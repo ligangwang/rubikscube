@@ -10,11 +10,14 @@
 	</head>
 	<body>
 		<script src="lib/three.min.js"></script>
-		<script src="rubikscube.js"></script>
 		<script src="lib/controls/OrbitControls.js"></script>
+		<script src="lib/Tween.js"></script>
+		<script src="rubikscube.js"></script>
 		<script>
-			var cube = new RubiksCube(new THREE.Vector3(0,0,0));
+			var cube = new RubiksCube();
 			cube.render();
+			cube.rotate("F'");
+			cube.rotate("F");
 		</script>
 	</body>
 </html>

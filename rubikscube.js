@@ -31,12 +31,9 @@ CubieFace.prototype = {
 	},
 	
 	setPosition : function(position){
-		//this.geometry.translate(position.x, position.y, position.z);
 		matrix = new THREE.Matrix4().makeTranslation(position.x, position.y, position.z);
 		for (mesh of this.meshes){
 			mesh.applyMatrix(matrix);
-		// 	console.log(mesh.geometry.vertices[0].clone());
-		// 	//console.log(mesh.geometry);
 		}
 	},
 }
@@ -45,35 +42,12 @@ CubieFace.prototype = {
 var Cubie = function(name, position, cubeRotation){
 	meshes = [];
 	cubieFaces = [];
-	if(name.indexOf('R') > -1){
-		R = new CubieFace(0xff0000, new THREE.Vector3(100, -100, 100), cubeRotation.face_rotations['R'][0]);
-		meshes = meshes.concat(R.meshes);
-		cubieFaces.push(R);
-	}
-	if(name.indexOf('U') > -1){
-		U = new CubieFace(0xffffff, new THREE.Vector3(-100, 100, 100), cubeRotation.face_rotations['U'][0]);
-		meshes = meshes.concat(U.meshes);
-		cubieFaces.push(U);
-	}
-	if(name.indexOf('F') > -1){
-		F = new CubieFace(0x00ff00, new THREE.Vector3(-100, -100, 100), cubeRotation.face_rotations['F'][0]);
-		meshes = meshes.concat(F.meshes);
-		cubieFaces.push(F);
-	}
-	if(name.indexOf('L') > -1){
-		L = new CubieFace(0xffa500, new THREE.Vector3(-100, -100, 100), cubeRotation.face_rotations['L'][0]);
-		meshes = meshes.concat(L.meshes);
-		cubieFaces.push(L);
-	}
-	if(name.indexOf('D') > -1){
-		D = new CubieFace(0xffff00, new THREE.Vector3(100, -100, 100), cubeRotation.face_rotations['D'][0]);
-		meshes = meshes.concat(D.meshes);
-		cubieFaces.push(D);
-	}
-	if(name.indexOf('B') > -1){
-		B = new CubieFace(0x0000ff, new THREE.Vector3(100, -100, -100), cubeRotation.face_rotations['B'][0]);
-		meshes = meshes.concat(B.meshes);
-		cubieFaces.push(B);
+	for (face_name of cubeRotation.face_names){
+		if(name.indexOf(face_name) > -1){
+			face = new CubieFace(cubeRotation.face_configs[face_name][0], cubeRotation.face_configs[face_name][1], cubeRotation.face_rotations[face_name][0]);
+			meshes = meshes.concat(face.meshes);
+			cubieFaces.push(face);
+		}
 	}
 	this.cubieFaces = cubieFaces;
 	this.cubeRotation = cubeRotation;
@@ -90,18 +64,11 @@ Cubie.prototype = {
 			cubieFace.setPosition(position);
 		}
 	},
-	
-	transform : function(op){
-		matrix = this.cubeRotation.face_rotations[op][1];
-		for (mesh of this.meshes){
-			//console.log(op);
-			mesh.applyMatrix(matrix);
-		}
-		this.orientation = this.cubeRotation.transformOrientation(this.orientation, op);
-	}
 }
 
 var CubeRotation = function(){
+	this.face_names = ["R", "U", "F", "L", "D", "B"];
+	
 	this.face_rotation_cycle = new Array();
 	this.face_rotation_cycle["R"] = ["F", "D", "B", "U"]; //R: F->D->B->U
 	this.face_rotation_cycle["U"] = ["F", "R", "B", "L"]; //U: F->R->B->L
@@ -109,26 +76,31 @@ var CubeRotation = function(){
 	this.face_rotation_cycle["L"] = this.face_rotation_cycle["R"].slice().reverse();
 	this.face_rotation_cycle["D"] = this.face_rotation_cycle["U"].slice().reverse();
 	this.face_rotation_cycle["B"] = this.face_rotation_cycle["F"].slice().reverse();
-	
-	//reverse op
-	for (op of ["R", "U", "F", "L", "D", "B"]){
+	for (op of this.face_names){
 		this.face_rotation_cycle[op + "'"] = this.face_rotation_cycle[op].slice().reverse();
 	}
 	
 	this.face_rotations = new Array();
-	this.face_rotations["R"] = [new THREE.Vector3(1, 0, 0), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI/2)];
-	this.face_rotations["U"] = [new THREE.Vector3(0, 1, 0), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), Math.PI/2)];
-	this.face_rotations["F"] = [new THREE.Vector3(0,0,1), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0,0,1), Math.PI/2)]
-	this.face_rotations["L"] = [new THREE.Vector3(-1, 0, 0), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(-1, 0, 0), Math.PI/2)];
-	this.face_rotations["D"] = [new THREE.Vector3(0, -1, 0), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, -1, 0), Math.PI/2)];
-	this.face_rotations["B"] = [new THREE.Vector3(0, 0, -1), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, -1), Math.PI/2)];
+	this.face_rotations["R"] = [new THREE.Vector3(1, 0, 0), Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI/2)];
+	this.face_rotations["U"] = [new THREE.Vector3(0, 1, 0), Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), Math.PI/2)];
+	this.face_rotations["F"] = [new THREE.Vector3(0,0,1), Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0,0,1), Math.PI/2)]
+	this.face_rotations["L"] = [new THREE.Vector3(-1, 0, 0), Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(-1, 0, 0), Math.PI/2)];
+	this.face_rotations["D"] = [new THREE.Vector3(0, -1, 0), Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, -1, 0), Math.PI/2)];
+	this.face_rotations["B"] = [new THREE.Vector3(0, 0, -1), Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, -1), Math.PI/2)];
 
-	this.face_rotations["R'"] = [new THREE.Vector3(1, 0, 0), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), -Math.PI/2)];
-	this.face_rotations["U'"] = [new THREE.Vector3(0, 1, 0), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), -Math.PI/2)];
-	this.face_rotations["F'"] = [new THREE.Vector3(0, 0, 1), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0,0,1), -Math.PI/2)]
-	this.face_rotations["L'"] = [new THREE.Vector3(-1, 0, 0), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(-1, 0, 0), -Math.PI/2)];
-	this.face_rotations["D'"] = [new THREE.Vector3(0, -1, 0), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, -1, 0), -Math.PI/2)];
-	this.face_rotations["B'"] = [new THREE.Vector3(0, 0, -1), new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, -1), -Math.PI/2)];
+	this.face_rotations["R'"] = [new THREE.Vector3(1, 0, 0), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), -Math.PI/2)];
+	this.face_rotations["U'"] = [new THREE.Vector3(0, 1, 0), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), -Math.PI/2)];
+	this.face_rotations["F'"] = [new THREE.Vector3(0, 0, 1), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0,0,1), -Math.PI/2)]
+	this.face_rotations["L'"] = [new THREE.Vector3(-1, 0, 0), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(-1, 0, 0), -Math.PI/2)];
+	this.face_rotations["D'"] = [new THREE.Vector3(0, -1, 0), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, -1, 0), -Math.PI/2)];
+	this.face_rotations["B'"] = [new THREE.Vector3(0, 0, -1), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, -1), -Math.PI/2)];
+	this.face_configs = new Array();
+	this.face_configs["R"] = [0xff0000, new THREE.Vector3(100, -100, 100)];
+	this.face_configs["U"] = [0xffffff, new THREE.Vector3(-100, 100, 100)];
+	this.face_configs["F"] = [0x00ff00, new THREE.Vector3(-100, -100, 100)];
+	this.face_configs["L"] = [0xffa500, new THREE.Vector3(-100, -100, 100)];
+	this.face_configs["D"] = [0xffff00, new THREE.Vector3(100, -100, 100)];
+	this.face_configs["B"] = [0x0000ff, new THREE.Vector3(100, -100, -100)];
 }
 
 CubeRotation.prototype = {
@@ -150,12 +122,13 @@ CubeRotation.prototype = {
 	}
 }
 
-var RubiksCube = function(position){
-	this.position = position;
+var RubiksCube = function(){
+	this.position = new THREE.Vector3(0,0,0);
 	this.cubies = [];
 	this.cubeRotation = new CubeRotation(); 
 	 
 	this.cubies.push(new Cubie("FRU", new THREE.Vector3(200,200,200), this.cubeRotation));
+	
 	this.cubies.push(new Cubie("FUL", new THREE.Vector3(-200,200,200), this.cubeRotation)); 	//F: FRU->FUL
 	this.cubies.push(new Cubie("RBU", new THREE.Vector3(200,200,-200), this.cubeRotation)); 	//U: FRU->RBU
 	this.cubies.push(new Cubie("DRF", new THREE.Vector3(200,-200,200), this.cubeRotation)); 	//R: FRU->DRF	
@@ -184,45 +157,79 @@ var RubiksCube = function(position){
 	this.cubies.push(new Cubie("U",  new THREE.Vector3(0,200,0), this.cubeRotation));
 	this.cubies.push(new Cubie("R", new THREE.Vector3(200,0,0), this.cubeRotation));
 	this.cubies.push(new Cubie("L", new THREE.Vector3(-200,0,0), this.cubeRotation));
-
+	
 	this.meshes = [];
 	for (cubie of this.cubies){
 		this.meshes = this.meshes.concat(cubie.meshes);
 	}
+	this.is_in_rotation = false;
 }
 
 RubiksCube.prototype = {
 	render : function(){
 		var scene = new THREE.Scene();
-		var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+		var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
 		var renderer = new THREE.WebGLRenderer({ antialias: true });
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		renderer.setClearColor(0xf0f0f0);
 		document.body.appendChild( renderer.domElement );
-		//var cube = new RubiksCube(new THREE.Vector3(0,0,0));
 		for (mesh of this.meshes){
 			scene.add( mesh );
 		}
-		camera.position.z = 1000;
+		camera.lookAt(new THREE.Vector3(0,0,0));
+		camera.position.z = 800;
+		camera.position.y = 800;
+		camera.position.x = 800;
 		controls = new THREE.OrbitControls(camera, renderer.domElement);
 		controls.enableDamping = true;
 		controls.dampingFactor = 0.25;
 		controls.enableZoom = false;
-		
+		var i = 0;
 		function animate() {
 			requestAnimationFrame( animate );
 			controls.update();
+			TWEEN.update();
 			renderer.render( scene, camera );
 		}
 		animate();			
 	},
 	
-	transform : function(op){
-		affected_face = op.slice(0, 1);
+	rotate : function(op){
+		if (this.is_in_rotation){
+			console.log("the cube is rotating. quiting ".concat(op))
+			return;
+		}
+		affected_face_name = op.slice(0, 1);
+		affected_objects = [];
 		for (cubie of this.cubies){
-			if (cubie.orientation.indexOf(affected_face) > -1){
-				cubie.transform(op);
+			if (cubie.orientation.indexOf(affected_face_name) > -1){
+				cubie.orientation = this.cubeRotation.transformOrientation(cubie.orientation, op);
+				affected_objects = affected_objects.concat(cubie.meshes);
 			}
 		}
+		axis = this.cubeRotation.face_rotations[op][0];
+		angle = this.cubeRotation.face_rotations[op][1];
+		this.rotate_objects(affected_objects, axis, angle);		
+		
+	},
+	
+	rotate_objects: function(objects, axis, angle){
+		cube = this;
+		this.is_in_rotation = true;
+		var tween = new TWEEN.Tween({value:0}).to({value:angle}, 800);
+		last_data = 0;
+		tween.onUpdate(function(){
+			delta = this.value - last_data;
+			last_data = this.value;
+			matrix = new THREE.Matrix4().makeRotationAxis(axis, delta);
+			for (object of objects){
+				object.applyMatrix(matrix);
+			}
+		});
+		tween.onComplete(function(){
+			cube.is_in_rotation = false;
+		});
+		tween.start();
 	}
+	
 }
