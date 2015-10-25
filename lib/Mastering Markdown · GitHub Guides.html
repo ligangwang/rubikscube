@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<!-- saved from url=(0054)https://guides.github.com/features/mastering-markdown/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="UTF-8">
+  <title>
+    
+      Mastering Markdown · GitHub Guides
+    
+  </title>
+  <link rel="icon" type="image/x-icon" href="https://guides.github.com/favicon.ico">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <link rel="stylesheet" href="./Mastering Markdown · GitHub Guides_files/gridism.css">
+  <link rel="stylesheet" href="./Mastering Markdown · GitHub Guides_files/markdown.css">
+  <link rel="stylesheet" href="./Mastering Markdown · GitHub Guides_files/octicons.css">
+  <link href="./Mastering Markdown · GitHub Guides_files/main.css" rel="stylesheet">
+  <link href="./Mastering Markdown · GitHub Guides_files/pygments.css" rel="stylesheet">
+
+  <script type="text/javascript" async="" src="./Mastering Markdown · GitHub Guides_files/ga.js"></script><script src="./Mastering Markdown · GitHub Guides_files/jquery.js" type="text/javascript"></script>
+  <script src="./Mastering Markdown · GitHub Guides_files/snap.svg-min.js" type="text/javascript"></script>
+  <script src="./Mastering Markdown · GitHub Guides_files/application.js" type="text/javascript"></script>
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-3769691-29']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <ul class="links">
+        <li><a href="https://www.youtube.com/githubguides">Video Guides</a></li>
+        <li><a href="https://help.github.com/">GitHub Help</a></li>
+        <li class="nav-github"><a href="https://github.com/">GitHub.com</a></li>
+        <li class="nav-rss"><a href="https://guides.github.com/feed/index.xml"><span class="octicon octicon-rss"></span></a></li>
+      </ul>
+
+      <a href="https://guides.github.com/"><img src="./Mastering Markdown · GitHub Guides_files/logo@2x.png" width="136" height="25" alt="GitHub Guides logo"></a>
+    </div>
+  </header>
+
+  <article class="full">
+  <div class="article-heading js-article-heading js-geopattern" style="background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDMiIGhlaWdodD0iMjAzIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJyZ2IoNDMsIDEzNywgNTYpIiAgLz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjE0MTMzMzMzMzMzMzMzMzM0OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMzLjk0OCwtMzMuOTQ4KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjE0MTMzMzMzMzMzMzMzMzM0OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTY5LjczOTk5OTk5OTk5OTk4LC0zMy45NDgpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiNkZGQiIHN0eWxlPSJvcGFjaXR5OjAuMTQxMzMzMzMzMzMzMzMzMzQ7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMzMuOTQ4LDE2OS43NCkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iI2RkZCIgc3R5bGU9Im9wYWNpdHk6MC4xNDEzMzMzMzMzMzMzMzMzNDsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE2OS43Mzk5OTk5OTk5OTk5OCwxNjkuNzQpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiNkZGQiIHN0eWxlPSJvcGFjaXR5OjAuMDg5MzMzMzMzMzMzMzMzMzM7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjAsLTE2Ljk3NCkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iI2RkZCIgc3R5bGU9Im9wYWNpdHk6MC4wODkzMzMzMzMzMzMzMzMzMzsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAuMCwxODYuNzE0KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjEzMjY2NjY2NjY2NjY2NjY1OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzMuOTQ4LC0zMy45NDgpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiMyMjIiIHN0eWxlPSJvcGFjaXR5OjAuMTMyNjY2NjY2NjY2NjY2NjU7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMy45NDgsMTY5Ljc0KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjE1OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNjcuODk1OTk5OTk5OTk5OTksLTE2Ljk3NCkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iIzIyMiIgc3R5bGU9Im9wYWNpdHk6MC4xNTsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDY3Ljg5NTk5OTk5OTk5OTk5LDE4Ni43MTQpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiMyMjIiIHN0eWxlPSJvcGFjaXR5OjAuMDk4OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAxLjg0NCwtMzMuOTQ4KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA5ODsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwMS44NDQsMTY5Ljc0KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjA3MjAwMDAwMDAwMDAwMDAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTM1Ljc5MiwtMTYuOTc0KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjA3MjAwMDAwMDAwMDAwMDAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTM1Ljc5MiwxODYuNzE0KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjA3MjAwMDAwMDAwMDAwMDAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMzLjk0OCwwLjApIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiNkZGQiIHN0eWxlPSJvcGFjaXR5OjAuMDcyMDAwMDAwMDAwMDAwMDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNjkuNzM5OTk5OTk5OTk5OTgsMC4wKSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA4MDY2NjY2NjY2NjY2NjY2OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wLDE2Ljk3Mzk5OTk5OTk5OTk5Nykgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iI2RkZCIgc3R5bGU9Im9wYWNpdHk6MC4wNzIwMDAwMDAwMDAwMDAwMTsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMzLjk0OCwwLjApIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiMyMjIiIHN0eWxlPSJvcGFjaXR5OjAuMDgwNjY2NjY2NjY2NjY2NjY7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2Ny44OTU5OTk5OTk5OTk5OSwxNi45NzM5OTk5OTk5OTk5OTcpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiMyMjIiIHN0eWxlPSJvcGFjaXR5OjAuMTU7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDEuODQ0LDAuMCkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iIzIyMiIgc3R5bGU9Im9wYWNpdHk6MC4xMTUzMzMzMzMzMzMzMzMzNDsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzNS43OTIsMTYuOTczOTk5OTk5OTk5OTk3KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjEzMjY2NjY2NjY2NjY2NjY1OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMzLjk0OCwzMy45NDc5OTk5OTk5OTk5OSkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iIzIyMiIgc3R5bGU9Im9wYWNpdHk6MC4xMzI2NjY2NjY2NjY2NjY2NTsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE2OS43Mzk5OTk5OTk5OTk5OCwzMy45NDc5OTk5OTk5OTk5OSkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iIzIyMiIgc3R5bGU9Im9wYWNpdHk6MC4wNDY7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjAsNTAuOTIyKSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjEwNjY2NjY2NjY2NjY2NjY3OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzMuOTQ4LDMzLjk0Nzk5OTk5OTk5OTk5KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA0NjsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDY3Ljg5NTk5OTk5OTk5OTk5LDUwLjkyMikgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iI2RkZCIgc3R5bGU9Im9wYWNpdHk6MC4wODkzMzMzMzMzMzMzMzMzMzsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwMS44NDQsMzMuOTQ3OTk5OTk5OTk5OTkpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiMyMjIiIHN0eWxlPSJvcGFjaXR5OjAuMDQ2OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTM1Ljc5Miw1MC45MjIpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiNkZGQiIHN0eWxlPSJvcGFjaXR5OjAuMTI0MDAwMDAwMDAwMDAwMDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMzMuOTQ4LDY3Ljg5NTk5OTk5OTk5OTk5KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjEyNDAwMDAwMDAwMDAwMDAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTY5LjczOTk5OTk5OTk5OTk4LDY3Ljg5NTk5OTk5OTk5OTk5KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA2MzMzMzMzMzMzMzMzMzM0OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wLDg0Ljg2OTk5OTk5OTk5OTk4KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA0NjsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMzLjk0OCw2Ny44OTU5OTk5OTk5OTk5OSkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iI2RkZCIgc3R5bGU9Im9wYWNpdHk6MC4wMzczMzMzMzMzMzMzMzMzMzsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDY3Ljg5NTk5OTk5OTk5OTk5LDg0Ljg2OTk5OTk5OTk5OTk4KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjAyODY2NjY2NjY2NjY2NjY2NzsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwMS44NDQsNjcuODk1OTk5OTk5OTk5OTkpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiNkZGQiIHN0eWxlPSJvcGFjaXR5OjAuMDcyMDAwMDAwMDAwMDAwMDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMzUuNzkyLDg0Ljg2OTk5OTk5OTk5OTk4KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA4MDY2NjY2NjY2NjY2NjY2OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMzLjk0OCwxMDEuODQ0KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA4MDY2NjY2NjY2NjY2NjY2OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTY5LjczOTk5OTk5OTk5OTk4LDEwMS44NDQpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiMyMjIiIHN0eWxlPSJvcGFjaXR5OjAuMDk4OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wLDExOC44MTc5OTk5OTk5OTk5OCkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iIzIyMiIgc3R5bGU9Im9wYWNpdHk6MC4wOTg7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMy45NDgsMTAxLjg0NCkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iIzIyMiIgc3R5bGU9Im9wYWNpdHk6MC4xMTUzMzMzMzMzMzMzMzMzNDsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDY3Ljg5NTk5OTk5OTk5OTk5LDExOC44MTc5OTk5OTk5OTk5OCkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iI2RkZCIgc3R5bGU9Im9wYWNpdHk6MC4xNDEzMzMzMzMzMzMzMzMzNDsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwMS44NDQsMTAxLjg0NCkgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iIzIyMiIgc3R5bGU9Im9wYWNpdHk6MC4xMTUzMzMzMzMzMzMzMzMzNDsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzNS43OTIsMTE4LjgxNzk5OTk5OTk5OTk4KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjA1NDY2NjY2NjY2NjY2NjY3OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMzLjk0OCwxMzUuNzkyMDAwMDAwMDAwMDMpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiNkZGQiIHN0eWxlPSJvcGFjaXR5OjAuMDU0NjY2NjY2NjY2NjY2Njc7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxNjkuNzM5OTk5OTk5OTk5OTgsMTM1Ljc5MjAwMDAwMDAwMDAzKSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjA1NDY2NjY2NjY2NjY2NjY3OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMzLjk0OCwtNjcuODk1OTk5OTk5OTk5OTYpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiMyMjIiIHN0eWxlPSJvcGFjaXR5OjAuMTE1MzMzMzMzMzMzMzMzMzQ7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjAsMTUyLjc2NjAwMDAwMDAwMDAyKSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjExNTMzMzMzMzMzMzMzMzM0OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wLC01MC45MjE5OTk5OTk5OTk5Nykgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iI2RkZCIgc3R5bGU9Im9wYWNpdHk6MC4wNTQ2NjY2NjY2NjY2NjY2NzsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMzLjk0OCwxMzUuNzkyMDAwMDAwMDAwMDMpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiNkZGQiIHN0eWxlPSJvcGFjaXR5OjAuMDU0NjY2NjY2NjY2NjY2Njc7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMy45NDgsLTY3Ljg5NTk5OTk5OTk5OTk2KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA2MzMzMzMzMzMzMzMzMzM0OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNjcuODk1OTk5OTk5OTk5OTksMTUyLjc2NjAwMDAwMDAwMDAyKSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjMjIyIiBzdHlsZT0ib3BhY2l0eTowLjA2MzMzMzMzMzMzMzMzMzM0OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNjcuODk1OTk5OTk5OTk5OTksLTUwLjkyMTk5OTk5OTk5OTk3KSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjA3MjAwMDAwMDAwMDAwMDAxOyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAxLjg0NCwxMzUuNzkyMDAwMDAwMDAwMDMpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjxnIGZpbGw9IiNkZGQiIHN0eWxlPSJvcGFjaXR5OjAuMDcyMDAwMDAwMDAwMDAwMDE7IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDEuODQ0LC02Ny44OTU5OTk5OTk5OTk5Nikgcm90YXRlKDQ1LCAzMy45NDgsIDMzLjk0OCkiID48cmVjdCB4PSIyNC4wIiB5PSIwIiB3aWR0aD0iMjQuMCIgaGVpZ2h0PSI3Mi4wIiAgLz48cmVjdCB4PSIwIiB5PSIyNC4wIiB3aWR0aD0iNzIuMCIgaGVpZ2h0PSIyNC4wIiAgLz48L2c+PGcgZmlsbD0iI2RkZCIgc3R5bGU9Im9wYWNpdHk6MC4wNTQ2NjY2NjY2NjY2NjY2NzsiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzNS43OTIsMTUyLjc2NjAwMDAwMDAwMDAyKSByb3RhdGUoNDUsIDMzLjk0OCwgMzMuOTQ4KSIgPjxyZWN0IHg9IjI0LjAiIHk9IjAiIHdpZHRoPSIyNC4wIiBoZWlnaHQ9IjcyLjAiICAvPjxyZWN0IHg9IjAiIHk9IjI0LjAiIHdpZHRoPSI3Mi4wIiBoZWlnaHQ9IjI0LjAiICAvPjwvZz48ZyBmaWxsPSIjZGRkIiBzdHlsZT0ib3BhY2l0eTowLjA1NDY2NjY2NjY2NjY2NjY3OyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTM1Ljc5MiwtNTAuOTIxOTk5OTk5OTk5OTcpIHJvdGF0ZSg0NSwgMzMuOTQ4LCAzMy45NDgpIiA+PHJlY3QgeD0iMjQuMCIgeT0iMCIgd2lkdGg9IjI0LjAiIGhlaWdodD0iNzIuMCIgIC8+PHJlY3QgeD0iMCIgeT0iMjQuMCIgd2lkdGg9IjcyLjAiIGhlaWdodD0iMjQuMCIgIC8+PC9nPjwvc3ZnPg==);">
+    <div class="wrap">
+      <div class="icon-container">
+        <span class="mega-octicon octicon-markdown"></span>
+      </div>
+      <h1>Mastering Markdown</h1>
+      <span class="article-read-time article-meta">
+        <span class="octicon octicon-clock"></span> 3 minute read
+      </span>
+      
+      <a class="article-pdf article-meta" href="https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf" onclick="_gaq.push([&#39;_trackEvent&#39;, &#39;PDF Download&#39;, &#39;Click&#39;, &#39;markdown-cheatsheet-online.pdf&#39;]);">
+        <span class="octicon octicon-cloud-download"></span> Download PDF version
+      </a>
+      
+    </div>
+  </div>
+
+
+  <div class="wrap">
+    
+    <div class="toc-wrapper">
+      <ol class="toc js-toc sticky"><li><a href="https://guides.github.com/features/mastering-markdown/#intro" class="">Intro</a></li><li><a href="https://guides.github.com/features/mastering-markdown/#what" class="">What is Markdown?</a></li><li><a href="https://guides.github.com/features/mastering-markdown/#examples" class="">Examples</a></li><li><a href="https://guides.github.com/features/mastering-markdown/#syntax" class="active">Basic syntax</a></li><li><a href="https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown" class="">GFM</a></li></ol>
+    </div>
+    
+
+    <div class="markdown-body content-body ">
+      <p><a id="intro" title="Intro" class="toc-item"></a>
+Markdown is a lightweight and easy-to-use syntax for styling all forms of writing on the GitHub platform.</p>
+
+<p><strong>What you will learn:</strong></p>
+
+<ul>
+<li>How the Markdown format makes styled collaborative editing easy</li>
+<li>How Markdown differs from traditional formatting approaches</li>
+<li>How to use Markdown to format text</li>
+<li>How to leverage GitHub’s automatic Markdown rendering</li>
+<li>How to apply GitHub’s unique Markdown extensions</li>
+</ul>
+
+
+<p><a id="what" title="What is Markdown?" class="toc-item"></a></p>
+
+<h2>What is Markdown?</h2>
+
+<p><a href="http://daringfireball.net/projects/markdown/">Markdown</a> is a way to style text on the web. You control the display of the document; formatting words as bold or italic, adding images, and creating lists are just a few of the things we can do with Markdown. Mostly, Markdown is just regular text with a few non-alphabetic characters thrown in, like <code>#</code> or <code>*</code>.</p>
+
+<p>You can use Markdown most places around GitHub:</p>
+
+<ul>
+<li><a href="https://gist.github.com/">Gists</a></li>
+<li>Comments in Issues and Pull Requests</li>
+<li>Files with the <code>.md</code> or <code>.markdown</code> extension</li>
+</ul>
+
+
+<p><a id="examples" title="Examples" class="toc-item"></a></p>
+
+<h2>Examples</h2>
+
+<ul class="example-nav js-examples-nav">
+  <li><a href="https://guides.github.com/features/mastering-markdown/#" class="selected" data-container-id="example-text" data-proofer-ignore="">Text</a></li>
+  <li><a href="https://guides.github.com/features/mastering-markdown/#" data-container-id="example-lists" data-proofer-ignore="">Lists</a></li>
+  <li><a href="https://guides.github.com/features/mastering-markdown/#" data-container-id="example-images" data-proofer-ignore="">Images</a></li>
+  <li><a href="https://guides.github.com/features/mastering-markdown/#" data-container-id="example-headers" data-proofer-ignore="">Headers &amp; Quotes</a></li>
+  <li><a href="https://guides.github.com/features/mastering-markdown/#" data-container-id="example-code" data-proofer-ignore="">Code</a></li>
+  <li><a href="https://guides.github.com/features/mastering-markdown/#" data-container-id="example-extras" data-proofer-ignore="">Extras</a></li>
+</ul>
+
+
+
+
+<div class="markdown-example" id="example-text">
+<pre class="source">It's very easy to make some words **bold** and other words *italic* with Markdown. You can even [link to Google!](http://google.com)
+</pre>
+<div class="rendered">
+It's very easy to make some words <strong>bold</strong> and other words <em>italic</em> with Markdown. You can even <a href="http://google.com/">link to Google!</a>
+</div>
+</div>
+
+
+
+
+<div class="markdown-example" id="example-lists" style="display:none">
+<pre class="source">Sometimes you want numbered lists:
+
+1. One
+2. Two
+3. Three
+
+Sometimes you want bullet points:
+
+* Start a line with a star
+* Profit!
+
+Alternatively,
+
+- Dashes work just as well
+- And if you have sub points, put two spaces before the dash or star:
+  - Like this
+  - And this
+</pre>
+<div class="rendered">
+  <p>Sometimes you want numbered lists:</p>
+  <ol>
+  <li>One</li>
+  <li>Two</li>
+  <li>Three</li>
+  </ol>
+  <p>Sometimes you want bullet points:</p>
+  <ul>
+  <li>Start a line with a star</li>
+  <li>Profit!</li>
+  </ul>
+  <p>Alternatively,</p>
+  <ul>
+  <li>Dashes work just as well</li>
+  <li>And if you have sub points, put two spaces before the dash or star:
+  <ul>
+  <li>Like this</li>
+  <li>And this</li>
+  </ul>
+  </li>
+  </ul>
+</div>
+</div>
+
+
+
+
+<div class="markdown-example" id="example-images" style="display:none">
+<pre class="source">If you want to embed images, this is how you do it:
+
+![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
+</pre>
+<div class="rendered">
+  <p>If you want to embed images, this is how you do it:</p>
+  <p><img src="./Mastering Markdown · GitHub Guides_files/yaktocat.png" alt="Image of Yakotocat"></p>
+</div>
+</div>
+
+
+
+
+<div class="markdown-example" id="example-headers" style="display:none">
+<pre class="source"># Structured documents
+
+Sometimes it's useful to have different levels of headings to structure your documents. Start lines with a `#` to create headings. Multiple `##` in a row denote smaller heading sizes.
+
+### This is a third-tier heading
+
+You can use  one `#` all the way up to `######` six for different heading sizes.
+
+If you'd like to quote someone, use the &gt; character before the line:
+
+&gt; Coffee. The finest organic suspension ever devised... I beat the Borg with it.
+&gt; - Captain Janeway
+</pre>
+<div class="rendered">
+  <h1>Structured documents</h1>
+
+  <p>Sometimes it’s useful to have different levels of headings to structure your documents. Start lines with a <code>#</code> to create headings. Multiple <code>##</code> in a row denote smaller heading sizes.</p>
+
+  <h3>This is a third-tier heading</h3>
+
+  <p>You can use  one <code>#</code> all the way up to <code>######</code> six for different heading sizes.</p>
+
+  <p>If you’d like to quote someone, use the &gt; character before the line:</p>
+
+  <blockquote><p>Coffee. The finest organic suspension ever devised… I beat the Borg with it.
+  - Captain Janeway</p></blockquote>
+</div>
+</div>
+
+
+
+
+<div class="markdown-example" id="example-code" style="display:none">
+<pre class="source">There are many different ways to style code with GitHub's markdown. If you have inline code blocks, wrap them in backticks: `var example = true`.  If you've got a longer block of code, you can indent with four spaces:
+
+    if (isAwesome){
+      return true
+    }
+
+GitHub also supports something called code fencing, which allows for multiple lines without indentation:
+
+```
+if (isAwesome){
+  return true
+}
+```
+
+And if you'd like to use syntax highlighting, include the language:
+
+```javascript
+if (isAwesome){
+  return true
+}
+```
+</pre>
+<div class="rendered">
+  <p>There are many different ways to style code with GitHub’s markdown. If you have inline code blocks, wrap them in backticks: <code>var example = true</code>.  If you’ve got a longer block of code, you can indent with four spaces:</p>
+
+<pre><code>if (isAwesome){
+  return true
+}
+</code></pre>
+
+  <p>GitHub also supports something called code fencing, which allows for multiple lines without indentation:</p>
+
+<pre><code>if (isAwesome){
+  return true
+}
+</code></pre>
+
+  <p>And if you’d like to use syntax highlighting, include the language:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="k">if</span> <span class="p">(</span><span class="nx">isAwesome</span><span class="p">){</span>
+  <span class="k">return</span> <span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+
+</div>
+</div>
+
+
+
+
+<div class="markdown-example" id="example-extras" style="display:none">
+<pre class="source">GitHub supports many extras in Markdown that help you reference and link to people. If you ever want to direct a comment at someone, you can prefix their name with an @ symbol: Hey @kneath — love your sweater!
+
+But I have to admit, tasks lists are my favorite:
+
+- [x] This is a complete item
+- [ ] This is an incomplete item
+
+When you include a task list in the first comment of an Issue, you will see a helpful progress bar in your list of issues. It works in Pull Requests, too!
+
+And, of course emoji! :<nbsp>sparkles: :<nbsp>camel: :<nbsp>boom:
+</nbsp></nbsp></nbsp></pre>
+<div class="rendered">
+  <p>GitHub supports many extras in Markdown that help you reference and link to people. If you ever want to direct a comment at someone, you can prefix their name with an @ symbol: Hey <a href="https://github.com/kneath" class="user-mention">@kneath</a> — love your sweater!</p>
+
+  <p>But I have to admit, tasks lists are my favorite:</p>
+
+  <ul class="task-list">
+  <li class="task-list-item">
+  <input type="checkbox" class="task-list-item-checkbox" checked="" disabled=""> This is a complete item</li>
+  <li class="task-list-item">
+  <input type="checkbox" class="task-list-item-checkbox" disabled=""> This is an incomplete item</li>
+  </ul>
+  <p>When you include a task list in the first comment of an Issue, you will see a helpful progress bar in your list of issues. It works in Pull Requests, too!</p>
+  <p>And, of course emoji! <img class="emoji" title=":sparkles:" alt=":sparkles:" src="./Mastering Markdown · GitHub Guides_files/2728.png" height="20" width="20" align="absmiddle"> <img class="emoji" title=":camel:" alt=":camel:" src="./Mastering Markdown · GitHub Guides_files/1f42b.png" height="20" width="20" align="absmiddle"> <img class="emoji" title=":boom:" alt=":boom:" src="./Mastering Markdown · GitHub Guides_files/1f4a5.png" height="20" width="20" align="absmiddle"></p>
+
+</div>
+</div>
+
+
+<p><a id="syntax" title="Basic syntax" class="toc-item"></a></p>
+
+<h2>Syntax guide</h2>
+
+<p>Here’s an overview of Markdown syntax that you can use anywhere on GitHub.com or in your own text files.</p>
+
+<h3>Headers</h3>
+
+<pre><code class="markdown"># This is an &lt;h1&gt; tag
+## This is an &lt;h2&gt; tag
+###### This is an &lt;h6&gt; tag
+</code></pre>
+
+<h3>Emphasis</h3>
+
+<pre><code class="markdown">*This text will be italic*
+_This will also be italic_
+
+**This text will be bold**
+__This will also be bold__
+
+_You **can** combine them_
+</code></pre>
+
+<h3>Lists</h3>
+
+<h4>Unordered</h4>
+
+<pre><code class="markdown">* Item 1
+* Item 2
+  * Item 2a
+  * Item 2b
+</code></pre>
+
+<h4>Ordered</h4>
+
+<pre><code class="markdown">1. Item 1
+2. Item 2
+3. Item 3
+   * Item 3a
+   * Item 3b
+</code></pre>
+
+<h3>Images</h3>
+
+<pre><code class="markdown">![GitHub Logo](/images/logo.png)
+Format: ![Alt Text](url)
+</code></pre>
+
+<h3>Links</h3>
+
+<pre><code class="markdown">http://github.com - automatic!
+[GitHub](http://github.com)
+</code></pre>
+
+<h3>Blockquotes</h3>
+
+<pre><code class="markdown">As Kanye West said:
+
+&gt; We're living the future so
+&gt; the present is our past.
+</code></pre>
+
+<h3>Inline code</h3>
+
+<pre><code>I think you should use an
+`&lt;addr&gt;` element here instead.
+</code></pre>
+
+<p><a id="GitHub-flavored-markdown" title="GFM" class="toc-item"></a></p>
+
+<h2>GitHub Flavored Markdown</h2>
+
+<p>GitHub.com uses its own version of the Markdown syntax that provides an additional set of useful features, many of which make it easier to work with content on GitHub.com.</p>
+
+<p>Note that some features of GitHub Flavored Markdown are only available in the descriptions and comments of Issues and Pull Requests. These include @mentions as well as references to SHA-1 hashes, Issues, and Pull Requests. Task Lists are also available in Gist comments and in Gist Markdown files.</p>
+
+<h3>Syntax highlighting</h3>
+
+<p>Here’s an example of how you can use syntax highlighting with <a href="https://help.github.com/articles/github-flavored-markdown">GitHub Flavored Markdown</a>:</p>
+
+<pre><code>```javascript
+function fancyAlert(arg) {
+  if(arg) {
+    $.facebox({div:'#foo'})
+  }
+}
+```
+</code></pre>
+
+<p>You can also simply indent your code by four spaces:</p>
+
+<pre><code>    function fancyAlert(arg) {
+      if(arg) {
+        $.facebox({div:'#foo'})
+      }
+    }
+</code></pre>
+
+<p>Here’s an example of Python code without syntax highlighting:</p>
+
+<pre><code>def foo():
+    if not bar:
+        return True
+</code></pre>
+
+<h3>Task Lists</h3>
+
+<pre><code>- [x] @mentions, #refs, [links](), **formatting**, and &lt;del&gt;tags&lt;/del&gt; supported
+- [x] list syntax required (any unordered or ordered list supported)
+- [x] this is a complete item
+- [ ] this is an incomplete item
+</code></pre>
+
+<p>If you include a task list in the first comment of an Issue, you will get a handy progress indicator in your issue list. It also works in Pull Requests!</p>
+
+<h3>Tables</h3>
+
+<p>You can create tables by assembling a list of words and dividing them with hyphens <code>-</code> (for the first row), and then separating each column with a pipe <code>|</code>:</p>
+
+<pre><code>First Header | Second Header
+------------ | -------------
+Content from cell 1 | Content from cell 2
+Content in the first column | Content in the second column
+</code></pre>
+
+<p>Would become:</p>
+
+<table>
+<thead>
+<tr>
+<th>First Header </th>
+<th> Second Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Content from cell 1 </td>
+<td> Content from cell 2</td>
+</tr>
+<tr>
+<td>Content in the first column </td>
+<td> Content in the second column</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>SHA references</h3>
+
+<p>Any reference to a commit’s <a href="http://en.wikipedia.org/wiki/SHA-1">SHA-1 hash</a> will be automatically converted into a link to that commit on GitHub.</p>
+
+<pre><code>16c999e8c71134401a78d4d46435517b2271d6ac
+mojombo@16c999e8c71134401a78d4d46435517b2271d6ac
+mojombo/github-flavored-markdown@16c999e8c71134401a78d4d46435517b2271d6ac
+</code></pre>
+
+<h3>Issue references within a repository</h3>
+
+<p>Any number that refers to an Issue or Pull Request will be automatically converted into a link.</p>
+
+<pre><code>#1
+mojombo#1
+mojombo/github-flavored-markdown#1
+</code></pre>
+
+<h3>Username @mentions</h3>
+
+<p>Typing an <code>@</code> symbol, followed by a username, will notify that person to come and view the comment. This is called an “@mention”, because you’re <em>mentioning</em> the individual. You can also @mention teams within an organization.</p>
+
+<h3>Automatic linking for URLs</h3>
+
+<p>Any URL (like <code>http://www.github.com/</code>) will be automatically converted into a clickable link.</p>
+
+<h3>Strikethrough</h3>
+
+<p>Any word wrapped with two tildes (like <code>~~this~~</code>) will appear crossed out.</p>
+
+<h3>Emoji</h3>
+
+<p>GitHub supports emoji! <img class="emoji" title=":sparkles:" alt=":sparkles:" src="./Mastering Markdown · GitHub Guides_files/2728.png" height="20" width="20" align="absmiddle"> <img class="emoji" title=":camel:" alt=":camel:" src="./Mastering Markdown · GitHub Guides_files/1f42b.png" height="20" width="20" align="absmiddle"> <img class="emoji" title=":boom:" alt=":boom:" src="./Mastering Markdown · GitHub Guides_files/1f4a5.png" height="20" width="20" align="absmiddle"></p>
+
+<p> To see a list of every image we support, check out the <a href="http://www.emoji-cheat-sheet.com/">Emoji Cheat Sheet</a>.</p>
+
+
+      <p class="last-updated">Last updated Jan 15, 2014</p>
+    </div>
+  </div>
+</article>
+
+
+  <footer>
+    <div class="wrap">
+      <span class="mega-octicon octicon-mark-github"></span>
+      <p>
+        <a href="https://github.com/">GitHub</a> is the best way to build and ship software.<br>
+        Powerful collaboration, code review, and code management for open source and private projects.
+      </p>
+    </div>
+  </footer>
+
+
+
+</body></html>

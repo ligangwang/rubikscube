@@ -20,7 +20,7 @@ var CubieFace = function(color, bottom_left, axis){
 
 CubieFace.prototype = {
 	createSquareMesh : function(){
-		var material = new THREE.MeshBasicMaterial( { color: this.color, side:THREE.DoubleSide } );
+		var material = new THREE.MeshBasicMaterial( { color: this.color, side:THREE.DoubleSide, opacity: 0.9, transparent: true } );
 		var square_mesh = new THREE.Mesh( this.geometry, material );
 		return square_mesh				
 	},
@@ -94,6 +94,8 @@ var CubeRotation = function(){
 	this.face_rotations["L'"] = [new THREE.Vector3(-1, 0, 0), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(-1, 0, 0), -Math.PI/2)];
 	this.face_rotations["D'"] = [new THREE.Vector3(0, -1, 0), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, -1, 0), -Math.PI/2)];
 	this.face_rotations["B'"] = [new THREE.Vector3(0, 0, -1), -Math.PI/2, new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, -1), -Math.PI/2)];
+	this.operations = [];
+	for(var key in this.face_rotations) { this.operations.push(key);}
 	this.face_configs = new Array();
 	this.face_configs["R"] = [0xff0000, new THREE.Vector3(100, -100, 100)];
 	this.face_configs["U"] = [0xffffff, new THREE.Vector3(-100, 100, 100)];
@@ -163,6 +165,8 @@ var RubiksCube = function(){
 		this.meshes = this.meshes.concat(cubie.meshes);
 	}
 	this.is_in_rotation = false;
+	this.commands = "";
+	this.enable_animation = true;
 }
 
 RubiksCube.prototype = {
@@ -176,7 +180,7 @@ RubiksCube.prototype = {
 		for (mesh of this.meshes){
 			scene.add( mesh );
 		}
-		camera.lookAt(new THREE.Vector3(0,0,0));
+		camera.lookAt(scene.position);
 		camera.position.z = 800;
 		camera.position.y = 800;
 		camera.position.x = 800;
@@ -209,11 +213,14 @@ RubiksCube.prototype = {
 		}
 		axis = this.cubeRotation.face_rotations[op][0];
 		angle = this.cubeRotation.face_rotations[op][1];
-		this.rotate_objects(affected_objects, axis, angle);		
-		
+		if (this.enable_animation){
+			this.rotate_objects_with_animation(affected_objects, axis, angle);		
+		}else{
+			this.rotate_objects(affected_objects, axis, angle);
+		}
 	},
 	
-	rotate_objects: function(objects, axis, angle){
+	rotate_objects_with_animation: function(objects, axis, angle){
 		cube = this;
 		this.is_in_rotation = true;
 		var tween = new TWEEN.Tween({value:0}).to({value:angle}, 800);
@@ -221,15 +228,123 @@ RubiksCube.prototype = {
 		tween.onUpdate(function(){
 			delta = this.value - last_data;
 			last_data = this.value;
-			matrix = new THREE.Matrix4().makeRotationAxis(axis, delta);
-			for (object of objects){
-				object.applyMatrix(matrix);
-			}
+			cube.rotate_objects(objects, axis, delta);
 		});
 		tween.onComplete(function(){
 			cube.is_in_rotation = false;
+			cube.doOperation();
 		});
 		tween.start();
-	}
+	},
 	
+	rotate_objects: function(objects, axis, angle){
+		matrix = new THREE.Matrix4().makeRotationAxis(axis, angle);
+		for (object of objects){
+			object.applyMatrix(matrix);
+		}
+	},
+	
+	
+	is_valid_char:function(prev_char, char){
+		return (char in this.cubeRotation.face_rotations) || (prev_char != "'" && char == "'");
+	},
+	
+	queue : function(command){
+		this.commands = this.commands.concat(command);	
+		if (!this.is_in_rotation){
+			this.doOperation();
+		}
+	},
+	
+	doOperation : function(){
+		op = this.getNextOp();
+		if (op != ""){
+			this.rotate(op);
+		}	
+	},
+	
+	getNextOp : function(){
+		len = this.commands.length;
+		look_at = 0;
+		if (len > 1){
+			if (this.commands[1] == "'"){
+				look_at = 2;
+			}else{
+				look_at = 1;
+			}
+		}else if(len == 1){
+			look_at = 1;
+		}
+		op = this.commands.slice(0, look_at);
+		this.commands = this.commands.slice(look_at);
+		console.log(this.commands)
+		return op;
+	},
+	
+	randomize : function(){
+		saved = this.enable_animation;
+		this.enable_animation = false;
+		for (var i = 1; i < 20; i++){
+			op_i = this.get_random(0, 11);
+			op = this.cubeRotation.operations[op_i]
+			this.rotate(op);
+		}
+		this.enable_animation = saved; 	
+	},
+	
+	/**
+	* Returns a random number between min (inclusive) and max (inclusive)
+	*/
+	get_random:function(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}	
+}
+
+var cube = new RubiksCube();
+cube.render();
+
+document.addEventListener( 'keypress', onDocumentKeyPress, false );
+document.addEventListener( 'keydown', onDocumentKeyDown, false );	
+input_text = "";
+input_timer = null;
+resetInputTimer();
+function onTimer(){
+	if (input_text.length > 0){
+		console.log(input_text);
+		cube.queue(input_text);
+		input_text = "";
+	}
+}
+			
+function onDocumentKeyDown( event ) {
+	var keyCode = event.keyCode;
+	// backspace
+	if ( keyCode == 8 ) {
+		event.preventDefault();
+		input_text = input_text.substring( 0, input_text.length - 1 );
+		resetInputTimer();
+		return false;
+	}
+}
+
+function onDocumentKeyPress ( event ) {
+	var keyCode = event.which;
+	// backspace
+	if ( keyCode == 8 ) {
+		event.preventDefault();
+	} else {
+		var ch = String.fromCharCode( keyCode ).toUpperCase();
+		prev_char = input_text.substr(input_text.length - 1)
+		if (cube.is_valid_char(prev_char, ch)){
+			input_text += ch;
+			resetInputTimer();
+		}else if(ch == "S"){
+			cube.randomize();
+		}
+	}
+}
+	
+function resetInputTimer(){
+	window.clearTimeout(input_timer);
+	input_timer = window.setTimeout(onTimer, 1000);
 }
