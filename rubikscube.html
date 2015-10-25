@@ -13,30 +13,8 @@
 		<script src="rubikscube.js"></script>
 		<script src="lib/controls/OrbitControls.js"></script>
 		<script>
-			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			var renderer = new THREE.WebGLRenderer({ antialias: true });
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.setClearColor(0xf0f0f0);
-			document.body.appendChild( renderer.domElement );
 			var cube = new RubiksCube(new THREE.Vector3(0,0,0));
-			for (mesh of cube.meshes){
-				scene.add( mesh );
-			}
-			//cube.transform("F");
-			cube.transform("F'");
-			camera.position.z = 1000;
-			controls = new THREE.OrbitControls(camera, render.domElement);
-			controls.enableDamping = true;
-			controls.dampingFactor = 0.25;
-			controls.enableZoom = false;
-			
-			function render() {
-				requestAnimationFrame( render );
-				controls.update();
-				renderer.render( scene, camera );
-			}
-			render();			
+			cube.render();
 		</script>
 	</body>
 </html>

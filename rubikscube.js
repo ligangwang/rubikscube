@@ -156,7 +156,7 @@ var RubiksCube = function(position){
 	this.cubeRotation = new CubeRotation(); 
 	 
 	this.cubies.push(new Cubie("FRU", new THREE.Vector3(200,200,200), this.cubeRotation));
-/*	this.cubies.push(new Cubie("FUL", new THREE.Vector3(-200,200,200), this.cubeRotation)); 	//F: FRU->FUL
+	this.cubies.push(new Cubie("FUL", new THREE.Vector3(-200,200,200), this.cubeRotation)); 	//F: FRU->FUL
 	this.cubies.push(new Cubie("RBU", new THREE.Vector3(200,200,-200), this.cubeRotation)); 	//U: FRU->RBU
 	this.cubies.push(new Cubie("DRF", new THREE.Vector3(200,-200,200), this.cubeRotation)); 	//R: FRU->DRF	
 	this.cubies.push(new Cubie("FLD", new THREE.Vector3(-200,-200,200), this.cubeRotation)); //F: FUL->FLD
@@ -184,7 +184,7 @@ var RubiksCube = function(position){
 	this.cubies.push(new Cubie("U",  new THREE.Vector3(0,200,0), this.cubeRotation));
 	this.cubies.push(new Cubie("R", new THREE.Vector3(200,0,0), this.cubeRotation));
 	this.cubies.push(new Cubie("L", new THREE.Vector3(-200,0,0), this.cubeRotation));
-*/
+
 	this.meshes = [];
 	for (cubie of this.cubies){
 		this.meshes = this.meshes.concat(cubie.meshes);
@@ -192,6 +192,31 @@ var RubiksCube = function(position){
 }
 
 RubiksCube.prototype = {
+	render : function(){
+		var scene = new THREE.Scene();
+		var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+		var renderer = new THREE.WebGLRenderer({ antialias: true });
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.setClearColor(0xf0f0f0);
+		document.body.appendChild( renderer.domElement );
+		//var cube = new RubiksCube(new THREE.Vector3(0,0,0));
+		for (mesh of this.meshes){
+			scene.add( mesh );
+		}
+		camera.position.z = 1000;
+		controls = new THREE.OrbitControls(camera, renderer.domElement);
+		controls.enableDamping = true;
+		controls.dampingFactor = 0.25;
+		controls.enableZoom = false;
+		
+		function animate() {
+			requestAnimationFrame( animate );
+			controls.update();
+			renderer.render( scene, camera );
+		}
+		animate();			
+	},
+	
 	transform : function(op){
 		affected_face = op.slice(0, 1);
 		for (cubie of this.cubies){
