@@ -269,7 +269,7 @@ RubiksCube.prototype = {
 		}
 		var affected_face_name = op.slice(0, 1);
 		var affected_cubies = [];
-		for (cubie of this.cubies){
+		for (var cubie of this.cubies){
 			if (cubie.orientation.indexOf(affected_face_name) > -1){
 				affected_cubies = affected_cubies.concat(cubie);
 			}
@@ -277,19 +277,19 @@ RubiksCube.prototype = {
 		var axis = this.cubeRotation.face_rotations[op][0];
 		var angle = this.cubeRotation.face_rotations[op][1];
 		
-		this.with_animation(
-			function(args, delta){ args.cube.rotate_cubies(args.cubies, args.axis, delta * args.angle);}, 
+		this._withAnimation(
+			function(args, delta){ args.cube._rotateCubies(args.cubies, args.axis, delta * args.angle);}, 
 			{cube:this, cubies: affected_cubies, axis: axis, angle:angle},
 			function(args){ 
 				for(var cubie of affected_cubies){
 					cubie.rotateOrientation(op);
 				}
-				args.cube.do_next_command();
+				args.cube._doNextCommand();
 			}
 		);
 	},
 
-	with_animation: function(action, args, onComplete){
+	_withAnimation: function(action, args, onComplete){
 		if (this.enable_animation){
 			this.is_in_rotation = true;
 			var tween = new TWEEN.Tween({value:0.0}).to({value: 1.0}, this.time_per_animation_move);
@@ -310,7 +310,7 @@ RubiksCube.prototype = {
 		}
 	},
 	
-	get_facets:function(orientation){
+	_getFacets:function(orientation){
 		var facets = [];
 		for(var cubie of this.cubies){
 			if(orientation in cubie.facets){
@@ -320,9 +320,9 @@ RubiksCube.prototype = {
 		return facets;
 	},
 	
-	do_fold: function(do_unfolding, delta){
+	_fold: function(do_unfolding, delta){
 		for (var orientation in this.cubeRotation.facet_fold_config){
-			var facets = this.get_facets(orientation);
+			var facets = this._getFacets(orientation);
 			var transforms = this.cubeRotation.facet_fold_config[orientation];
 			var m = undefined;
 			for (var transform of transforms){
@@ -341,16 +341,23 @@ RubiksCube.prototype = {
 	},
 	
 	fold : function(){
-		this.with_animation(
+		this._withAnimation(
 			function(args, delta){ 
-				args.cube.do_fold(args.cube.is_folded, delta);
+				args.cube._fold(args.cube.is_folded, delta);
 			}, 
 			{cube:this},
 			function(args){ args.cube.is_folded  = !args.cube.is_folded;}
 		);
 	},
+
+	isValidInputChar:function(prev_char, char){
+		if ("OS".indexOf(char) > -1){
+			return true;
+		}
+		return (char in this.cubeRotation.face_rotations) || (prev_char != "'" && char == "'");
+	},
 	
-	rotate_cubies: function(){
+	_rotateCubies: function(){
 		var m = new THREE.Matrix4();		
 		return function(cubies, axis, angle){
 			m.makeRotationAxis(axis, angle);
@@ -360,22 +367,15 @@ RubiksCube.prototype = {
 		}
 	}(),
 	
-	is_valid_input_char:function(prev_char, char){
-		if ("OS".indexOf(char) > -1){
-			return true;
-		}
-		return (char in this.cubeRotation.face_rotations) || (prev_char != "'" && char == "'");
-	},
-	
 	command : function(command){
 		this.commands = this.commands.concat(command);	
 		if (!this.is_in_rotation){
-			this.do_next_command();
+			this._doNextCommand();
 		}
 	},
 	
-	do_next_command : function(){
-		var op = this.get_next_op();
+	_doNextCommand : function(){
+		var op = this._getNextOp();
 		if (op != ""){
 			if (op == "S"){
 				this.ramdomize();
@@ -387,7 +387,7 @@ RubiksCube.prototype = {
 		}	
 	},
 	
-	get_next_op : function(){
+	_getNextOp : function(){
 		var len = this.commands.length;
 		var look_at = 0;
 		if (len > 1){
@@ -409,7 +409,7 @@ RubiksCube.prototype = {
 		var saved = this.enable_animation;
 		this.enable_animation = false;
 		for (var i = 0; i < 20; i++){
-			var op_i = this.get_random(0, 11);
+			var op_i = this._getRandom(0, 11);
 			var op = this.cubeRotation.operations[op_i]
 			this.rotate(op);
 		}
@@ -419,7 +419,7 @@ RubiksCube.prototype = {
 	/**
 	* Returns a random number between min (inclusive) and max (inclusive)
 	*/
-	get_random:function(min, max) {
+	_getRandom:function(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}	
 }
@@ -460,7 +460,7 @@ function onDocumentKeyPress ( event ) {
 	} else {
 		var ch = String.fromCharCode( keyCode ).toUpperCase();
 		var prev_char = input_text.substr(input_text.length - 1)
-		if (cube.is_valid_input_char(prev_char, ch)){
+		if (cube.isValidInputChar(prev_char, ch)){
 			input_text += ch;
 			resetInputTimer();
 		}
