@@ -1,10 +1,9 @@
 # rubikscube
 This is a Javascript version of Rubik's Cube based on three.js library.
 
-##command line:
-**s**: randomize the cube
-
 #operation:
+- **s** :   randomize the cube
+- **o** :   fold & unfold the cube
 - **f** : 	rotate front face counter-clockwise
 - **f'**: 	rotate front face clockwise
 - **u** : 	rotate up face counter-clockwise
