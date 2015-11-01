@@ -11,9 +11,9 @@ var CubeConsole = function(){
 
 CubeConsole.prototype = {
 	render : function(){
-		//cube.command("O");
 		var scene = new THREE.Scene();
 		this.cube.addToScene(scene);
+//		this.cube.command("OB'");
 		var camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 10000 );
 		var renderer = new THREE.WebGLRenderer({ antialias: true });
 		renderer.setSize( window.innerWidth, window.innerHeight );

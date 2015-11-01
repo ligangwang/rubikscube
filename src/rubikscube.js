@@ -166,19 +166,18 @@ RubiksCube.prototype = {
 		}
 	},
 	
+	_updateOrientation : function(cubies, op){
+		for(var cubie of cubies){
+			cubie.rotateOrientation(op);
+			this.cubies[sort(cubie.orientation)] = cubie;
+		}
+	},
 	test : function(){
 		//this.time_per_animation_move = 20000;
 		//translation.makeScale(1, 1, this.test_scales[this.test_index]);
 		//console.log(facet);
 		//facet.applyMatrix(translation);
 		var transformers = [
-			new Teleporter(this.scene, this.cubies["DFR"].facets["R"], 900, new THREE.Vector3(900, 0, 0), new THREE.Vector3(500, 0, -200 * 8), -100,  AxisX, 1, -1),
-			new Teleporter(this.scene, this.cubies["FR"].facets["R"], 700, new THREE.Vector3(900, 0, 0), new THREE.Vector3(500, 0, -200 * 8), 100,  AxisX, 1, -1),
-			new Teleporter(this.scene, this.cubies["FRU"].facets["R"], 500, new THREE.Vector3(900, 0, 0), new THREE.Vector3(500, 0, -200 * 8), 300,  AxisX, 1, -1),
-			
-			new Teleporter(this.scene, this.cubies["DFL"].facets["D"], -300, new THREE.Vector3(-300, 0, -200 * 8), new THREE.Vector3(-1100, 0, 0), -500,  AxisX, -1, 1),
-			new Teleporter(this.scene, this.cubies["DF"].facets["D"], -100, new THREE.Vector3(-300, 0, -200 * 8), new THREE.Vector3(-1100, 0, 0), -700,  AxisX, -1, 1),
-			new Teleporter(this.scene, this.cubies["DFR"].facets["D"], 100, new THREE.Vector3(-300, 0, -200 * 8), new THREE.Vector3(-1100, 0, 0), -900,  AxisX, -1, 1),
 		]; 
 		
 		this._withAnimation(
@@ -200,12 +199,12 @@ RubiksCube.prototype = {
 			console.log("the cube is rotating. quiting ".concat(op))
 			return;
 		}
+		cube = this;
 		// if (!this.is_folded){
 		// 	console.log("the cube is unfolded. quiting ".concat(op))
 		// 	return;
 		// }
 		var op_face_name = op.slice(0, 1);
-		is_reverse_op = op.slice(1)=="'";
 		var rotate_cubies = [];
 		for (var cubie_key in this.cubies){
 			var cubie = this.cubies[cubie_key];
@@ -215,20 +214,21 @@ RubiksCube.prototype = {
 		}
 		var  transformers = [];
 		if (this.is_folded){
+			var is_reverse_op = op.slice(1)=="'";
 			var rotate_axis = this.cube_config.rotation_on_folded_configs[op_face_name].axis;
 			var rotate_angle = this.cube_config.rotation_on_folded_configs[op_face_name].angle;
 			transformers.push(new Rotater(rotate_cubies, this.cube_config.Origin, rotate_axis, is_reverse_op? -rotate_angle:rotate_angle));
 		}else{//rotating on unfolded plain
-			for(var rotate_config of this.cube_config.rotation_on_unfolded_configs[op_face_name]){
-				var facets = this._getFacets(rotate_cubies, rotate_config.facets);
+			for(var rotate_config of this.cube_config.rotation_on_unfolded_configs[op]){
 				if (rotate_config.transform_type == "translater"){
-					translation = rotate_config.translation
-					if (is_reverse_op){
-						translation = translation.clone().negate();
-					}
-					transformers.push(new Translater(facets, translation));
+					var facets = this._getFacets(rotate_cubies, rotate_config.facets);
+					transformers.push(new Translater(facets, rotate_config.translation));
 				}else if (rotate_config.transform_type == "rotater"){
-					transformers.push(new Rotater(facets, rotate_config.origin, this.cube_config.AxisY, is_reverse_op? -rotate_config.angle:rotate_config.angle));
+					var facets = this._getFacets(rotate_cubies, rotate_config.facets);
+					transformers.push(new Rotater(facets, rotate_config.origin, this.cube_config.AxisY, rotate_config.angle));
+				}else if (rotate_config.transform_type == "teleporter"){
+					transformers.push(new Teleporter(this.scene, this.cubies[rotate_config.cubie].facets[rotate_config.facet], rotate_config.origin, 
+					rotate_config.out_bound, rotate_config.in_bound, rotate_config.target,  rotate_config.axis, rotate_config.out_direction, rotate_config.in_direction));
 				}
 			}
 		}
@@ -241,13 +241,12 @@ RubiksCube.prototype = {
 			}, 
 			{cube:this},
 			function(args){ 
-				for(var cubie of rotate_cubies){
-					cubie.rotateOrientation(op);
-				}
+				cube._updateOrientation(rotate_cubies, op);
 			}
 		);
 	},
-
+	
+	
 	_withAnimation: function(action, args, onComplete){
 		if (this.enable_animation){
 			this.is_in_animation = true;
