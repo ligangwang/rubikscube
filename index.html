@@ -12,6 +12,42 @@
 		<script src="lib/three.min.js"></script>
 		<script src="lib/controls/OrbitControls.js"></script>
 		<script src="lib/Tween.js"></script>
-		<script src="rubikscube.js"></script>
+		<script src="src/common.js"></script>
+		<script src="src/transformer.js"></script>
+		<script src="src/cubeconfig.js"></script>
+		<script src="src/rubikscube.js"></script>
+		<script src="src/cubeconsole.js"></script>
+		<script>
+
+var cube_console = new CubeConsole();
+cube_console.render();
+
+document.addEventListener( 'keypress', onDocumentKeyPress, false );
+document.addEventListener( 'keydown', onDocumentKeyDown, false );	
+			
+function onDocumentKeyDown( event ) {
+	var keyCode = event.keyCode;
+	if ( keyCode == 8 ) {
+		event.preventDefault();
+		cube_console.backSpace();
+		return false;
+	}
+}
+
+function onDocumentKeyPress ( event ) {
+	var keyCode = event.which;
+	if ( keyCode == 8 ) {
+		event.preventDefault();
+	} else {
+		var ch = String.fromCharCode( keyCode );
+		cube_console.inputChar(ch);
+	}
+}
+	
+
+
+
+
+		</script>
 	</body>
 </html>
