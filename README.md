@@ -1,5 +1,6 @@
-# Rubik's Csube
-This is a Javascript version of Rubik's Cube based on three.js library.
+# Rubik's Cube
+This is a 3D Rubik's Cube written in Javascript. It supports rotation on unfolded state.
+
 
 #operation:
 - **s** :   randomize the cube

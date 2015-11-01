@@ -13,7 +13,8 @@ CubeConsole.prototype = {
 	render : function(){
 		var scene = new THREE.Scene();
 		this.cube.addToScene(scene);
-		this.cube.command("O");
+		//this.cube.enable_animation = false;
+		//this.cube.command("O");
 		var renderer = new THREE.WebGLRenderer({ antialias: true });
 		var width = 800, height = 600;
 		renderer.setSize( width, height );

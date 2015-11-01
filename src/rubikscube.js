@@ -265,7 +265,7 @@ RubiksCube.prototype = {
 			});
 			tween.start();
 		}else{
-			action(args, 1);
+			action(args, 1, 1);
 			onComplete(args);
 			args.cube._doNextCommand();
 		}
@@ -364,11 +364,12 @@ RubiksCube.prototype = {
 	},
 	
 	randomize : function(){
+		if (!this.is_folded) return;
 		var saved = this.enable_animation;
 		this.enable_animation = false;
 		for (var i = 0; i < 20; i++){
 			var op_i = this._getRandom(0, this.cube_config.operations.length - 1);
-			var op = this.cube_config.operations[op_i]
+			var op = this.cube_config.operations[op_i];
 			this.rotate(op);
 		}
 		this.enable_animation = saved; 	
