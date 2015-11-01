@@ -1,10 +1,12 @@
+/**
+ ** @author Ligang Wang, http://github.com/ligangwang/
+ **/
+
 var CubeConsole = function(){
 	this.cube = new RubiksCube();
 	this.cube.enable_animation = true;
 	this.input_text = "";
 	this.input_timer = null;
-	//this.resetInputTimer();
-	
 }
 
 CubeConsole.prototype = {

@@ -67,17 +67,17 @@ Facet.prototype = {
 	},
 }
 
-var Cubie = function(name, position, cubeRotation){
+var Cubie = function(name, position, cube_config){
 	var facets = [];
-	for (var face_name of cubeRotation.face_names){
+	for (var face_name of cube_config.face_names){
 		if(name.indexOf(face_name) > -1){
-			var facet = new Facet(this, cubeRotation.facet_configs[face_name][0]);
-			facet.construct(cubeRotation.facet_configs[face_name][1], cubeRotation.face_rotations[face_name][0]);
+			var facet = new Facet(this, cube_config.facet_configs[face_name].color);
+			facet.construct(cube_config.facet_configs[face_name].bottom_left, cube_config.rotation_on_folded_configs[face_name].axis);
 			facets[face_name] = facet;
 		}
 	}
 	this.facets = facets;
-	this.cubeRotation = cubeRotation;
+	this.cube_config = cube_config;
 	this.name = name;
 	this.orientation = name;
 	this.setPosition(position);
@@ -112,7 +112,7 @@ Cubie.prototype = {
 	},
 	
 	_rotateOrientation : function(orientation, op){
-		var rotation_cycle = this.cubeRotation.face_rotation_cycle[op];
+		var rotation_cycle = this.cube_config.face_rotation_cycle[op];
 		var rotation_cycle_len = rotation_cycle.length;
 		var to_orientation = "";
 		for (var i = 0, len=orientation.length; i < len; i++){
@@ -133,42 +133,11 @@ Cubie.prototype = {
 var RubiksCube = function(){
 	this.position = new THREE.Vector3(0,0,0);
 	this.cubies = [];
-	this.cubeRotation = new CubeRotation(); 
+	this.cube_config = new CubeConfig(); 
 
-	// this.cubies.push(new Cubie("DRF", new THREE.Vector3(200,-200,200), this.cubeRotation)); //R: FRU->DRF	
-	// this.cubies.push(new Cubie("DBR", new THREE.Vector3(200,-200,-200), this.cubeRotation)); //B: RBU->DBR
-	// this.cubies.push(new Cubie("FLD", new THREE.Vector3(-200,-200,200), this.cubeRotation)); //F: FUL->FLD
-
-	this._addCubie(new Cubie("FRU", new THREE.Vector3(200,200,200), this.cubeRotation));
-	this._addCubie(new Cubie("FUL", new THREE.Vector3(-200,200,200), this.cubeRotation)); //F: FRU->FUL
-	this._addCubie(new Cubie("RBU", new THREE.Vector3(200,200,-200), this.cubeRotation)); //U: FRU->RBU
-	this._addCubie(new Cubie("DRF", new THREE.Vector3(200,-200,200), this.cubeRotation)); //R: FRU->DRF	
-	this._addCubie(new Cubie("FLD", new THREE.Vector3(-200,-200,200), this.cubeRotation)); //F: FUL->FLD
-	this._addCubie(new Cubie("UBL", new THREE.Vector3(-200,200,-200), this.cubeRotation)); //L: FUL->UBL
-	this._addCubie(new Cubie("DBR", new THREE.Vector3(200,-200,-200), this.cubeRotation)); //B: RBU->DBR
-	this._addCubie(new Cubie("DLB", new THREE.Vector3(-200,-200,-200), this.cubeRotation));//D: FLD->LBD
-	
-	this._addCubie(new Cubie("FU", new THREE.Vector3(0,200,200), this.cubeRotation));
-	this._addCubie(new Cubie("RU", new THREE.Vector3(200,200,0), this.cubeRotation));
-	this._addCubie(new Cubie("BU", new THREE.Vector3(0,200,-200), this.cubeRotation));
-	this._addCubie(new Cubie("LU", new THREE.Vector3(-200,200,0), this.cubeRotation));
-	
-	this._addCubie(new Cubie("FR", new THREE.Vector3(200,0,200), this.cubeRotation));
-	this._addCubie(new Cubie("RB", new THREE.Vector3(200,0,-200), this.cubeRotation));
-	this._addCubie(new Cubie("BL", new THREE.Vector3(-200,0,-200), this.cubeRotation));
-	this._addCubie(new Cubie("LF", new THREE.Vector3(-200,0,200), this.cubeRotation));
-	this._addCubie(new Cubie("FD", new THREE.Vector3(0,-200,200), this.cubeRotation));
-	this._addCubie(new Cubie("RD", new THREE.Vector3(200,-200,0), this.cubeRotation));
-	this._addCubie(new Cubie("BD", new THREE.Vector3(0,-200,-200), this.cubeRotation));
-	this._addCubie(new Cubie("LD", new THREE.Vector3(-200,-200,0), this.cubeRotation));
-	
-	this._addCubie(new Cubie("F", new THREE.Vector3(0,0,200), this.cubeRotation));
-	this._addCubie(new Cubie("D", new THREE.Vector3(0,-200,0), this.cubeRotation));
-	this._addCubie(new Cubie("B", new THREE.Vector3(0,0,-200), this.cubeRotation));
-	this._addCubie(new Cubie("R", new THREE.Vector3(200,0,0), this.cubeRotation));
-	this._addCubie(new Cubie("L", new THREE.Vector3(-200,0,0), this.cubeRotation));
-	this._addCubie(new Cubie("U",  new THREE.Vector3(0,200,0), this.cubeRotation));
-
+	for(var cubie_config of this.cube_config.cubie_configs){
+		this._addCubie(new Cubie(cubie_config.name, cubie_config.position, this.cube_config));
+	}
 	this.cubie_list = [];
 	for (var key in this.cubies){
 		this.cubie_list.push(this.cubies[key]);
@@ -202,10 +171,11 @@ RubiksCube.prototype = {
 		//translation.makeScale(1, 1, this.test_scales[this.test_index]);
 		//console.log(facet);
 		//facet.applyMatrix(translation);
-		var teleporters = [
+		var transformers = [
 			new Teleporter(this.scene, this.cubies["DFR"].facets["R"], 900, new THREE.Vector3(900, 0, 0), new THREE.Vector3(500, 0, -200 * 8), -100,  AxisX, 1, -1),
 			new Teleporter(this.scene, this.cubies["FR"].facets["R"], 700, new THREE.Vector3(900, 0, 0), new THREE.Vector3(500, 0, -200 * 8), 100,  AxisX, 1, -1),
 			new Teleporter(this.scene, this.cubies["FRU"].facets["R"], 500, new THREE.Vector3(900, 0, 0), new THREE.Vector3(500, 0, -200 * 8), 300,  AxisX, 1, -1),
+			
 			new Teleporter(this.scene, this.cubies["DFL"].facets["D"], -300, new THREE.Vector3(-300, 0, -200 * 8), new THREE.Vector3(-1100, 0, 0), -500,  AxisX, -1, 1),
 			new Teleporter(this.scene, this.cubies["DF"].facets["D"], -100, new THREE.Vector3(-300, 0, -200 * 8), new THREE.Vector3(-1100, 0, 0), -700,  AxisX, -1, 1),
 			new Teleporter(this.scene, this.cubies["DFR"].facets["D"], 100, new THREE.Vector3(-300, 0, -200 * 8), new THREE.Vector3(-1100, 0, 0), -900,  AxisX, -1, 1),
@@ -213,8 +183,8 @@ RubiksCube.prototype = {
 		
 		this._withAnimation(
 			function(args, total, delta){ 
-				for (var teleporter of teleporters){
-					teleporter.transform(total, delta);
+				for (var transformer of transformers){
+					transformer.transform(total, delta);
 				}
 				console.log(total);
 			}, 
@@ -245,11 +215,11 @@ RubiksCube.prototype = {
 		}
 		var  transformers = [];
 		if (this.is_folded){
-			var rotate_axis = this.cubeRotation.face_rotations[op_face_name][0];
-			var rotate_angle = this.cubeRotation.face_rotations[op_face_name][1];
-			transformers.push(new Rotater(rotate_cubies, this.cubeRotation.Origin, rotate_axis, is_reverse_op? -rotate_angle:rotate_angle));
+			var rotate_axis = this.cube_config.rotation_on_folded_configs[op_face_name].axis;
+			var rotate_angle = this.cube_config.rotation_on_folded_configs[op_face_name].angle;
+			transformers.push(new Rotater(rotate_cubies, this.cube_config.Origin, rotate_axis, is_reverse_op? -rotate_angle:rotate_angle));
 		}else{//rotating on unfolded plain
-			for(var rotate_group of this.cubeRotation.facet_fold_translations[op_face_name]){
+			for(var rotate_group of this.cube_config.facet_fold_translations[op_face_name]){
 				var facets = this._getFacets(rotate_cubies, rotate_group.facets);
 				if (rotate_group.translation != undefined){
 					translation = rotate_group.translation
@@ -258,7 +228,7 @@ RubiksCube.prototype = {
 					}
 					transformers.push(new Translater(facets, translation));
 				}else{
-					transformers.push(new Rotater(facets, rotate_group.origin, this.cubeRotation.AxisY, is_reverse_op? -rotate_group.angle:rotate_group.angle));
+					transformers.push(new Rotater(facets, rotate_group.origin, this.cube_config.AxisY, is_reverse_op? -rotate_group.angle:rotate_group.angle));
 				}
 			}
 		}
@@ -315,17 +285,17 @@ RubiksCube.prototype = {
 	},
 	
 	_fold: function(do_unfolding, delta){
-		for (var orientation in this.cubeRotation.facet_fold_config){
+		for (var orientation in this.cube_config.facet_folding_config){
 			var facets = this._getFacets(this.cubie_list, orientation);
-			var transforms = this.cubeRotation.facet_fold_config[orientation];
+			var folding_configs = this.cube_config.facet_folding_config[orientation];
 			var m = undefined;
-			for (var transform of transforms){
-				var translate = transform[0];
+			for (var folding_config of folding_configs){
+				var translate = folding_config.translation;
 				if (m != undefined){
 					translate.applyMatrix4(m);
 				}
-				var rotate_axis = transform[1];
-				var rotate_angle = transform[2] * delta;
+				var rotate_axis = folding_config.axis;
+				var rotate_angle = folding_config.angle * delta;
 				m = Transform(translate, rotate_axis, do_unfolding? rotate_angle:-rotate_angle);
 				for (var facet of facets){
 					facet.geometry.applyMatrix(m);
@@ -348,7 +318,7 @@ RubiksCube.prototype = {
 		if ("OST".indexOf(char) > -1){
 			return true;
 		}
-		return (char in this.cubeRotation.face_rotations) || ("OST'".indexOf(prev_char) < 0 && char == "'");
+		return (char in this.cube_config.rotation_on_folded_configs) || ("OST'".indexOf(prev_char) < 0 && char == "'");
 	},
 
 	command : function(command){
@@ -397,8 +367,8 @@ RubiksCube.prototype = {
 		var saved = this.enable_animation;
 		this.enable_animation = false;
 		for (var i = 0; i < 20; i++){
-			var op_i = this._getRandom(0, this.cubeRotation.operations.length - 1);
-			var op = this.cubeRotation.operations[op_i]
+			var op_i = this._getRandom(0, this.cube_config.operations.length - 1);
+			var op = this.cube_config.operations[op_i]
 			this.rotate(op);
 		}
 		this.enable_animation = saved; 	

@@ -1,6 +1,7 @@
 /**
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
+ 
 function sort(s) {
 	return s.split("").sort().join("");
 }
