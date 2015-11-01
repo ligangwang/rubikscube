@@ -175,21 +175,28 @@ RubiksCube.prototype = {
 	
 	test : function(){
 		//this.time_per_animation_move = 20000;
-		var transformers = [
-		]; 
-		
+		/*
+		rotate_configs = [
+			{transform_type: "teleporter", cubie: "DFR", facet: "D", origin: 300,  out_bound:new THREE.Vector3(300, 0, -1600), in_bound:new THREE.Vector3(1100, 0, 0), target:500,  axis:AxisX, out_direction:1, in_direction:-1},
+			{transform_type: "teleporter", cubie: "DF", facet: "D", origin: 100,  out_bound:new THREE.Vector3(300, 0, -1600), in_bound:new THREE.Vector3(1100, 0, 0), target:700,  axis:AxisX, out_direction:1, in_direction:-1},
+		];
+		var transformers = []; 
+		for(rotate_config of rotate_configs){
+			transformers.push(new Teleporter(this.scene, this.cubies[rotate_config.cubie].facets[rotate_config.facet], rotate_config.origin, 
+					rotate_config.out_bound, rotate_config.in_bound, rotate_config.target,  rotate_config.axis, rotate_config.out_direction, rotate_config.in_direction));
+		}
 		this._withAnimation(
 			function(args, total, delta){ 
 				for (var transformer of transformers){
 					transformer.transform(total, delta);
 				}
-				console.log(total);
+				//console.log(total);
 			}, 
 			{cube: this},
 			function(args){ 
 			}
 		);
-		//this.time_per_animation_move = saved;
+		*/
 	},
 	
 	rotate : function(op){
@@ -198,10 +205,6 @@ RubiksCube.prototype = {
 			return;
 		}
 		cube = this;
-		// if (!this.is_folded){
-		// 	console.log("the cube is unfolded. quiting ".concat(op))
-		// 	return;
-		// }
 		var op_face_name = op.slice(0, 1);
 		var rotate_cubies = [];
 		for (var cubie_key in this.cubies){
