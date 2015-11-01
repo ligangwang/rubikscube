@@ -172,11 +172,9 @@ RubiksCube.prototype = {
 			this.cubies[sort(cubie.orientation)] = cubie;
 		}
 	},
+	
 	test : function(){
 		//this.time_per_animation_move = 20000;
-		//translation.makeScale(1, 1, this.test_scales[this.test_index]);
-		//console.log(facet);
-		//facet.applyMatrix(translation);
 		var transformers = [
 		]; 
 		
@@ -218,7 +216,7 @@ RubiksCube.prototype = {
 			var rotate_axis = this.cube_config.rotation_on_folded_configs[op_face_name].axis;
 			var rotate_angle = this.cube_config.rotation_on_folded_configs[op_face_name].angle;
 			transformers.push(new Rotater(rotate_cubies, this.cube_config.Origin, rotate_axis, is_reverse_op? -rotate_angle:rotate_angle));
-		}else{//rotating on unfolded plain
+		}else{//rotating on unfolded state
 			for(var rotate_config of this.cube_config.rotation_on_unfolded_configs[op]){
 				if (rotate_config.transform_type == "translater"){
 					var facets = this._getFacets(rotate_cubies, rotate_config.facets);

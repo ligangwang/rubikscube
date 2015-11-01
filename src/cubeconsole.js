@@ -14,10 +14,10 @@ CubeConsole.prototype = {
 		var scene = new THREE.Scene();
 		this.cube.addToScene(scene);
 //		this.cube.command("OB'");
-		var camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 10000 );
 		var renderer = new THREE.WebGLRenderer({ antialias: true });
-		renderer.setSize( window.innerWidth, window.innerHeight );
-		console.log(window.innerWidth, window.innerHeight);
+		var width = 800, height = 600;
+		renderer.setSize( width, height );
+		var camera = new THREE.PerspectiveCamera( 50, width / height, 0.1, 10000 );
 		renderer.setClearColor(0xf0f0f0);
 		document.body.appendChild( renderer.domElement );
 		
