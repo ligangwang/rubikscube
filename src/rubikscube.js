@@ -219,16 +219,16 @@ RubiksCube.prototype = {
 			var rotate_angle = this.cube_config.rotation_on_folded_configs[op_face_name].angle;
 			transformers.push(new Rotater(rotate_cubies, this.cube_config.Origin, rotate_axis, is_reverse_op? -rotate_angle:rotate_angle));
 		}else{//rotating on unfolded plain
-			for(var rotate_group of this.cube_config.facet_fold_translations[op_face_name]){
-				var facets = this._getFacets(rotate_cubies, rotate_group.facets);
-				if (rotate_group.translation != undefined){
-					translation = rotate_group.translation
+			for(var rotate_config of this.cube_config.rotation_on_unfolded_configs[op_face_name]){
+				var facets = this._getFacets(rotate_cubies, rotate_config.facets);
+				if (rotate_config.transform_type == "translater"){
+					translation = rotate_config.translation
 					if (is_reverse_op){
 						translation = translation.clone().negate();
 					}
 					transformers.push(new Translater(facets, translation));
-				}else{
-					transformers.push(new Rotater(facets, rotate_group.origin, this.cube_config.AxisY, is_reverse_op? -rotate_group.angle:rotate_group.angle));
+				}else if (rotate_config.transform_type == "rotater"){
+					transformers.push(new Rotater(facets, rotate_config.origin, this.cube_config.AxisY, is_reverse_op? -rotate_config.angle:rotate_config.angle));
 				}
 			}
 		}
