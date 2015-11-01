@@ -143,8 +143,10 @@ Teleporter.prototype = {
 					//first cross boundary
 					this._createClone();
 					out_adjust_size = Math.min(out_cut_len, move_distance);
-					this.axis.makeTranslation(mirror_translation, 2* (move_distance - out_cut_len) * this.out_direction)
-					this.facet.applyMatrix(mirror_translation);
+					if (this.out_direction != this.in_direction){
+						this.axis.makeTranslation(mirror_translation, 2* (move_distance - out_cut_len) * this.out_direction)
+						this.facet.applyMatrix(mirror_translation);
+					}
 					this._sqeeze();
 					
 				}else{
