@@ -359,7 +359,7 @@ RubiksCube.prototype = {
 		}
 		var op = this.commands.slice(0, look_at);
 		this.commands = this.commands.slice(look_at);
-		console.log(op, this.commands);
+		//console.log(op, this.commands);
 		return op;
 	},
 	

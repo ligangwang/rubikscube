@@ -19,9 +19,8 @@ var Teleporter = function(scene, facet, origin, out_bound, in_bound, target, axi
 	this.out_direction = out_direction;
 	this.in_direction = in_direction;
 	this._setup();
-	this.moved_distance = 0;
-	console.log("distance", this.distance, this.out_bound_value, this.in_bound_value);
-	console.log(this.out_vertices_adj_index, this.out_vertices_noadj_index, this.in_vertices_adj_index, this.in_vertices_noadj_index)
+	//console.log("distance", this.distance, this.out_bound_value, this.in_bound_value);
+	//console.log(this.out_vertices_adj_index, this.out_vertices_noadj_index, this.in_vertices_adj_index, this.in_vertices_noadj_index)
 }
 
 Teleporter.prototype = {
@@ -75,10 +74,7 @@ Teleporter.prototype = {
 		var in_bound = this.in_bound.clone();
 		in_bound.sub(this.out_bound);
 		
-		// if (this.in_bound_value > this.out_bound_value) { //????????? 
-		// 	self.axis.set(in_bound, self.axis.get(in_bound) + this.length);
-		// }
-		console.log("teleporting to", in_bound);
+		//console.log("teleporting to", in_bound);
 		this.teleport.makeTranslation(in_bound.x, in_bound.y, in_bound.z);
 	},
 	
@@ -106,8 +102,7 @@ Teleporter.prototype = {
 	},
 	
 	_deleteClone : function(){
-		if (this.facet_clone==null){return;}
-		console.log("deleting clone...");
+		//console.log("deleting clone...");
 		this.facet_clone.removeFromScene(this.scene);
 		delete this.facet_clone;
 		this.facet_clone = null;
@@ -127,16 +122,12 @@ Teleporter.prototype = {
 		var out_translation = new THREE.Matrix4();
 		var in_translation = new THREE.Matrix4();
 		var mirror_translation = new THREE.Matrix4();
-		//var last_cut_len = 0;
 		return function(total, delta){
 			var move_distance = delta * this.distance
 			this.position += move_distance * this.out_direction;
 			var out_cut_len = (this.position - this.out_bound_value) * this.out_direction;
-			//console.log(out_cut_len);
-			//var in_cut_len = 200 - out_cut_len; 
 			this.axis.makeTranslation(out_translation, move_distance * this.out_direction);
 			this.axis.makeTranslation( in_translation, move_distance * this.in_direction);
-			this.moved_distance += move_distance * this.in_direction;
 			if (out_cut_len > 0 && out_cut_len < this.length){
 				var out_adjust_size;
 				if (this.facet_clone == null){
@@ -168,7 +159,6 @@ Teleporter.prototype = {
 				else if(out_cut_len >= this.length){
 					//moving in
 					this.facet.applyMatrix(in_translation);
-					//console.log(this.moved_distance);
 				}
 			}
 			if (total == 1 && this.facet_clone != null){
@@ -205,7 +195,6 @@ var Rotater = function(objects, origin, axis, angle){
 }
 
 Rotater.prototype = {
-	//_rotateObjects
 	transform: function(){
 		var m = new THREE.Matrix4();		
 		return function(total, delta){
