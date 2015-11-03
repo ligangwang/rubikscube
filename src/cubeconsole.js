@@ -50,7 +50,7 @@ CubeConsole.prototype = {
 		}
 	},
 
-	backSpace : function(){	
+	deleteChar : function(){	
 		this.input_text = this.input_text.substring( 0, this.input_text.length - 1 );
 		this.resetInputTimer();
 	},

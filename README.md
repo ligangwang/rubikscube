@@ -10,19 +10,19 @@ Credits to the following libraries:
 
 
 #operations:
-- **s** :   randomize the cube
-- **o** :   fold & unfold the cube
-- **f** : 	rotate front face counter-clockwise
-- **f'**: 	rotate front face clockwise
-- **u** : 	rotate up face counter-clockwise
-- **u'**: 	rotate up face clockwise
-- **r** : 	rotate right face counter-clockwise
-- **r'**: 	rotate right face clockwise
-- **b** : 	rotate back face counter-clockwise
-- **b'**: 	rotate back face clockwise
-- **d** : 	rotate down face counter-clockwise
-- **d'**: 	rotate down face clockwise
-- **l** : 	rotate left face counter-clockwise
-- **l'**: 	rotate left face clockwise
+- **S** :   randomize the cube
+- **O** :   fold & unfold the cube
+- **F** : 	rotate front face 
+- **F'**: 	rotate front face counterclockwise
+- **U** : 	rotate up face 
+- **U'**: 	rotate up face counterclockwise
+- **R** : 	rotate right face
+- **R'**: 	rotate right face counterclockwise
+- **B** : 	rotate back face 
+- **B'**: 	rotate back face counterclockwise
+- **D** : 	rotate down face 
+- **D'**: 	rotate down face counterclockwise
+- **L** : 	rotate left face 
+- **L'**: 	rotate left face counterclockwise
 
 **See it live at [http://ligangwang.github.io](http://ligangwang.github.io)**

@@ -22,17 +22,23 @@ Facet.prototype = {
 		this.geometry.vertices = vertices;
 		this.geometry.faces.push(new THREE.Face3(0, 1, 2));
 		this.geometry.faces.push(new THREE.Face3(2, 3, 0));
-		this.meshes = [this.createSquareMesh(), this.createEdgeMesh()];
+		this.square_mesh = this.createSquareMesh();
+		this.edge_mesh = this.createEdgeMesh();
+		this.meshes = [this.square_mesh, this.edge_mesh];
 	},
 
 	createSquareMesh : function(){
-		var material = new THREE.MeshBasicMaterial( { color: this.color, side:THREE.DoubleSide, opacity: 0.9, transparent: true } );
+		var material = new THREE.MeshBasicMaterial( { color: this.color, side:THREE.DoubleSide, opacity: 1, transparent: true } );
 		return new THREE.Mesh( this.geometry, material );
 	},
 	
 	createEdgeMesh : function(){
 		var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 1, linewidth: 4 } );
 		return new THREE.Line(this.geometry, material);
+	},
+
+	setOpacity : function(opacity){
+		this.square_mesh.material.opacity = opacity;
 	},
 	
 	setPosition : function(){
@@ -89,6 +95,13 @@ Cubie.prototype = {
 		for (var key in this.facets){
 			var facet = this.facets[key];
 			facet.setPosition(position);
+		}
+	},
+	
+	setOpacity : function(opacity){
+		for (var key in this.facets){
+			var facet = this.facets[key];
+			facet.setOpacity(opacity);
 		}
 	},
 
@@ -173,6 +186,12 @@ RubiksCube.prototype = {
 		}
 	},
 	
+	setOpacity : function(opacity){
+		for(var cubie of this.cubie_list){
+			cubie.setOpacity(opacity);
+		}	
+	},
+	
 	test : function(){
 		//this.time_per_animation_move = 20000;
 		/*
@@ -215,10 +234,9 @@ RubiksCube.prototype = {
 		}
 		var  transformers = [];
 		if (this.is_folded){
-			var is_reverse_op = op.slice(1)=="'";
-			var rotate_axis = this.cube_config.rotation_on_folded_configs[op_face_name].axis;
-			var rotate_angle = this.cube_config.rotation_on_folded_configs[op_face_name].angle;
-			transformers.push(new Rotater(rotate_cubies, this.cube_config.Origin, rotate_axis, is_reverse_op? -rotate_angle:rotate_angle));
+			var rotate_axis = this.cube_config.rotation_on_folded_configs[op].axis;
+			var rotate_angle = this.cube_config.rotation_on_folded_configs[op].angle;
+			transformers.push(new Rotater(rotate_cubies, this.cube_config.Origin, rotate_axis, rotate_angle));
 		}else{//rotating on unfolded state
 			for(var rotate_config of this.cube_config.rotation_on_unfolded_configs[op]){
 				if (rotate_config.transform_type == "translater"){
@@ -359,12 +377,10 @@ RubiksCube.prototype = {
 		}
 		var op = this.commands.slice(0, look_at);
 		this.commands = this.commands.slice(look_at);
-		//console.log(op, this.commands);
 		return op;
 	},
 	
 	randomize : function(){
-		if (!this.is_folded) return;
 		var saved = this.enable_animation;
 		this.enable_animation = false;
 		for (var i = 0; i < 20; i++){

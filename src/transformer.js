@@ -19,6 +19,7 @@ var Teleporter = function(scene, facet, origin, out_bound, in_bound, target, axi
 	this.out_direction = out_direction;
 	this.in_direction = in_direction;
 	this._setup();
+	this._jump_moving_out_phase = true;
 	//console.log("distance", this.distance, this.out_bound_value, this.in_bound_value);
 	//console.log(this.out_vertices_adj_index, this.out_vertices_noadj_index, this.in_vertices_adj_index, this.in_vertices_noadj_index)
 }
@@ -124,11 +125,12 @@ Teleporter.prototype = {
 		var mirror_translation = new THREE.Matrix4();
 		return function(total, delta){
 			var move_distance = delta * this.distance
-			this.position += move_distance * this.out_direction;
-			var out_cut_len = (this.position - this.out_bound_value) * this.out_direction;
+			var new_position = this.position + move_distance * this.out_direction;
+			var out_cut_len = (new_position - this.out_bound_value) * this.out_direction;
 			this.axis.makeTranslation(out_translation, move_distance * this.out_direction);
 			this.axis.makeTranslation( in_translation, move_distance * this.in_direction);
 			if (out_cut_len > 0 && out_cut_len < this.length){
+				this._jump_moving_out_phase = false;
 				var out_adjust_size;
 				if (this.facet_clone == null){
 					//first cross boundary
@@ -158,6 +160,15 @@ Teleporter.prototype = {
 				}
 				else if(out_cut_len >= this.length){
 					//moving in
+					if (this._jump_moving_out_phase){
+						this.facet.applyMatrix(this.teleport);
+						if (this.out_direction != this.in_direction){
+							var gap = (this.out_bound_value - this.position) * this.out_direction;
+							this.axis.makeTranslation(mirror_translation, 2 * gap * this.out_direction)
+							this.facet.applyMatrix(mirror_translation);
+						}
+						this._jump_moving_out_phase = false;
+					}
 					this.facet.applyMatrix(in_translation);
 				}
 			}
@@ -165,6 +176,7 @@ Teleporter.prototype = {
 				//console.log("deleting clone at the last");
 				this._deleteClone();
 			}
+			this.position = new_position;
 		}
 	}(),
 	

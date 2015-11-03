@@ -26,18 +26,20 @@
 			</br>
 			Randomize: <a onclick="onCommand('S')" href="#">S</a>
 			Fold/Unfold: <a onclick="onCommand('O')" href="#">O</a> <br/>
-			Rotate Front Face Counterclockwise: <a onclick="onCommand('F')" href="#">F</a>
-			Rotate Front Face Clockwise): <a onclick="onCommand('F\'')" href="#">F'</a>
-			Rotate Back Face Counterclockwise): <a onclick="onCommand('B')" href="#">B</a>
-			Rotate Back Face Clockwise): <a onclick="onCommand('B\'')" href="#">B'</a> <br/>
-			Rotate Left Face Counterclockwise): <a onclick="onCommand('L')" href="#">L</a>
-			Rotate Left Face Clockwise): <a onclick="onCommand('L\'')" href="#">L'</a>
-			Rotate Right Face Counterclockwise): <a onclick="onCommand('R')" href="#">R</a>
-			Rotate Right Face Clockwise): <a onclick="onCommand('R\'')" href="#">R'</a> </br>
-			Rotate Up Face Counterclockwise): <a onclick="onCommand('U')" href="#">U</a>
-			Rotate Up Face Clockwise): <a onclick="onCommand('U\'')" href="#">U'</a>
-			Rotate Down Face Counterclockwise): <a onclick="onCommand('D')" href="#">D</a>
-			Rotate Down Face Clockwise): <a onclick="onCommand('D\'')" href="#">D'</a>
+			Rotate Front Face: <a onclick="onCommand('F')" href="#">F</a>
+			Rotate Front Face Counterclockwise: <a onclick="onCommand('F\'')" href="#">F'</a>
+			Rotate Back Face: <a onclick="onCommand('B')" href="#">B</a>
+			Rotate Back Face Counterlockwise: <a onclick="onCommand('B\'')" href="#">B'</a> <br/>
+			Rotate Left Face: <a onclick="onCommand('L')" href="#">L</a>
+			Rotate Left Face Counterclockwise: <a onclick="onCommand('L\'')" href="#">L'</a>
+			Rotate Right Face: <a onclick="onCommand('R')" href="#">R</a>
+			Rotate Right Face Counterclockwise: <a onclick="onCommand('R\'')" href="#">R'</a> <br/>
+			Rotate Up Face: <a onclick="onCommand('U')" href="#">U</a>
+			Rotate Up Face Counterclockwise: <a onclick="onCommand('U\'')" href="#">U'</a>
+			Rotate Down Face: <a onclick="onCommand('D')" href="#">D</a>
+			Rotate Down Face Counterclockwise: <a onclick="onCommand('D\'')" href="#">D'</a><br/>
+			Set transparency: <input type="range" min="0" max="100" step="1" value="0" onchange="onChangeTransparent(this.value)">
+			
 		</div>		
 		<script src="lib/three.min.js"></script>
 		<script src="lib/controls/OrbitControls.js"></script>
@@ -59,7 +61,7 @@ function onDocumentKeyDown( event ) {
 	var keyCode = event.keyCode;
 	if ( keyCode == 8 ) {
 		event.preventDefault();
-		cube_console.backSpace();
+		cube_console.deleteChar();
 		return false;
 	}
 }
@@ -79,7 +81,12 @@ function onCommand(op){
 	cube_console.cube.command(op);
 }
 
-
+function onChangeTransparent(value){
+	transparent = value;
+	opacity = (100-transparent)/100;
+	cube_console.cube.setOpacity(opacity);
+	//console.log(opacity);
+}
 		</script>
 	</body>
 </html>
