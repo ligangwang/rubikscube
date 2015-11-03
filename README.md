@@ -25,4 +25,4 @@ Credits to the following libraries:
 - **L** : 	rotate left face 
 - **L'**: 	rotate left face counterclockwise
 
-**See it live at [http://ligangwang.github.io](http://ligangwang.github.io)**
+**See it live [here](http://ligangwang.github.io/rubikscube/)**
