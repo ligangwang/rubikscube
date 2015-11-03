@@ -22,13 +22,13 @@ Facet.prototype = {
 		this.geometry.vertices = vertices;
 		this.geometry.faces.push(new THREE.Face3(0, 1, 2));
 		this.geometry.faces.push(new THREE.Face3(2, 3, 0));
-		this.square_mesh = this.createSquareMesh();
+		this.square_mesh = this.createSquareMesh(1);
 		this.edge_mesh = this.createEdgeMesh();
 		this.meshes = [this.square_mesh, this.edge_mesh];
 	},
 
-	createSquareMesh : function(){
-		var material = new THREE.MeshBasicMaterial( { color: this.color, side:THREE.DoubleSide, opacity: 1, transparent: true } );
+	createSquareMesh : function(opacity){
+		var material = new THREE.MeshBasicMaterial( { color: this.color, side:THREE.DoubleSide, opacity: opacity, transparent: true } );
 		return new THREE.Mesh( this.geometry, material );
 	},
 	
@@ -56,7 +56,7 @@ Facet.prototype = {
 	clone: function(){
 		var facet = new Facet(this.cubie, this.color);
 		facet.geometry = this.geometry.clone();
-		facet.meshes = [facet.createSquareMesh(), facet.createEdgeMesh()]
+		facet.meshes = [facet.createSquareMesh(this.square_mesh.material.opacity), facet.createEdgeMesh()]
 		return facet;
 	},
 	
