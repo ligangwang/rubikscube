@@ -1,7 +1,7 @@
 # Rubik's Cube
 
-This is a 3D Rubik's Cube written in Javascript. It supports rotation on unfolded state. 
-You can unfold (with O command) the cube and rotate it to help build intuitions of cubie permutation more easily.
+This is a 3D 3x3x3 Rubik's Cube written in Javascript. It supports rotation on unfolded state. 
+You can unfold (with O command) the cube and rotate it to help build intuitions of cubie permutations.
 
 Credits to the following libraries:
 * [three js](https://github.com/mrdoob/three.js/)
@@ -9,7 +9,7 @@ Credits to the following libraries:
 
 
 #operations:
-- **S** :   randomize the cube
+- **S** :   scramble the cube
 - **O** :   fold & unfold the cube
 - **F** : 	rotate front face 
 - **F'**: 	rotate front face counterclockwise
