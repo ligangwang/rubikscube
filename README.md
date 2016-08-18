@@ -1,7 +1,6 @@
 # Rubik's Cube
-A few years back for my soon to be born daughter I wrote a [Rubik's Cube](https://rubikscube.codeplex.com/) on Microsoft WPF/Silverlight platform.
 
-This is a 3D Rubik's Cube written in Javascript. It also supports rotation on unfolded state (which was not supported on original silverlight version). 
+This is a 3D Rubik's Cube written in Javascript. It supports rotation on unfolded state. 
 You can unfold (with O command) the cube and rotate it to help build intuitions of cubie permutation more easily.
 
 Credits to the following libraries:
