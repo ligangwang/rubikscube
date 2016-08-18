@@ -12,7 +12,7 @@ var CubeConsole = function(){
 CubeConsole.prototype = {
 	render : function(){
 		var scene = new THREE.Scene();
-		this.cube.addToScene(scene);
+		this.cube.add_contents_to_scene(scene);
 		var renderer = new THREE.WebGLRenderer({ antialias: true });
 		var width = 800, height = 600;
 		renderer.setSize( width, height );
@@ -37,30 +37,30 @@ CubeConsole.prototype = {
 		animate();
 	},	
 	
-	resetInputTimer : function(){
+	reset_input_timer : function(){
 		window.clearTimeout(this.input_timer);
-		this.input_timer = window.setTimeout(this.onTimer, 1000, this);
+		this.input_timer = window.setTimeout(this.on_timer, 1000, this);
 	},
 	
 
-	onTimer : function(console){
+	on_timer : function(console){
 		if (console.input_text.length > 0){
 			console.cube.command(console.input_text);
 			console.input_text = "";
 		}
 	},
 
-	deleteChar : function(){	
+	delete_char : function(){	
 		this.input_text = this.input_text.substring( 0, this.input_text.length - 1 );
-		this.resetInputTimer();
+		this.reset_input_timer();
 	},
 
-	inputChar : function(ch){
-		ch = ch.toUpperCase();				
+	input_char : function(ch){
+		ch = ch.toUpperCase();	
 		var prev_char = this.input_text.substr(this.input_text.length - 1)
-		if (this.cube.isValidInputChar(prev_char, ch)){
+		if (this.cube.is_valid_input_char(prev_char, ch)){
 			this.input_text += ch;
-			this.resetInputTimer();
+			this.reset_input_timer();
 		}
 	},
 }

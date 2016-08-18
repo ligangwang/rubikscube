@@ -4,9 +4,8 @@
 
 var CubeConfig = function(){
 	this.face_names = ["R", "U", "F", "L", "D", "B"];
-	this.AxisY = new THREE.Vector3(0, 1, 0);
-	this.Origin = new THREE.Vector3(0, 0, 0);
-	
+	this.axis_y = new THREE.Vector3(0, 1, 0);
+	this.origin = new THREE.Vector3(0, 0, 0);
 	this.cubie_configs = [
 		{name: "FRU", position: new THREE.Vector3(200,200,200)},
 		{name: "FUL", position: new THREE.Vector3(-200,200,200)}, 
@@ -39,15 +38,31 @@ var CubeConfig = function(){
 		{name: "U", position: new THREE.Vector3(0,200,0)},
 	];	
 	
-	this.face_rotation_cycle = [];
-	this.face_rotation_cycle["R"] = ["F", "U", "B", "D"]; //R: F->U->B->D
-	this.face_rotation_cycle["U"] = ["F", "L", "B", "R"]; //U: F->R->B->L
-	this.face_rotation_cycle["F"] = ["U", "R", "D", "L"]; //F: R->U->L->D
-	this.face_rotation_cycle["L"] = this.face_rotation_cycle["R"].slice().reverse();
-	this.face_rotation_cycle["D"] = this.face_rotation_cycle["U"].slice().reverse();
-	this.face_rotation_cycle["B"] = this.face_rotation_cycle["F"].slice().reverse();
+	var convert_cycle_to_map = function(cycle){
+		map = []
+		for (var i = 0, len=cycle.length; i < len; i++){
+			map[cycle[i]] = cycle[(i+1)%len];
+		}
+		return map;
+	}
+	face_rotation_cycle = [];
+	face_rotation_cycle["R"] = ["F", "U", "B", "D"]; //R: F->U->B->D
+	face_rotation_cycle["U"] = ["F", "L", "B", "R"]; //U: F->R->B->L
+	face_rotation_cycle["F"] = ["U", "R", "D", "L"]; //F: R->U->L->D
+	face_rotation_cycle["L"] = face_rotation_cycle["R"].slice().reverse();
+	face_rotation_cycle["D"] = face_rotation_cycle["U"].slice().reverse();
+	face_rotation_cycle["B"] = face_rotation_cycle["F"].slice().reverse();
 	for (var op of this.face_names){
-		this.face_rotation_cycle[op + "'"] = this.face_rotation_cycle[op].slice().reverse();
+		face_rotation_cycle[op + "'"] = face_rotation_cycle[op].slice().reverse();
+	}
+
+	this.rotation_face_map = [];
+	for(var op_key in face_rotation_cycle){
+		var map = convert_cycle_to_map(face_rotation_cycle[op_key]);
+		op_face = op_key.slice(0, 1);
+		map[op_face] = op_face; //the same face not changed.
+		this.rotation_face_map[op_key] = map;
+		
 	}
 	
 	this.facet_configs = [];
@@ -173,4 +188,5 @@ var CubeConfig = function(){
 												{transform_type: "teleporter", cubie: "BD", facet: "D", origin:  100,  out_bound:new THREE.Vector3(300, 0, -800), in_bound:new THREE.Vector3(1100, 0, 0), target:700,  axis:AxisX, out_direction:1, in_direction:-1},
 												{transform_type: "teleporter", cubie: "BDL", facet: "D", origin:-100,  out_bound:new THREE.Vector3(300, 0, -800), in_bound:new THREE.Vector3(1100, 0, 0), target:900,  axis:AxisX, out_direction:1, in_direction:-1},
 												]; 
+
 }

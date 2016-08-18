@@ -1,7 +1,8 @@
 /**
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
-var Facet = function(cubie, color){
+var Facet = function(name, cubie, color){
+	this.name = name;
 	this.cubie = cubie;
 	this.color = color;
 }
@@ -22,26 +23,26 @@ Facet.prototype = {
 		this.geometry.vertices = vertices;
 		this.geometry.faces.push(new THREE.Face3(0, 1, 2));
 		this.geometry.faces.push(new THREE.Face3(2, 3, 0));
-		this.square_mesh = this.createSquareMesh(1);
-		this.edge_mesh = this.createEdgeMesh();
+		this.square_mesh = this.create_square_mesh(1);
+		this.edge_mesh = this.create_edge_mesh();
 		this.meshes = [this.square_mesh, this.edge_mesh];
 	},
 
-	createSquareMesh : function(opacity){
+	create_square_mesh : function(opacity){
 		var material = new THREE.MeshBasicMaterial( { color: this.color, side:THREE.DoubleSide, opacity: opacity, transparent: true } );
 		return new THREE.Mesh( this.geometry, material );
 	},
 	
-	createEdgeMesh : function(){
-		var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 1, linewidth: 4 } );
+	create_edge_mesh : function(){
+		var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 1, linewidth: 6 } );
 		return new THREE.Line(this.geometry, material);
 	},
 
-	setOpacity : function(opacity){
+	set_opacity : function(opacity){
 		this.square_mesh.material.opacity = opacity;
 	},
 	
-	setPosition : function(){
+	set_position : function(){
 		var m = new THREE.Matrix4();
 		return function(position){
 			m.makeTranslation(position.x, position.y, position.z);
@@ -49,112 +50,97 @@ Facet.prototype = {
 		}
 	}(),
 	
-	applyMatrix: function(matrix){	
+	apply_matrix: function(matrix){	
 		this.geometry.applyMatrix(matrix);
 	},
 	
 	clone: function(){
 		var facet = new Facet(this.cubie, this.color);
 		facet.geometry = this.geometry.clone();
-		facet.meshes = [facet.createSquareMesh(this.square_mesh.material.opacity), facet.createEdgeMesh()]
+		facet.meshes = [facet.create_square_mesh(this.square_mesh.material.opacity), facet.create_edge_mesh()]
 		return facet;
 	},
 	
-	addToScene : function(scene){
-		for (var mesh of this.meshes){
-			scene.add(mesh);
-		}
+	add_contents_to_scene : function(scene){
+		this.meshes.forEach(x=>scene.add(x));
 	},
 	
-	removeFromScene : function(scene){
-		for (var mesh of this.meshes){
-			scene.remove(mesh);
-		}
+	remove_from_scene : function(scene){
+		this.meshes.forEach(x=>scene.remove(x));
 	},
 }
 
 var Cubie = function(name, position, cube_config){
+	this.name = name;
+	this.orientation = name;
+	this.cube_config = cube_config;
+
 	var facets = [];
-	for (var face_name of cube_config.face_names){
-		if(name.indexOf(face_name) > -1){
-			var facet = new Facet(this, cube_config.facet_configs[face_name].color);
+	name.split('').forEach(face_name=>
+		{
+			var facet = new Facet(face_name, this, cube_config.facet_configs[face_name].color);
 			facet.construct(cube_config.facet_configs[face_name].bottom_left, cube_config.rotation_on_folded_configs[face_name].axis);
 			facets[face_name] = facet;
 		}
-	}
+	);
 	this.facets = facets;
-	this.cube_config = cube_config;
-	this.name = name;
-	this.orientation = name;
-	this.setPosition(position);
+	this.set_position(position);
+	this._set_location();
 }
 
 Cubie.prototype = {
-	setPosition : function(position){
-		this.position = position;
-		for (var key in this.facets){
-			var facet = this.facets[key];
-			facet.setPosition(position);
-		}
-	},
-	
-	setOpacity : function(opacity){
-		for (var key in this.facets){
-			var facet = this.facets[key];
-			facet.setOpacity(opacity);
-		}
+	_set_location : function(){
+		this.location = sort(this.orientation);
 	},
 
-	applyMatrix: function(matrix){	
-		for (var key in this.facets){
-			var facet = this.facets[key];
-			facet.applyMatrix(matrix);
-		}
+	get_facet : function(index){
+		return this.facets[this.name[index]];
+	},
+
+	set_position : function(position){
+		this.position = position;
+		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.set_position(position));
 	},
 	
-	rotateOrientation : function(op){
-		var orientation = this._rotateOrientation(this.orientation, op);
+	set_opacity : function(opacity){
+		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.set_opacity(opacity));
+	},
+
+	apply_matrix: function(matrix){
+		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.apply_matrix(matrix));
+	},
+	
+	rotate_orientation : function(op){
 		var from_facets = this.facets;
+		var from_orientation = this.orientation
+		var to_orientation = this._rotate_orientation(from_orientation, op);
 		this.facets = [];
-		for (var i = 0, len = this.orientation.length; i < len; i++){
-			var from_facet = this.orientation[i];
-			var to_facet = orientation[i];
-			this.facets[to_facet] = from_facets[from_facet];
-		}
-		this.orientation = orientation;
+		transforms = from_orientation.split('').map((x,i)=>[from_orientation[i], to_orientation[i]]);
+		transforms.forEach(x=>this.facets[x[1]] = from_facets[x[0]]);
+		this.orientation = to_orientation;
+		this._set_location();
 	},
 	
-	_rotateOrientation : function(orientation, op){
-		var rotation_cycle = this.cube_config.face_rotation_cycle[op];
-		var rotation_cycle_len = rotation_cycle.length;
-		var to_orientation = "";
-		for (var i = 0, len=orientation.length; i < len; i++){
-			var from_face = orientation[i];
-			var pos = rotation_cycle.indexOf(from_face)
-			if (pos > -1){
-				var to_face = rotation_cycle[(pos+1)%rotation_cycle_len];
-				to_orientation += to_face;
-			}else{
-				to_orientation += from_face;
-			}
-		}
-		return to_orientation;
+	_rotate_orientation : function(orientation, op){
+		return orientation.split('').map(face_name=>this.cube_config.rotation_face_map[op][face_name]).join('');
+	},
+
+	is_solved : function(){
+		return Object.keys(this.facets).every(x=>x == this.facets[x].name);
 	},
 	
+	add_contents_to_scene : function(scene){
+		Object.keys(this.facets).forEach(x=>this.facets[x].add_contents_to_scene(scene));
+	}
 }
 
 var RubiksCube = function(){
-	this.position = new THREE.Vector3(0,0,0);
-	this.cubies = [];
 	this.cube_config = new CubeConfig(); 
-
-	for(var cubie_config of this.cube_config.cubie_configs){
-		this._addCubie(new Cubie(cubie_config.name, cubie_config.position, this.cube_config));
-	}
-	this.cubie_list = [];
-	for (var key in this.cubies){
-		this.cubie_list.push(this.cubies[key]);
-	}
+	this.position = new THREE.Vector3(0,0,0);
+	this.cubies = [];           //cubies index storing cubies per location(cubicle)
+	this.cubicle_faces = [];	//cube index storing locations(cubicles) per face 
+	this.cube_config.face_names.forEach(x=>this.cubicle_faces[x] = []);
+	this.cube_config.cubie_configs.forEach(x=>this._add_cubie(x.name, x.position));
 	this.is_in_animation = false;
 	this.commands = "";
 	this.enable_animation = true;
@@ -163,33 +149,27 @@ var RubiksCube = function(){
 }
 
 RubiksCube.prototype = {
-	_addCubie : function(cubie){
-		orientation = sort(cubie.name);
-		this.cubies[orientation] = cubie;	
+	_add_cubie : function(name, position){
+		var cubie = new Cubie(name, position, this.cube_config)
+		this.cubies[cubie.location] = cubie;
+		cubie.location.split('').forEach(x=>this.cubicle_faces[x].push(cubie.location))
 	},
 	
-	addToScene : function(scene){
+	add_contents_to_scene : function(scene){
 		this.scene = scene;
-		for (var cubie_key in this.cubies){
-			var cubie = this.cubies[cubie_key];
-			for (var key in cubie.facets){
-				var facet = cubie.facets[key];
-				facet.addToScene(scene);
+		Object.keys(this.cubies).forEach(x=>this.cubies[x].add_contents_to_scene(scene));
+	},
+	
+	_update_orientation : function(cubies, op){
+		cubies.forEach(x=>{
+			x.rotate_orientation(op);
+			this.cubies[x.location] = x;
 			}
-		}
+		);
 	},
 	
-	_updateOrientation : function(cubies, op){
-		for(var cubie of cubies){
-			cubie.rotateOrientation(op);
-			this.cubies[sort(cubie.orientation)] = cubie;
-		}
-	},
-	
-	setOpacity : function(opacity){
-		for(var cubie of this.cubie_list){
-			cubie.setOpacity(opacity);
-		}	
+	set_opacity : function(opacity){
+		Object.keys(this.cubies).map(x=>this.cubies[x]).forEach(x=>x.set_opacity(opacity));
 	},
 	
 	test : function(){
@@ -204,7 +184,7 @@ RubiksCube.prototype = {
 			transformers.push(new Teleporter(this.scene, this.cubies[rotate_config.cubie].facets[rotate_config.facet], rotate_config.origin, 
 					rotate_config.out_bound, rotate_config.in_bound, rotate_config.target,  rotate_config.axis, rotate_config.out_direction, rotate_config.in_direction));
 		}
-		this._withAnimation(
+		this._with_animation(
 			function(args, total, delta){ 
 				for (var transformer of transformers){
 					transformer.transform(total, delta);
@@ -216,6 +196,8 @@ RubiksCube.prototype = {
 			}
 		);
 		*/
+		//console.log(this.cubies);
+		console.log(this.is_solved());
 	},
 	
 	rotate : function(op){
@@ -225,26 +207,20 @@ RubiksCube.prototype = {
 		}
 		cube = this;
 		var op_face_name = op.slice(0, 1);
-		var rotate_cubies = [];
-		for (var cubie_key in this.cubies){
-			var cubie = this.cubies[cubie_key];
-			if (op_face_name in cubie.facets){
-				rotate_cubies = rotate_cubies.concat(cubie);
-			}
-		}
+		var rotate_cubies = this._get_cubies(op_face_name);
 		var  transformers = [];
 		if (this.is_folded){
 			var rotate_axis = this.cube_config.rotation_on_folded_configs[op].axis;
 			var rotate_angle = this.cube_config.rotation_on_folded_configs[op].angle;
-			transformers.push(new Rotater(rotate_cubies, this.cube_config.Origin, rotate_axis, rotate_angle));
+			transformers.push(new Rotater(rotate_cubies, this.cube_config.origin, rotate_axis, rotate_angle));
 		}else{//rotating on unfolded state
 			for(var rotate_config of this.cube_config.rotation_on_unfolded_configs[op]){
 				if (rotate_config.transform_type == "translater"){
-					var facets = this._getFacets(rotate_cubies, rotate_config.facets);
+					var facets = this._get_facets_from_cubies(rotate_cubies, rotate_config.facets);
 					transformers.push(new Translater(facets, rotate_config.translation));
 				}else if (rotate_config.transform_type == "rotater"){
-					var facets = this._getFacets(rotate_cubies, rotate_config.facets);
-					transformers.push(new Rotater(facets, rotate_config.origin, this.cube_config.AxisY, rotate_config.angle));
+					var facets = this._get_facets_from_cubies(rotate_cubies, rotate_config.facets);
+					transformers.push(new Rotater(facets, rotate_config.origin, this.cube_config.axis_y, rotate_config.angle));
 				}else if (rotate_config.transform_type == "teleporter"){
 					transformers.push(new Teleporter(this.scene, this.cubies[rotate_config.cubie].facets[rotate_config.facet], rotate_config.origin, 
 					rotate_config.out_bound, rotate_config.in_bound, rotate_config.target,  rotate_config.axis, rotate_config.out_direction, rotate_config.in_direction));
@@ -252,21 +228,19 @@ RubiksCube.prototype = {
 			}
 		}
 		
-		this._withAnimation(
+		this._with_animation(
 			function(args, total, delta){ 
-				for (var transformer of transformers){
-					transformer.transform(total, delta);
-				}
+				transformers.forEach(x=>x.transform(total, delta));
 			}, 
 			{cube:this},
 			function(args){ 
-				cube._updateOrientation(rotate_cubies, op);
+				cube._update_orientation(rotate_cubies, op);
 			}
 		);
 	},
 	
 	
-	_withAnimation: function(action, args, onComplete){
+	_with_animation: function(action, args, on_complete){
 		if (this.enable_animation){
 			this.is_in_animation = true;
 			var tween = new TWEEN.Tween({value:0.0}).to({value: 1.0}, this.time_per_animation_move);
@@ -278,34 +252,37 @@ RubiksCube.prototype = {
 			});
 			tween.onComplete(function(){
 				args.cube.is_in_animation = false;
-				onComplete(args);
-				args.cube._doNextCommand();
+				on_complete(args);
+				args.cube._do_next_command();
 			});
 			tween.start();
 		}else{
 			action(args, 1, 1);
-			onComplete(args);
-			args.cube._doNextCommand();
+			on_complete(args);
+			args.cube._do_next_command();
 		}
 	},
  
- 	_getFacets : function(cubies, facet_names){
-		var facets = []
-		for(var cubie of cubies){
-			for (var key in cubie.facets){
-				if (facet_names.indexOf(key) > -1){ 
-					var facet = cubie.facets[key];
-					facets.push(facet);
-				}
-			}
-		}
-		return facets;
+	_get_cubies : function(face_name){
+		return this.cubicle_faces[face_name].map(e=>this.cubies[e]);
+	},
+
+	_get_facets : function(face_name){
+		return this._get_cubies(face_name).map(e=>e.facets[face_name]);
+	},
+
+	_get_facets_by_face: function(cubies, face_name){
+		return cubies.filter(cubie=>face_name in cubie.facets).map(cubie=>cubie.facets[face_name]);
+	},
+
+	_get_facets_from_cubies : function(cubies, facet_names){
+		return [].concat.apply([], facet_names.split('').map(face=>this._get_facets_by_face(cubies, face)));
 	},
 	
 	_fold: function(do_unfolding, delta){
-		for (var orientation in this.cube_config.facet_folding_config){
-			var facets = this._getFacets(this.cubie_list, orientation);
-			var folding_configs = this.cube_config.facet_folding_config[orientation];
+		for (var facet_name in this.cube_config.facet_folding_config){
+			var facets = this._get_facets(facet_name);
+			var folding_configs = this.cube_config.facet_folding_config[facet_name];
 			var m = undefined;
 			for (var folding_config of folding_configs){
 				var translate = folding_config.translation;
@@ -323,7 +300,7 @@ RubiksCube.prototype = {
 	},
 	
 	fold : function(){
-		this._withAnimation(
+		this._with_animation(
 			function(args, total, delta){ 
 				args.cube._fold(args.cube.is_folded, delta);
 			}, 
@@ -332,7 +309,7 @@ RubiksCube.prototype = {
 		);
 	},
 
-	isValidInputChar:function(prev_char, char){
+	is_valid_input_char:function(prev_char, char){
 		if ("OST".indexOf(char) > -1){
 			return true;
 		}
@@ -342,13 +319,13 @@ RubiksCube.prototype = {
 	command : function(command){
 		this.commands = this.commands.concat(command);	
 		if (!this.is_in_animation){
-			this._doNextCommand();
+			this._do_next_command();
 		}
 	},
 	
 	
-	_doNextCommand : function(){
-		var op = this._getNextOp();
+	_do_next_command : function(){
+		var op = this._get_next_op();
 		if (op != ""){
 			if (op == "S"){
 				this.randomize();
@@ -363,7 +340,7 @@ RubiksCube.prototype = {
 		}	
 	},
 	
-	_getNextOp : function(){
+	_get_next_op : function(){
 		var len = this.commands.length;
 		var look_at = 0;
 		if (len > 1){
@@ -384,14 +361,22 @@ RubiksCube.prototype = {
 		var saved = this.enable_animation;
 		this.enable_animation = false;
 		for (var i = 0; i < 20; i++){
-			var op_i = this._getRandom(0, this.cube_config.operations.length - 1);
+			var op_i = this._get_random(0, this.cube_config.operations.length - 1);
 			var op = this.cube_config.operations[op_i];
 			this.rotate(op);
 		}
 		this.enable_animation = saved; 	
 	},
 	
-	_getRandom:function(min, max) {
+	_get_random:function(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
-	}	
+	},
+
+	_get_cubie_items : function(){
+		return Object.keys(this.cubies).map(e=>this.cubies[e]);
+	},
+
+	is_solved : function(){
+		return this._get_cubie_items().every(cubie=> cubie.is_solved());
+	}
 }

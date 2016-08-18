@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+PE html>
 <html>
 	<head>
 		<meta charset=utf-8>
@@ -50,6 +50,7 @@
 		<script src="src/rubikscube.js"></script>
 		<script src="src/cubeconsole.js"></script>
 		<script>
+
 var cube_console = new CubeConsole();
 cube_console.render();
 
@@ -60,7 +61,7 @@ function onDocumentKeyDown( event ) {
 	var keyCode = event.keyCode;
 	if ( keyCode == 8 ) {
 		event.preventDefault();
-		cube_console.delete_char();
+		cube_console.deleteChar();
 		return false;
 	}
 }
@@ -71,7 +72,7 @@ function onDocumentKeyPress ( event ) {
 		event.preventDefault();
 	} else {
 		var ch = String.fromCharCode( keyCode );
-		cube_console.input_char(ch);
+		cube_console.inputChar(ch);
 	}
 }
 	
@@ -83,7 +84,7 @@ function onCommand(op){
 function onChangeTransparent(value){
 	transparent = value;
 	opacity = (100-transparent)/100;
-	cube_console.cube.set_opacity(opacity);
+	cube_console.cube.setOpacity(opacity);
 	//console.log(opacity);
 }
 		</script>

@@ -25,24 +25,7 @@ var Teleporter = function(scene, facet, origin, out_bound, in_bound, target, axi
 }
 
 Teleporter.prototype = {
-	_setupDirection : function(){
-		return;
-		if (this.out_bound_value == this.origin){
-			this.out_direction = this.target > this.origin ? -1 : 1;
-		}else{
-			this.out_direction = this.out_bound_value > this.origin ? 1 : -1;
-		}
-		if (this.target == this.in_bound_value){
-			this.in_direction = this.target > this.origin ? -1 : 1;
-			if (this.on_target_limit == "-"){
-				this.in_direction = -this.in_direction;
-			}
-		}else{
-			this.in_direction = this.target > this.in_bound_value ? 1 : -1;
-		}
-	},
-	
-	_setupIndex : function(){
+	_setup_index : function(){
 		this.out_vertices_adj_index = [];
 		this.out_vertices_noadj_index = [];
 		this.in_vertices_adj_index = [];
@@ -69,8 +52,7 @@ Teleporter.prototype = {
 	},
 	
 	_setup : function(){
-		this._setupDirection();
-		this._setupIndex();
+		this._setup_index();
 		this.teleport = new THREE.Matrix4();
 		var in_bound = this.in_bound.clone();
 		in_bound.sub(this.out_bound);
@@ -96,21 +78,21 @@ Teleporter.prototype = {
 		}
 	},
 
-	_createClone : function(){
+	_create_clone : function(){
 		this.facet_clone = this.facet.clone();
-		this.facet_clone.addToScene(this.scene);
-		this.facet.applyMatrix(this.teleport);
+		this.facet_clone.add_contents_to_scene(this.scene);
+		this.facet.apply_matrix(this.teleport);
 	},
 	
-	_deleteClone : function(){
+	_delete_clone : function(){
 		//console.log("deleting clone...");
-		this.facet_clone.removeFromScene(this.scene);
+		this.facet_clone.remove_from_scene(this.scene);
 		delete this.facet_clone;
 		this.facet_clone = null;
 		this._reset();
 	},
 	
-	adjustSize : function(facet, vertice_index, adjust_size){
+	adjust_size : function(facet, vertice_index, adjust_size){
 		facet.geometry.dynamic = true;
 		for(var index of vertice_index){
 			var vertice = facet.geometry.vertices[index];
@@ -127,18 +109,18 @@ Teleporter.prototype = {
 			var move_distance = delta * this.distance
 			var new_position = this.position + move_distance * this.out_direction;
 			var out_cut_len = (new_position - this.out_bound_value) * this.out_direction;
-			this.axis.makeTranslation(out_translation, move_distance * this.out_direction);
-			this.axis.makeTranslation( in_translation, move_distance * this.in_direction);
+			this.axis.make_translation(out_translation, move_distance * this.out_direction);
+			this.axis.make_translation( in_translation, move_distance * this.in_direction);
 			if (out_cut_len > 0 && out_cut_len < this.length){
 				this._jump_moving_out_phase = false;
 				var out_adjust_size;
 				if (this.facet_clone == null){
 					//first cross boundary
-					this._createClone();
+					this._create_clone();
 					out_adjust_size = Math.min(out_cut_len, move_distance);
 					if (this.out_direction != this.in_direction){
-						this.axis.makeTranslation(mirror_translation, 2* (move_distance - out_cut_len) * this.out_direction)
-						this.facet.applyMatrix(mirror_translation);
+						this.axis.make_translation(mirror_translation, 2* (move_distance - out_cut_len) * this.out_direction)
+						this.facet.apply_matrix(mirror_translation);
 					}
 					this._sqeeze();
 					
@@ -146,35 +128,34 @@ Teleporter.prototype = {
 					out_adjust_size = move_distance;
 				}
 				//clone, both moving 
-				this.facet.applyMatrix(in_translation);
-				this.facet_clone.applyMatrix(out_translation);
+				this.facet.apply_matrix(in_translation);
+				this.facet_clone.apply_matrix(out_translation);
 
-				this.adjustSize(this.facet_clone, 	this.out_vertices_adj_index, out_adjust_size * this.out_direction * -1);
-				this.adjustSize(this.facet, 		this.in_vertices_adj_index, out_adjust_size * this.in_direction * -1);
+				this.adjust_size(this.facet_clone, 	this.out_vertices_adj_index, out_adjust_size * this.out_direction * -1);
+				this.adjust_size(this.facet, 		this.in_vertices_adj_index, out_adjust_size * this.in_direction * -1);
 			}else{
 				if (this.facet_clone != null){
-					this._deleteClone();
+					this._delete_clone();
 				}
 				if (out_cut_len <=0){
-					this.facet.applyMatrix(out_translation);
+					this.facet.apply_matrix(out_translation);
 				}
 				else if(out_cut_len >= this.length){
 					//moving in
 					if (this._jump_moving_out_phase){
-						this.facet.applyMatrix(this.teleport);
+						this.facet.apply_matrix(this.teleport);
 						if (this.out_direction != this.in_direction){
 							var gap = (this.out_bound_value - this.position) * this.out_direction;
-							this.axis.makeTranslation(mirror_translation, 2 * gap * this.out_direction)
-							this.facet.applyMatrix(mirror_translation);
+							this.axis.make_translation(mirror_translation, 2 * gap * this.out_direction)
+							this.facet.apply_matrix(mirror_translation);
 						}
 						this._jump_moving_out_phase = false;
 					}
-					this.facet.applyMatrix(in_translation);
+					this.facet.apply_matrix(in_translation);
 				}
 			}
 			if (total == 1 && this.facet_clone != null){
-				//console.log("deleting clone at the last");
-				this._deleteClone();
+				this._delete_clone();
 			}
 			this.position = new_position;
 		}
@@ -193,7 +174,7 @@ Translater.prototype = {
 		return function(total, delta){
 			m.makeTranslation(this.translation.x * delta, this.translation.y * delta, this.translation.z * delta);
 			for (var obj of this.objects){
-				obj.applyMatrix(m);
+				obj.apply_matrix(m);
 			}
 		}
 	}(),
@@ -216,7 +197,7 @@ Rotater.prototype = {
 				m.makeRotationAxis(this.axis, this.angle * delta);
 			}
 			for (var obj of this.objects){
-				obj.applyMatrix(m);
+				obj.apply_matrix(m);
 			}
 		}
 	}(),

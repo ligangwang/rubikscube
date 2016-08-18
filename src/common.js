@@ -15,7 +15,7 @@ var AxisX = {
 		obj.x = v;
 	},
 	
-	makeTranslation: function(m, v){
+	make_translation: function(m, v){
 		m.makeTranslation(v, 0, 0);
 	},
 	
@@ -33,7 +33,7 @@ var AxisY = {
 		obj.y = v;
 	},
 	   
-	makeTranslation: function(m, v){
+	make_translation: function(m, v){
 		m.makeTranslation(0, v, 0);
 	},
 	  
@@ -51,7 +51,7 @@ var AxisZ = {
 		obj.z = v;
 	},
 	
-	makeTranslation: function(m, v){
+	make_translation: function(m, v){
 		m.makeTranslation(0, 0, v);
 	},
 	  
