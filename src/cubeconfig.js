@@ -3,7 +3,6 @@
  **/
 
 var CubeConfig = function(){
-	this.face_names = ["R", "U", "F", "L", "D", "B"];
 	this.axis_y = new THREE.Vector3(0, 1, 0);
 	this.origin = new THREE.Vector3(0, 0, 0);
 	this.cubie_configs = [
@@ -37,33 +36,6 @@ var CubeConfig = function(){
 		{name: "L", position: new THREE.Vector3(-200,0,0)},
 		{name: "U", position: new THREE.Vector3(0,200,0)},
 	];	
-	
-	var convert_cycle_to_map = function(cycle){
-		map = []
-		for (var i = 0, len=cycle.length; i < len; i++){
-			map[cycle[i]] = cycle[(i+1)%len];
-		}
-		return map;
-	}
-	face_rotation_cycle = [];
-	face_rotation_cycle["R"] = ["F", "U", "B", "D"]; //R: F->U->B->D
-	face_rotation_cycle["U"] = ["F", "L", "B", "R"]; //U: F->R->B->L
-	face_rotation_cycle["F"] = ["U", "R", "D", "L"]; //F: R->U->L->D
-	face_rotation_cycle["L"] = face_rotation_cycle["R"].slice().reverse();
-	face_rotation_cycle["D"] = face_rotation_cycle["U"].slice().reverse();
-	face_rotation_cycle["B"] = face_rotation_cycle["F"].slice().reverse();
-	for (var op of this.face_names){
-		face_rotation_cycle[op + "'"] = face_rotation_cycle[op].slice().reverse();
-	}
-
-	this.rotation_face_map = [];
-	for(var op_key in face_rotation_cycle){
-		var map = convert_cycle_to_map(face_rotation_cycle[op_key]);
-		op_face = op_key.slice(0, 1);
-		map[op_face] = op_face; //the same face not changed.
-		this.rotation_face_map[op_key] = map;
-		
-	}
 	
 	this.facet_configs = [];
 	this.facet_configs["R"] = {color:0xff0000, bottom_left:new THREE.Vector3(100, -100, 100)};

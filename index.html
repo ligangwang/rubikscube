@@ -20,7 +20,7 @@
 	</head>
 	<body>
 		<div class="info" style="font-size:small">
-			Welcome to Rubik's Cube. The source code is available <a href="https://github.com/ligangwang/rubikscube" target="_blank">here</a>.
+			Welcome to Rubik's Cube !
 		</div>
 		<div class="info">
 			</br>
@@ -38,17 +38,20 @@
 			Rotate Up Face Counterclockwise: <a onclick="onCommand('U\'')" href="#">U'</a>
 			Rotate Down Face: <a onclick="onCommand('D')" href="#">D</a>
 			Rotate Down Face Counterclockwise: <a onclick="onCommand('D\'')" href="#">D'</a><br/>
-			Set transparency: <input type="range" min="0" max="100" step="1" value="0" onchange="onChangeTransparent(this.value)">
+			Set transparency: <input type="range" min="0" max="100" step="1" value="0" onchange="onChangeTransparent(this.value)"><br/>
+			Solver: <a onclick="on_bottom_up_solver()" href="#">Solve with bottom up method (beginner's method)</a>
 			
 		</div>		
 		<script src="lib/three.min.js"></script>
 		<script src="lib/controls/OrbitControls.js"></script>
 		<script src="lib/Tween.js"></script>
 		<script src="src/common.js"></script>
+		<script src="src/cubefacts.js"></script>
 		<script src="src/cubeconfig.js"></script>
 		<script src="src/transformer.js"></script>
 		<script src="src/rubikscube.js"></script>
 		<script src="src/cubeconsole.js"></script>
+		<script src="src/cubesolvers.js"></script>
 		<script>
 var cube_console = new CubeConsole();
 cube_console.render();
@@ -85,6 +88,12 @@ function onChangeTransparent(value){
 	opacity = (100-transparent)/100;
 	cube_console.cube.set_opacity(opacity);
 	//console.log(opacity);
+}
+
+function on_bottom_up_solver(){
+	var solver = new BottomupSolver(cube_console.cube.get_cube_states());
+	//solver.solve().forEach(op=>cube_console.cube.command(op));
+	//console.log(solver._determine_the_first_layer_to_solve());
 }
 		</script>
 	</body>

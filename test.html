@@ -6,6 +6,7 @@
 		<script src="lib/controls/OrbitControls.js"></script>
 		<script src="lib/Tween.js"></script>
 		<script src="src/common.js"></script>
+        <script src="src/cubefacts.js"></script>
 		<script src="src/cubeconfig.js"></script>
 		<script src="src/transformer.js"></script>
 		<script src="src/rubikscube.js"></script>
@@ -14,9 +15,10 @@
             
             function onTest(){
                 var test = "hello";
-                
-                console.log(test[1]);
-                console.log(test);
+                var a = new Set([1,2]);
+                var b = new Set([1,2]);
+                console.log(["A","B","C"].reduce((a,b)=>a>b?a:b));
+                console.log(get_command_from_path("F", "U", "D"));
             }
         </script>
         <button onclick="onTest()">Click me</button>

@@ -122,7 +122,7 @@ Cubie.prototype = {
 	},
 	
 	_rotate_orientation : function(orientation, op){
-		return orientation.split('').map(face_name=>this.cube_config.rotation_face_map[op][face_name]).join('');
+		return orientation.split('').map(face_name=>ROTATION_FACE_MAP[op][face_name]).join('');
 	},
 
 	is_solved : function(){
@@ -138,8 +138,8 @@ var RubiksCube = function(){
 	this.cube_config = new CubeConfig(); 
 	this.position = new THREE.Vector3(0,0,0);
 	this.cubies = [];           //cubies index storing cubies per location(cubicle)
-	this.cubicle_faces = [];	//cube index storing locations(cubicles) per face 
-	this.cube_config.face_names.forEach(x=>this.cubicle_faces[x] = []);
+	this.cube_faces = [];	//cube index storing locations(cubicles) per face 
+	FACE_NAMES.forEach(x=>this.cube_faces[x] = []);
 	this.cube_config.cubie_configs.forEach(x=>this._add_cubie(x.name, x.position));
 	this.is_in_animation = false;
 	this.commands = "";
@@ -152,7 +152,7 @@ RubiksCube.prototype = {
 	_add_cubie : function(name, position){
 		var cubie = new Cubie(name, position, this.cube_config)
 		this.cubies[cubie.location] = cubie;
-		cubie.location.split('').forEach(x=>this.cubicle_faces[x].push(cubie.location))
+		cubie.location.split('').forEach(x=>this.cube_faces[x].push(cubie.location))
 	},
 	
 	add_contents_to_scene : function(scene){
@@ -198,6 +198,7 @@ RubiksCube.prototype = {
 		*/
 		//console.log(this.cubies);
 		console.log(this.is_solved());
+		console.log(this.get_cube_states());
 	},
 	
 	rotate : function(op){
@@ -264,7 +265,7 @@ RubiksCube.prototype = {
 	},
  
 	_get_cubies : function(face_name){
-		return this.cubicle_faces[face_name].map(e=>this.cubies[e]);
+		return this.cube_faces[face_name].map(e=>this.cubies[e]);
 	},
 
 	_get_facets : function(face_name){
@@ -378,5 +379,17 @@ RubiksCube.prototype = {
 
 	is_solved : function(){
 		return this._get_cubie_items().every(cubie=> cubie.is_solved());
+	},
+
+	get_cube_states : function(){
+		cube_states = [];
+		Object.keys(this.cubies).forEach(location=>{
+			cubicle_state = []
+			cubie = this.cubies[location];
+			Object.keys(cubie.facets).forEach(x=>cubicle_state[x] = cubie.facets[x].name);
+			cube_states[location] = cubicle_state;
+		}
+		);
+		return cube_states;
 	}
 }

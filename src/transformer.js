@@ -20,8 +20,6 @@ var Teleporter = function(scene, facet, origin, out_bound, in_bound, target, axi
 	this.in_direction = in_direction;
 	this._setup();
 	this._jump_moving_out_phase = true;
-	//console.log("distance", this.distance, this.out_bound_value, this.in_bound_value);
-	//console.log(this.out_vertices_adj_index, this.out_vertices_noadj_index, this.in_vertices_adj_index, this.in_vertices_noadj_index)
 }
 
 Teleporter.prototype = {
