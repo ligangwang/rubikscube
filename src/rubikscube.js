@@ -71,8 +71,7 @@ Facet.prototype = {
 }
 
 var Cubie = function(name, position, cube_config){
-	this.name = name;
-	this.orientation = name;
+	this.name = sort(name);
 	this.cube_config = cube_config;
 
 	var facets = [];
@@ -85,18 +84,9 @@ var Cubie = function(name, position, cube_config){
 	);
 	this.facets = facets;
 	this.set_position(position);
-	this._set_location();
 }
 
 Cubie.prototype = {
-	_set_location : function(){
-		this.location = sort(this.orientation);
-	},
-
-	get_facet : function(index){
-		return this.facets[this.name[index]];
-	},
-
 	set_position : function(position){
 		this.position = position;
 		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.set_position(position));
@@ -110,25 +100,6 @@ Cubie.prototype = {
 		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.apply_matrix(matrix));
 	},
 	
-	rotate_orientation : function(op){
-		var from_facets = this.facets;
-		var from_orientation = this.orientation
-		var to_orientation = this._rotate_orientation(from_orientation, op);
-		this.facets = [];
-		transforms = from_orientation.split('').map((x,i)=>[from_orientation[i], to_orientation[i]]);
-		transforms.forEach(x=>this.facets[x[1]] = from_facets[x[0]]);
-		this.orientation = to_orientation;
-		this._set_location();
-	},
-	
-	_rotate_orientation : function(orientation, op){
-		return orientation.split('').map(face_name=>ROTATION_FACE_MAP[op][face_name]).join('');
-	},
-
-	is_solved : function(){
-		return Object.keys(this.facets).every(x=>x == this.facets[x].name);
-	},
-	
 	add_contents_to_scene : function(scene){
 		Object.keys(this.facets).forEach(x=>this.facets[x].add_contents_to_scene(scene));
 	}
@@ -137,9 +108,8 @@ Cubie.prototype = {
 var RubiksCube = function(){
 	this.cube_config = new CubeConfig(); 
 	this.position = new THREE.Vector3(0,0,0);
+	this.cube_state = new CubeState();
 	this.cubies = [];           //cubies index storing cubies per location(cubicle)
-	this.cube_faces = [];	//cube index storing locations(cubicles) per face 
-	FACE_NAMES.forEach(x=>this.cube_faces[x] = []);
 	this.cube_config.cubie_configs.forEach(x=>this._add_cubie(x.name, x.position));
 	this.is_in_animation = false;
 	this.commands = "";
@@ -151,21 +121,13 @@ var RubiksCube = function(){
 RubiksCube.prototype = {
 	_add_cubie : function(name, position){
 		var cubie = new Cubie(name, position, this.cube_config)
-		this.cubies[cubie.location] = cubie;
-		cubie.location.split('').forEach(x=>this.cube_faces[x].push(cubie.location))
+		this.cubies[cubie.name] = cubie;
+		this.cube_state.add_cubie_state(name, name)
 	},
 	
 	add_contents_to_scene : function(scene){
 		this.scene = scene;
 		Object.keys(this.cubies).forEach(x=>this.cubies[x].add_contents_to_scene(scene));
-	},
-	
-	_update_orientation : function(cubies, op){
-		cubies.forEach(x=>{
-			x.rotate_orientation(op);
-			this.cubies[x.location] = x;
-			}
-		);
 	},
 	
 	set_opacity : function(opacity){
@@ -197,10 +159,14 @@ RubiksCube.prototype = {
 		);
 		*/
 		//console.log(this.cubies);
-		console.log(this.is_solved());
-		console.log(this.get_cube_states());
+		console.log(this.cube_state.is_solved());
 	},
 	
+	_get_facet_from_location_face : function(loc, loc_face_name){
+		cubie_state = this.cube_state.loc_to_cubie_map[loc]
+		return this.cubies[cubie_state.name].facets[cubie_state.loc_to_facet_map[loc_face_name]];
+	},
+
 	rotate : function(op){
 		if (this.is_in_animation){
 			console.log("the cube is rotating. quiting ".concat(op))
@@ -223,7 +189,7 @@ RubiksCube.prototype = {
 					var facets = this._get_facets_from_cubies(rotate_cubies, rotate_config.facets);
 					transformers.push(new Rotater(facets, rotate_config.origin, this.cube_config.axis_y, rotate_config.angle));
 				}else if (rotate_config.transform_type == "teleporter"){
-					transformers.push(new Teleporter(this.scene, this.cubies[rotate_config.cubie].facets[rotate_config.facet], rotate_config.origin, 
+					transformers.push(new Teleporter(this.scene, this._get_facet_from_location_face(rotate_config.cubie, rotate_config.facet), rotate_config.origin, 
 					rotate_config.out_bound, rotate_config.in_bound, rotate_config.target,  rotate_config.axis, rotate_config.out_direction, rotate_config.in_direction));
 				}
 			}
@@ -235,7 +201,7 @@ RubiksCube.prototype = {
 			}, 
 			{cube:this},
 			function(args){ 
-				cube._update_orientation(rotate_cubies, op);
+				cube.cube_state.rotate(op);
 			}
 		);
 	},
@@ -264,20 +230,23 @@ RubiksCube.prototype = {
 		}
 	},
  
-	_get_cubies : function(face_name){
-		return this.cube_faces[face_name].map(e=>this.cubies[e]);
+	_get_cubies : function(loc_face_name){
+		return this.cube_state.get_cubie_states(loc_face_name).map(cs=>this.cubies[cs.name]);
 	},
 
-	_get_facets : function(face_name){
-		return this._get_cubies(face_name).map(e=>e.facets[face_name]);
+	_get_facets : function(loc_face_name){
+		return this.cube_state.get_cubie_states(loc_face_name).map(cs=>this.cubies[cs.name].facets[cs.loc_to_facet_map[loc_face_name]]);
 	},
 
-	_get_facets_by_face: function(cubies, face_name){
-		return cubies.filter(cubie=>face_name in cubie.facets).map(cubie=>cubie.facets[face_name]);
+	_get_facets_by_loc_face: function(cubies, loc_face_name){
+		return cubies.map(x=>this.cube_state.cubie_to_loc_map[x.name])
+			.filter(loc=>loc.indexOf(loc_face_name) >= 0)
+			.map(loc=>this.cube_state.loc_to_cubie_map[loc])
+			.map(cs=>this.cubies[cs.name].facets[cs.loc_to_facet_map[loc_face_name]]);
 	},
 
-	_get_facets_from_cubies : function(cubies, facet_names){
-		return [].concat.apply([], facet_names.split('').map(face=>this._get_facets_by_face(cubies, face)));
+	_get_facets_from_cubies : function(cubies, loc_face_names){
+		return [].concat.apply([], loc_face_names.split('').map(loc_face=>this._get_facets_by_loc_face(cubies, loc_face)));
 	},
 	
 	_fold: function(do_unfolding, delta){
@@ -373,23 +342,7 @@ RubiksCube.prototype = {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	},
 
-	_get_cubie_items : function(){
-		return Object.keys(this.cubies).map(e=>this.cubies[e]);
-	},
-
-	is_solved : function(){
-		return this._get_cubie_items().every(cubie=> cubie.is_solved());
-	},
-
-	get_cube_states : function(){
-		cube_states = [];
-		Object.keys(this.cubies).forEach(location=>{
-			cubicle_state = []
-			cubie = this.cubies[location];
-			Object.keys(cubie.facets).forEach(x=>cubicle_state[x] = cubie.facets[x].name);
-			cube_states[location] = cubicle_state;
-		}
-		);
-		return cube_states;
+	get_cube_state : function(){
+		return this.cube_state.clone();
 	}
 }

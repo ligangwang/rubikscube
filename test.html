@@ -6,7 +6,7 @@
 		<script src="lib/controls/OrbitControls.js"></script>
 		<script src="lib/Tween.js"></script>
 		<script src="src/common.js"></script>
-        <script src="src/cubefacts.js"></script>
+        <script src="src/cubestate.js"></script>
 		<script src="src/cubeconfig.js"></script>
 		<script src="src/transformer.js"></script>
 		<script src="src/rubikscube.js"></script>
@@ -19,6 +19,18 @@
                 var b = new Set([1,2]);
                 console.log(["A","B","C"].reduce((a,b)=>a>b?a:b));
                 console.log(get_command_from_path("F", "U", "D"));
+                console.log("ABCD".indexOf("D"));
+
+                var some_db = {        
+                    "One" : "1",    
+                    "Two" : "2",    
+                    "Three" : "3"    
+                };
+
+                var copy_db = some_db.clone();
+                copy_db["One"] = 11;
+                console.log(copy_db["One"]);
+                console.log(some_db["One"]);
             }
         </script>
         <button onclick="onTest()">Click me</button>

@@ -40,19 +40,14 @@
         //      until all corner positioned correctly
         //4.2.a.2 M,N: N'XNX' until M,N solved, using Z', to move M,N then repeating untill all fixed
 
-var BottomupSolver = function(cube_states){
-    this.cube_states = cube_states;
-    this.cube_faces = [];
-    FACE_NAMES.forEach(x=>this.cube_faces[x] = []);
-    Object.keys(cube_states).forEach(location=>location.split('').forEach(x=>this.cube_faces[x].push(location)));
+var BottomupSolver = function(cube_state){
+    this.cube_state = cube_state; //store facets per each location
 }
-
-
 
 BottomupSolver.prototype = {
     solve : function(){
         commands = []
-        if (! this._is_solved()){
+        if (! this.cube_state.is_solved()){
             var X = this._determine_the_first_layer_to_solve();
             commands = commands.concat(this._solve_first_layer(X));
             var Z = OPPOSITE_FACE_NAMES[X];
@@ -62,12 +57,8 @@ BottomupSolver.prototype = {
 
     _solve_first_layer : function(X){
         commands = [];
-        return commands;
-    },
 
-    _num_of_faces_solved : function(locations){
-        return locations.map(loc=>Object.keys(this.cube_states[loc]).filter(x=>x==this.cube_states[loc][x]).length)
-                    .reduce((a,b)=>a+b, 0);
+        return commands;
     },
 
     _determine_the_first_layer_to_solve : function(){
@@ -76,8 +67,8 @@ BottomupSolver.prototype = {
             {
                 count_key = 
                 [
-                    this._num_of_faces_solved(this.cube_faces[face_name].filter(loc=>loc.length==2)),
-                    this._num_of_faces_solved(this.cube_faces[face_name].filter(loc=>loc.length==3))
+                    this.cube_state.get_num_of_facets_solved(CUBE_FACES[face_name].filter(loc=>loc.length==2)),
+                    this.cube_state.get_num_of_facets_solved(CUBE_FACES[face_name].filter(loc=>loc.length==3))
                 ].map(x=>x<10?"0" + x.toString() : x.toString()).join('');
                 num_of_edge_facets_solved[count_key] = face_name;
             }
@@ -85,15 +76,6 @@ BottomupSolver.prototype = {
         //console.log(num_of_edge_facets_solved);
         max_number_of_facets_solved = Object.keys(num_of_edge_facets_solved).reduce((a,b)=>a>b?a:b);
         return num_of_edge_facets_solved[max_number_of_facets_solved];
-    },
-
-    _is_solved_cubie : function(cubie_states){
-        return Object.keys(cubie_states).every(x=>x==cubie_states[x]);
-    },
-
-    _is_solved : function()
-    {
-        return Object.keys(this.cube_states).every(x=>this._is_solved_cubie(this.cube_states[x]));
     },
 
     _do_command : function(op)

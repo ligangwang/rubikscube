@@ -46,7 +46,7 @@
 		<script src="lib/controls/OrbitControls.js"></script>
 		<script src="lib/Tween.js"></script>
 		<script src="src/common.js"></script>
-		<script src="src/cubefacts.js"></script>
+		<script src="src/cubestate.js"></script>
 		<script src="src/cubeconfig.js"></script>
 		<script src="src/transformer.js"></script>
 		<script src="src/rubikscube.js"></script>
@@ -91,7 +91,10 @@ function onChangeTransparent(value){
 }
 
 function on_bottom_up_solver(){
-	var solver = new BottomupSolver(cube_console.cube.get_cube_states());
+	cube_state = cube_console.cube.get_cube_state();
+	//console.log(cube_state.is_solved());
+	var solver = new BottomupSolver(cube_state);
+	
 	//solver.solve().forEach(op=>cube_console.cube.command(op));
 	//console.log(solver._determine_the_first_layer_to_solve());
 }
