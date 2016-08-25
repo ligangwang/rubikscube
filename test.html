@@ -14,23 +14,12 @@
         <script>
             
             function onTest(){
-                var test = "hello";
-                var a = new Set([1,2]);
-                var b = new Set([1,2]);
-                console.log(["A","B","C"].reduce((a,b)=>a>b?a:b));
-                console.log(get_command_from_path("F", "U", "D"));
-                console.log("ABCD".indexOf("D"));
-
-                var some_db = {        
-                    "One" : "1",    
-                    "Two" : "2",    
-                    "Three" : "3"    
-                };
-
-                var copy_db = some_db.clone();
-                copy_db["One"] = 11;
-                console.log(copy_db["One"]);
-                console.log(some_db["One"]);
+                var a = [];
+                a.push(2);
+                a.push(1);
+                
+                console.log(a.sort());
+                console.log(a.some(x=>x==3));
             }
         </script>
         <button onclick="onTest()">Click me</button>

@@ -6,10 +6,10 @@ face_pairs.forEach(x=>{
     OPPOSITE_FACE_NAMES[x[1]] = x[0];
 });
 
-var _convert_cycle_to_map = function(cycle){
+var _convert_cycle_to_map = function(cycle, repeat_times){
     map = []
     for (var i = 0, len=cycle.length; i < len; i++){
-        map[cycle[i]] = cycle[(i+1)%len];
+        map[cycle[i]] = cycle[(i+repeat_times)%len];
     }
     return map;
 }
@@ -27,13 +27,15 @@ for (var op of FACE_NAMES){
 
 ROTATION_FACE_MAP = [];
 for(var op_key in ROTATION_FACE_CYCLES){
-    var map = _convert_cycle_to_map(ROTATION_FACE_CYCLES[op_key]);
+    ROTATION_FACE_MAP[op_key] = _convert_cycle_to_map(ROTATION_FACE_CYCLES[op_key], 1);
+    ROTATION_FACE_MAP[op_key.repeat(2)] = _convert_cycle_to_map(ROTATION_FACE_CYCLES[op_key], 2);
     op_face = op_key.slice(0, 1);
     map[op_face] = op_face; //the same face not changed.
-    ROTATION_FACE_MAP[op_key] = map;
-    
+    ROTATION_FACE_MAP[op_key][op_face] = op_face; 
+    ROTATION_FACE_MAP[op_key.repeat(2)][op_face] = op_face; 
 }
 
+console.log(ROTATION_FACE_MAP);
 var get_command_from_path = function(rotate_face, from_side, to_side){
     cycle = ROTATION_FACE_CYCLES[rotate_face];
     start_pos = cycle.indexOf(from_side);
@@ -58,6 +60,16 @@ var get_command_from_path = function(rotate_face, from_side, to_side){
 CUBE_FACES = [];	//cube index storing locations(cubicles) per face 
 FACE_NAMES.forEach(x=>CUBE_FACES[x] = []);
 
+var reverse_op = function(op){
+    if (op.length == 1)
+        return op + "'";
+    else if (op.length == 2){
+        ops = op.split('');
+        return op[1] == "'" ? op[0] : op;
+    }
+    else
+        throw "not supported op: " + op;
+}
 
 var CubieState = function(facet_orientation, loc_orientation){
     this.name = sort(facet_orientation);
@@ -90,6 +102,10 @@ CubieState.prototype = {
 		return Object.keys(this.loc_to_facet_map).every(x=>x == this.loc_to_facet_map[x]);
 	},
     
+    get_number_of_facet_solved : function(){
+        return Object.keys(this.facet_to_loc_map).filter(x=>this.facet_to_loc_map[x] == x).length;
+    },
+
     clone : function(){
         facets = Object.keys(this.facet_to_loc_map);
         locs = facets.map(x=>this.facet_to_loc_map[x]);
@@ -130,6 +146,10 @@ CubeState.prototype = {
 
     get_cubie_states : function(loc_face_name){
         return CUBE_FACES[loc_face_name].map(loc=>this.loc_to_cubie_map[loc]);
+    },
+
+    get_cubie_state : function(cubie_name){
+        return this.loc_to_cubie_map[this.cubie_to_loc_map[cubie_name]];
     },
 
 	is_solved : function(){

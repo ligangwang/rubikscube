@@ -114,8 +114,8 @@ var RubiksCube = function(){
 	this.is_in_animation = false;
 	this.commands = "";
 	this.enable_animation = true;
-	this.time_per_animation_move = 800; //in millisecond
 	this.is_folded = true;
+	this.set_is_in_solver_mode(false);
 }
 
 RubiksCube.prototype = {
@@ -134,6 +134,14 @@ RubiksCube.prototype = {
 		Object.keys(this.cubies).map(x=>this.cubies[x]).forEach(x=>x.set_opacity(opacity));
 	},
 	
+	set_is_in_solver_mode : function(enabled){
+		if(enabled){
+			this.time_per_animation_move = 200; //in ms
+		}else
+			this.time_per_animation_move = 600;
+		this.is_in_solver_mode = enabled;
+	},
+
 	test : function(){
 		//this.time_per_animation_move = 20000;
 		/*
@@ -159,7 +167,7 @@ RubiksCube.prototype = {
 		);
 		*/
 		//console.log(this.cubies);
-		console.log(this.cube_state.is_solved());
+		console.log(this.cube_state);
 	},
 	
 	_get_facet_from_location_face : function(loc, loc_face_name){
@@ -204,6 +212,9 @@ RubiksCube.prototype = {
 				cube.cube_state.rotate(op);
 			}
 		);
+
+		if (this.cube_state.is_solved() && this.is_in_solver_mode)
+			this.set_is_in_solver_mode(false);
 	},
 	
 	
@@ -307,7 +318,7 @@ RubiksCube.prototype = {
 				this.test();
 			}
 			else{this.rotate(op);}
-		}	
+		}
 	},
 	
 	_get_next_op : function(){
