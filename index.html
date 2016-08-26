@@ -75,12 +75,6 @@ function onDocumentKeyPress ( event ) {
 	} else {
 		var ch = String.fromCharCode( keyCode );
 		cube_console.input_char(ch);
-		if (ch=="t" || ch == "T"){
-			var solver = new BottomupSolver(cube_console.cube.get_cube_state());
-			var X = solver._determine_the_first_layer_to_solve();
-			var Z = OPPOSITE_FACE_NAMES[X];
-			console.log(solver._solve_third_layer_edge_cubies(Z));
-		}
 	}
 }
 	
