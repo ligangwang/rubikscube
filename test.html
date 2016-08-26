@@ -1,24 +1,27 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-	<head>Testing</head>
-    <body>
-		<script src="lib/three.min.js"></script>
-		<script src="lib/controls/OrbitControls.js"></script>
-		<script src="lib/Tween.js"></script>
-		<script src="src/common.js"></script>
-        <script src="src/cubestate.js"></script>
-		<script src="src/cubeconfig.js"></script>
-		<script src="src/transformer.js"></script>
-		<script src="src/rubikscube.js"></script>
-		<script src="src/cubeconsole.js"></script>
-        <script>
-            
-            function onTest(){
-                var a = [];
-                a.push(10); a.push(2); a.push(3);                
-                console.log(10 in a);
-            }
-        </script>
-        <button onclick="onTest()">Click me</button>
-    </body>
+<head>
+  <meta charset="utf-8">
+  <title>Rubik's Cube Tests</title>
+
+  <link rel="shortcut icon" type="image/png" href="jasmine-standalone-2.4.1/lib/jasmine-2.4.1/jasmine_favicon.png">
+  <link rel="stylesheet" href="jasmine-standalone-2.4.1/lib/jasmine-2.4.1/jasmine.css">
+
+  <script src="jasmine-standalone-2.4.1/lib/jasmine-2.4.1/jasmine.js"></script>
+  <script src="jasmine-standalone-2.4.1/lib/jasmine-2.4.1/jasmine-html.js"></script>
+  <script src="jasmine-standalone-2.4.1/lib/jasmine-2.4.1/boot.js"></script>
+
+  <!-- include source files here... -->
+  <script src="unittest/Player.js"></script>
+  <script src="unittest/Song.js"></script>
+
+  <!-- include spec files here... -->
+  <script src="unittest/SpecHelper.js"></script>
+  <script src="unittest/PlayerSpec.js"></script>
+
+</head>
+
+<body>
+</body>
 </html>
