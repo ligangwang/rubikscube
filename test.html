@@ -15,11 +15,8 @@
             
             function onTest(){
                 var a = [];
-                a.push(2);
-                a.push(1);
-                
-                console.log(a.sort());
-                console.log(a.some(x=>x==3));
+                a.push(10); a.push(2); a.push(3);                
+                console.log(10 in a);
             }
         </script>
         <button onclick="onTest()">Click me</button>

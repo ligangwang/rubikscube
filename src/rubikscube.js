@@ -136,7 +136,7 @@ RubiksCube.prototype = {
 	
 	set_is_in_solver_mode : function(enabled){
 		if(enabled){
-			this.time_per_animation_move = 200; //in ms
+			this.time_per_animation_move = 100; //in ms
 		}else
 			this.time_per_animation_move = 600;
 		this.is_in_solver_mode = enabled;
@@ -167,7 +167,6 @@ RubiksCube.prototype = {
 		);
 		*/
 		//console.log(this.cubies);
-		console.log(this.cube_state);
 	},
 	
 	_get_facet_from_location_face : function(loc, loc_face_name){
