@@ -108,14 +108,9 @@ Cubie.prototype = {
 var RubiksCube = function(){
 	this.cube_config = new CubeConfig(); 
 	this.position = new THREE.Vector3(0,0,0);
-	this.cube_state = new CubeState(this.cube_config.init_state);
+	this.cube_state = new CubeState(SINGMASTER_SOLVED_STATE);
 	this.cubies = [];           //cubies index storing cubies per location(cubicle)
-	this.cube_config.cubie_configs.forEach(
-		x=>{	
-				this._add_cubie(x.name, x.position); 
-				var loc = sort(x.name);
-				loc.split('').forEach(x=>CUBE_FACES[x].push(loc))
-			});
+	this.cube_config.cubie_configs.forEach(x=>this._add_cubie(x.name, x.position));
 	
 	this.is_in_animation = false;
 	this.commands = "";
@@ -128,7 +123,6 @@ RubiksCube.prototype = {
 	_add_cubie : function(name, position){
 		var cubie = new Cubie(name, position, this.cube_config)
 		this.cubies[cubie.name] = cubie;
-		//this.cube_state.add_cubie_state(name, name)
 	},
 	
 	add_contents_to_scene : function(scene){

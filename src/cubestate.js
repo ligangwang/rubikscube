@@ -1,5 +1,8 @@
 var face_pairs = [["F", "B"], ["L", "R"], ["U", "D"]];
+var SINGMASTER_SOLVED_STATE = "UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR";
+var SINGMASTER_SOLVED_SLOTS = SINGMASTER_SOLVED_STATE.split(' ');
 var FACE_NAMES = [].concat.apply([], face_pairs);
+var ALL_SLOTS = SINGMASTER_SOLVED_SLOTS.concat(FACE_NAMES);
 var OPPOSITE_FACE_NAMES = [];
 face_pairs.forEach(x=>{
     OPPOSITE_FACE_NAMES[x[0]] = x[1];
@@ -59,6 +62,10 @@ var get_command_from_path = function(rotate_face, from_side, to_side){
 
 CUBE_FACES = [];	//cube index storing locations(cubicles) per face 
 FACE_NAMES.forEach(x=>CUBE_FACES[x] = []);
+ALL_SLOTS.forEach(x=>{
+        var loc = sort(x);
+		loc.split('').forEach(x=>CUBE_FACES[x].push(loc))
+    });
 
 var reverse_op = function(op){
     if (op.length == 1)
@@ -111,12 +118,6 @@ CubieState.prototype = {
         var locs = facets.map(x=>this.facet_to_loc_map[x]);
         return new CubieState(facets.join(''), locs.join(''));
     },
-
-     get_state : function(){
-        var facets = Object.keys(this.facet_to_loc_map);
-        var locs = facets.map(x=>this.facet_to_loc_map[x]);
-        return locs.join('') + ":" + facets.join('');
-    }
    
 }
 
@@ -124,18 +125,16 @@ var CubeState = function(state){
     this.loc_to_cubie_map = [];
     this.cubie_to_loc_map = [];
     this.init_state = state;
-    var orientations = state.split(':')
-    var locs = orientations[0].split(' '); 
-    var cubies = orientations[1].split(' ');
-    if (locs.length != cubies.length) throw "Length not matched for cubicle and cubie";
-    locs.forEach((x, i)=>this.add_cubie_state(locs[i], cubies[i]));
+    var cubies = state.split(' ').concat(FACE_NAMES);
+    if (ALL_SLOTS.length != cubies.length) throw "Length not matched for cubicle and cubie";
+    ALL_SLOTS.forEach((x, i)=>this.add_cubie_state(ALL_SLOTS[i], cubies[i]));
 }
 
 CubeState.prototype = {
     get_state : function(){
-        var cubicle_cubies  = Object.keys(this.loc_to_cubie_map)
-            .map(x=>this.loc_to_cubie_map[x].get_state().split(':'));
-        return cubicle_cubies.map(x=>x[0]).join(' ') + ":" + cubicle_cubies.map(x=>x[1]).join(' ') 
+        return SINGMASTER_SOLVED_SLOTS
+            .map(x=>x.split('').map(o=>this.loc_to_cubie_map[sort(x)].loc_to_facet_map[o]))
+            .map(x=>x.join('')).join(' ');
     },
 
 

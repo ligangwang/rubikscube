@@ -5,29 +5,30 @@
 var CubeConfig = function(){
 	this.axis_y = new THREE.Vector3(0, 1, 0);
 	this.origin = new THREE.Vector3(0, 0, 0);
+
 	this.cubie_configs = [
-		{name: "FRU", position: new THREE.Vector3(200,200,200)},
-		{name: "FUL", position: new THREE.Vector3(-200,200,200)}, 
-		{name: "RBU", position: new THREE.Vector3(200,200,-200)}, 
+		{name: "UFR", position: new THREE.Vector3(200,200,200)},
+		{name: "ULF", position: new THREE.Vector3(-200,200,200)}, 
+		{name: "URB", position: new THREE.Vector3(200,200,-200)}, 
 		{name: "DRF", position: new THREE.Vector3(200,-200,200)}, 	
-		{name: "FLD", position: new THREE.Vector3(-200,-200,200)},
+		{name: "DFL", position: new THREE.Vector3(-200,-200,200)},
 		{name: "UBL", position: new THREE.Vector3(-200,200,-200)},
 		{name: "DBR", position: new THREE.Vector3(200,-200,-200)},
 		{name: "DLB", position: new THREE.Vector3(-200,-200,-200)},
 	
-		{name: "FU", position: new THREE.Vector3(0,200,200)},
-		{name: "RU", position: new THREE.Vector3(200,200,0)},
-		{name: "BU", position: new THREE.Vector3(0,200,-200)},
-		{name: "LU", position: new THREE.Vector3(-200,200,0)},
+		{name: "UF", position: new THREE.Vector3(0,200,200)},
+		{name: "UR", position: new THREE.Vector3(200,200,0)},
+		{name: "UB", position: new THREE.Vector3(0,200,-200)},
+		{name: "UL", position: new THREE.Vector3(-200,200,0)},
 	
 		{name: "FR", position: new THREE.Vector3(200,0,200)},
-		{name: "RB", position: new THREE.Vector3(200,0,-200)},
+		{name: "BR", position: new THREE.Vector3(200,0,-200)},
 		{name: "BL", position: new THREE.Vector3(-200,0,-200)},
-		{name: "LF", position: new THREE.Vector3(-200,0,200)},
-		{name: "FD", position: new THREE.Vector3(0,-200,200)},
-		{name: "RD", position: new THREE.Vector3(200,-200,0)},
-		{name: "BD", position: new THREE.Vector3(0,-200,-200)},
-		{name: "LD", position: new THREE.Vector3(-200,-200,0)},
+		{name: "FL", position: new THREE.Vector3(-200,0,200)},
+		{name: "DF", position: new THREE.Vector3(0,-200,200)},
+		{name: "DR", position: new THREE.Vector3(200,-200,0)},
+		{name: "DB", position: new THREE.Vector3(0,-200,-200)},
+		{name: "DL", position: new THREE.Vector3(-200,-200,0)},
 	
 		{name: "F", position: new THREE.Vector3(0,0,200)},
 		{name: "D", position: new THREE.Vector3(0,-200,0)},
@@ -36,8 +37,6 @@ var CubeConfig = function(){
 		{name: "L", position: new THREE.Vector3(-200,0,0)},
 		{name: "U", position: new THREE.Vector3(0,200,0)},
 	];	
-	var locs = this.cubie_configs.map(x=>x.name).join(' ');
-	this.init_state = locs + ":" + locs.slice();
 
 	this.facet_configs = [];
 	this.facet_configs["R"] = {color:0xff0000, bottom_left:new THREE.Vector3(100, -100, 100)};
