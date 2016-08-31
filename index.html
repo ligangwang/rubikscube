@@ -87,16 +87,12 @@ function onChangeTransparent(value){
 	transparent = value;
 	opacity = (100-transparent)/100;
 	cube_console.cube.set_opacity(opacity);
-	//console.log(opacity);
 }
 
 function on_bottom_up_solver(){
 	cube_console.cube.set_is_in_solver_mode(true);
-	cube_state = cube_console.cube.get_cube_state();
-	//console.log(cube_state.is_solved());
-	var solver = new BottomupSolver(cube_state);
+	var solver = new BottomupSolver(cube_console.cube.get_cube_state_string());
 	solver.solve().forEach(op=>cube_console.cube.command(op));
-	//console.log(solver._determine_the_first_layer_to_solve());
 }
 		</script>
 	</body>

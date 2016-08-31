@@ -108,9 +108,15 @@ Cubie.prototype = {
 var RubiksCube = function(){
 	this.cube_config = new CubeConfig(); 
 	this.position = new THREE.Vector3(0,0,0);
-	this.cube_state = new CubeState();
+	this.cube_state = new CubeState(this.cube_config.init_state);
 	this.cubies = [];           //cubies index storing cubies per location(cubicle)
-	this.cube_config.cubie_configs.forEach(x=>this._add_cubie(x.name, x.position));
+	this.cube_config.cubie_configs.forEach(
+		x=>{	
+				this._add_cubie(x.name, x.position); 
+				var loc = sort(x.name);
+				loc.split('').forEach(x=>CUBE_FACES[x].push(loc))
+			});
+	
 	this.is_in_animation = false;
 	this.commands = "";
 	this.enable_animation = true;
@@ -122,7 +128,7 @@ RubiksCube.prototype = {
 	_add_cubie : function(name, position){
 		var cubie = new Cubie(name, position, this.cube_config)
 		this.cubies[cubie.name] = cubie;
-		this.cube_state.add_cubie_state(name, name)
+		//this.cube_state.add_cubie_state(name, name)
 	},
 	
 	add_contents_to_scene : function(scene){
@@ -354,5 +360,9 @@ RubiksCube.prototype = {
 
 	get_cube_state : function(){
 		return this.cube_state.clone();
-	}
+	},
+
+	get_cube_state_string : function(){
+		return this.cube_state.get_state();
+	},
 }

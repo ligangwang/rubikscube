@@ -35,7 +35,7 @@ for(var op_key in ROTATION_FACE_CYCLES){
     ROTATION_FACE_MAP[op_key.repeat(2)][op_face] = op_face; 
 }
 
-console.log(ROTATION_FACE_MAP);
+//console.log(ROTATION_FACE_MAP);
 var get_command_from_path = function(rotate_face, from_side, to_side){
     cycle = ROTATION_FACE_CYCLES[rotate_face];
     start_pos = cycle.indexOf(from_side);
@@ -107,35 +107,52 @@ CubieState.prototype = {
     },
 
     clone : function(){
-        facets = Object.keys(this.facet_to_loc_map);
-        locs = facets.map(x=>this.facet_to_loc_map[x]);
+        var facets = Object.keys(this.facet_to_loc_map);
+        var locs = facets.map(x=>this.facet_to_loc_map[x]);
         return new CubieState(facets.join(''), locs.join(''));
+    },
+
+     get_state : function(){
+        var facets = Object.keys(this.facet_to_loc_map);
+        var locs = facets.map(x=>this.facet_to_loc_map[x]);
+        return locs.join('') + ":" + facets.join('');
     }
+   
 }
 
-var CubeState = function(){
+var CubeState = function(state){
     this.loc_to_cubie_map = [];
     this.cubie_to_loc_map = [];
-
+    this.init_state = state;
+    var orientations = state.split(':')
+    var locs = orientations[0].split(' '); 
+    var cubies = orientations[1].split(' ');
+    if (locs.length != cubies.length) throw "Length not matched for cubicle and cubie";
+    locs.forEach((x, i)=>this.add_cubie_state(locs[i], cubies[i]));
 }
 
 CubeState.prototype = {
-    add_cubie_state : function(facet_orientation, loc_orientation){
-        loc = sort(loc_orientation);
-        cubie_state = new CubieState(facet_orientation, loc_orientation);
+    get_state : function(){
+        var cubicle_cubies  = Object.keys(this.loc_to_cubie_map)
+            .map(x=>this.loc_to_cubie_map[x].get_state().split(':'));
+        return cubicle_cubies.map(x=>x[0]).join(' ') + ":" + cubicle_cubies.map(x=>x[1]).join(' ') 
+    },
+
+
+    add_cubie_state : function(loc_orientation, facet_orientation){
+        var loc = sort(loc_orientation);
+        var cubie_state = new CubieState(facet_orientation, loc_orientation);
         this.loc_to_cubie_map[loc] = cubie_state;
         this.cubie_to_loc_map[cubie_state.name] = loc;
-
-        loc.split('').forEach(x=>CUBE_FACES[x].push(loc))
     },
 
     rotate : function(op){
-        loc_to_cubie_map = [];
+        var loc_to_cubie_map = [];
         var op_face_name = op.slice(0, 1);
         CUBE_FACES[op_face_name].forEach(from_loc=>
             {
                 cubie_state = this.loc_to_cubie_map[from_loc];
-                to_loc = cubie_state.rotate(op);
+                var to_loc = cubie_state.rotate(op);
                 this.cubie_to_loc_map[cubie_state.name] = to_loc;
                 loc_to_cubie_map[to_loc] = cubie_state;
             }
@@ -163,9 +180,11 @@ CubeState.prototype = {
     },
 
     clone : function(){
-        cube_state = new CubeState();
-        Object.keys(this.loc_to_cubie_map).forEach(loc=>cube_state.loc_to_cubie_map[loc] = this.loc_to_cubie_map[loc].clone());
-        Object.keys(this.cubie_to_loc_map).forEach(name=>cube_state.cubie_to_loc_map[name] = this.cubie_to_loc_map[name]);
-        return cube_state;
+        return new CubeState(this.get_state());
+        //console.log(cube_state);
+        //cube_state.loc_to_cubie_map = [];
+        //cube_state.cubie_to_loc_map = [];
+        //Object.keys(this.loc_to_cubie_map).forEach(loc=>cube_state.loc_to_cubie_map[loc] = this.loc_to_cubie_map[loc].clone());
+        //Object.keys(this.cubie_to_loc_map).forEach(name=>cube_state.cubie_to_loc_map[name] = this.cubie_to_loc_map[name]);
     }
 }

@@ -37,7 +37,7 @@ var CubeConfig = function(){
 		{name: "U", position: new THREE.Vector3(0,200,0)},
 	];	
 	var locs = this.cubie_configs.map(x=>x.name).join(' ');
-	this.init_state = locs + ":" + locs.slice()
+	this.init_state = locs + ":" + locs.slice();
 
 	this.facet_configs = [];
 	this.facet_configs["R"] = {color:0xff0000, bottom_left:new THREE.Vector3(100, -100, 100)};
