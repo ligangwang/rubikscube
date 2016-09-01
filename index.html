@@ -39,6 +39,7 @@
 			Rotate Down Face: <a onclick="onCommand('D')" href="#">D</a>
 			Rotate Down Face Counterclockwise: <a onclick="onCommand('D\'')" href="#">D'</a><br/>
 			Set transparency: <input type="range" min="0" max="100" step="1" value="0" onchange="onChangeTransparent(this.value)"><br/>
+			<br/>
 			Solver: <a onclick="on_bottom_up_solver()" href="#">Solve with bottom up method (beginner's method)</a>
 			
 		</div>		
@@ -51,7 +52,7 @@
 		<script src="src/transformer.js"></script>
 		<script src="src/rubikscube.js"></script>
 		<script src="src/cubeconsole.js"></script>
-		<script src="src/cubesolvers.js"></script>
+		<script src="src/bottomupsolver.js"></script>
 		<script>
 var cube_console = new CubeConsole(SINGMASTER_SOLVED_STATE);
 cube_console.render();
@@ -76,8 +77,7 @@ function onDocumentKeyPress ( event ) {
 		var ch = String.fromCharCode( keyCode );
 		cube_console.input_char(ch);
 	}
-}
-	
+}	
 
 function onCommand(op){
 	cube_console.cube.command(op);
