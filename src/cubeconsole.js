@@ -2,8 +2,8 @@
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
 
-var CubeConsole = function(){
-	this.cube = new RubiksCube();
+var CubeConsole = function(initial_state){
+	this.cube = new RubiksCube(initial_state);
 	this.cube.enable_animation = true;
 	this.input_text = "";
 	this.input_timer = null;

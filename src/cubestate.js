@@ -80,6 +80,7 @@ var reverse_op = function(op){
 
 var CubieState = function(facet_orientation, loc_orientation){
     this.name = sort(facet_orientation);
+    this.cubicle = sort(loc_orientation);
     this.loc_to_facet_map = [];
     this.facet_to_loc_map = [];
     facet_orientation.split('').forEach((x, i)=>{
@@ -101,8 +102,8 @@ CubieState.prototype = {
             }
         );
         this.loc_to_facet_map = loc_to_facet_map;
-
-        return Object.keys(loc_to_facet_map).sort().join(''); //returning new location
+        this.cubicle = Object.keys(loc_to_facet_map).sort().join('');
+        return this.cubicle; //returning new location
     },
 
 	is_solved : function(){
@@ -180,10 +181,5 @@ CubeState.prototype = {
 
     clone : function(){
         return new CubeState(this.get_state());
-        //console.log(cube_state);
-        //cube_state.loc_to_cubie_map = [];
-        //cube_state.cubie_to_loc_map = [];
-        //Object.keys(this.loc_to_cubie_map).forEach(loc=>cube_state.loc_to_cubie_map[loc] = this.loc_to_cubie_map[loc].clone());
-        //Object.keys(this.cubie_to_loc_map).forEach(name=>cube_state.cubie_to_loc_map[name] = this.cubie_to_loc_map[name]);
     }
 }

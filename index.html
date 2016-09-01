@@ -53,7 +53,7 @@
 		<script src="src/cubeconsole.js"></script>
 		<script src="src/cubesolvers.js"></script>
 		<script>
-var cube_console = new CubeConsole();
+var cube_console = new CubeConsole(SINGMASTER_SOLVED_STATE);
 cube_console.render();
 
 document.addEventListener( 'keypress', onDocumentKeyPress, false );
@@ -91,7 +91,7 @@ function onChangeTransparent(value){
 
 function on_bottom_up_solver(){
 	cube_console.cube.set_is_in_solver_mode(true);
-	var solver = new BottomupSolver(cube_console.cube.get_cube_state_string());
+	var solver = new BottomupSolver(cube_console.cube.get_state());
 	solver.solve().forEach(op=>cube_console.cube.command(op));
 }
 		</script>

@@ -6,45 +6,56 @@ var CubeConfig = function(){
 	this.axis_y = new THREE.Vector3(0, 1, 0);
 	this.origin = new THREE.Vector3(0, 0, 0);
 
-	this.cubie_configs = [
-		{name: "UFR", position: new THREE.Vector3(200,200,200)},
-		{name: "ULF", position: new THREE.Vector3(-200,200,200)}, 
-		{name: "URB", position: new THREE.Vector3(200,200,-200)}, 
-		{name: "DRF", position: new THREE.Vector3(200,-200,200)}, 	
-		{name: "DFL", position: new THREE.Vector3(-200,-200,200)},
-		{name: "UBL", position: new THREE.Vector3(-200,200,-200)},
-		{name: "DBR", position: new THREE.Vector3(200,-200,-200)},
-		{name: "DLB", position: new THREE.Vector3(-200,-200,-200)},
-	
-		{name: "UF", position: new THREE.Vector3(0,200,200)},
-		{name: "UR", position: new THREE.Vector3(200,200,0)},
-		{name: "UB", position: new THREE.Vector3(0,200,-200)},
-		{name: "UL", position: new THREE.Vector3(-200,200,0)},
-	
-		{name: "FR", position: new THREE.Vector3(200,0,200)},
-		{name: "BR", position: new THREE.Vector3(200,0,-200)},
-		{name: "BL", position: new THREE.Vector3(-200,0,-200)},
-		{name: "FL", position: new THREE.Vector3(-200,0,200)},
-		{name: "DF", position: new THREE.Vector3(0,-200,200)},
-		{name: "DR", position: new THREE.Vector3(200,-200,0)},
-		{name: "DB", position: new THREE.Vector3(0,-200,-200)},
-		{name: "DL", position: new THREE.Vector3(-200,-200,0)},
-	
-		{name: "F", position: new THREE.Vector3(0,0,200)},
-		{name: "D", position: new THREE.Vector3(0,-200,0)},
-		{name: "B", position: new THREE.Vector3(0,0,-200)},
-		{name: "R", position: new THREE.Vector3(200,0,0)},
-		{name: "L", position: new THREE.Vector3(-200,0,0)},
-		{name: "U", position: new THREE.Vector3(0,200,0)},
-	];	
+	//the fixed place holding for cubies
+	this.cubicle_positions = [];
+
+	this.cubicle_positions[sort("UFR")] = new THREE.Vector3(200,200,200);
+	this.cubicle_positions[sort("ULF")] = new THREE.Vector3(-200,200,200); 
+	this.cubicle_positions[sort("URB")] = new THREE.Vector3(200,200,-200); 
+	this.cubicle_positions[sort("DRF")] = new THREE.Vector3(200,-200,200); 	
+	this.cubicle_positions[sort("DFL")] = new THREE.Vector3(-200,-200,200);
+	this.cubicle_positions[sort("UBL")] = new THREE.Vector3(-200,200,-200);
+	this.cubicle_positions[sort("DBR")] = new THREE.Vector3(200,-200,-200);
+	this.cubicle_positions[sort("DLB")] = new THREE.Vector3(-200,-200,-200);
+
+	this.cubicle_positions[sort("UF")] = new THREE.Vector3(0,200,200);
+	this.cubicle_positions[sort("UR")] = new THREE.Vector3(200,200,0);
+	this.cubicle_positions[sort("UB")] = new THREE.Vector3(0,200,-200);
+	this.cubicle_positions[sort("UL")] = new THREE.Vector3(-200,200,0);
+
+	this.cubicle_positions[sort("FR")] = new THREE.Vector3(200,0,200);
+	this.cubicle_positions[sort("BR")] = new THREE.Vector3(200,0,-200);
+	this.cubicle_positions[sort("BL")] = new THREE.Vector3(-200,0,-200);
+	this.cubicle_positions[sort("FL")] = new THREE.Vector3(-200,0,200);
+	this.cubicle_positions[sort("DF")] = new THREE.Vector3(0,-200,200);
+	this.cubicle_positions[sort("DR")] = new THREE.Vector3(200,-200,0);
+	this.cubicle_positions[sort("DB")] = new THREE.Vector3(0,-200,-200);
+	this.cubicle_positions[sort("DL")] = new THREE.Vector3(-200,-200,0);
+
+	this.cubicle_positions["F"] = new THREE.Vector3(0,0,200);
+	this.cubicle_positions["D"] = new THREE.Vector3(0,-200,0);
+	this.cubicle_positions["B"] = new THREE.Vector3(0,0,-200);
+	this.cubicle_positions["R"] = new THREE.Vector3(200,0,0);
+	this.cubicle_positions["L"] = new THREE.Vector3(-200,0,0);
+	this.cubicle_positions["U"] = new THREE.Vector3(0,200,0);
+
 
 	this.facet_configs = [];
-	this.facet_configs["R"] = {color:0xff0000, bottom_left:new THREE.Vector3(100, -100, 100)};
-	this.facet_configs["U"] = {color:0xffffff, bottom_left:new THREE.Vector3(-100, 100, 100)};
-	this.facet_configs["F"] = {color:0x00ff00, bottom_left:new THREE.Vector3(-100, -100, 100)};
-	this.facet_configs["L"] = {color:0xffa500, bottom_left:new THREE.Vector3(-100, -100, 100)};
-	this.facet_configs["D"] = {color:0xffff00, bottom_left:new THREE.Vector3(100, -100, 100)};
-	this.facet_configs["B"] = {color:0x0000ff, bottom_left:new THREE.Vector3(100, -100, -100)};
+	this.facet_configs["R"] = {color:0xff0000};
+	this.facet_configs["U"] = {color:0xffffff};
+	this.facet_configs["F"] = {color:0x00ff00};
+	this.facet_configs["L"] = {color:0xffa500};
+	this.facet_configs["D"] = {color:0xffff00};
+	this.facet_configs["B"] = {color:0x0000ff};
+
+	//facelet is the place to hold facet. (cubicle:facelet)=>(cubie:facet)
+	this.facelet_configs = [];
+	this.facelet_configs["R"] = {bottom_left:new THREE.Vector3(100, -100, 100)};
+	this.facelet_configs["U"] = {bottom_left:new THREE.Vector3(-100, 100, 100)};
+	this.facelet_configs["F"] = {bottom_left:new THREE.Vector3(-100, -100, 100)};
+	this.facelet_configs["L"] = {bottom_left:new THREE.Vector3(-100, -100, 100)};
+	this.facelet_configs["D"] = {bottom_left:new THREE.Vector3(100, -100, 100)};
+	this.facelet_configs["B"] = {bottom_left:new THREE.Vector3(100, -100, -100)};
 
 	//regular rotation config (on folded state)
 	this.rotation_on_folded_configs = [];

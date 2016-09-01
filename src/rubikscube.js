@@ -1,9 +1,8 @@
 /**
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
-var Facet = function(name, cubie, color){
+var Facet = function(name, color){
 	this.name = name;
-	this.cubie = cubie;
 	this.color = color;
 }
 
@@ -55,7 +54,7 @@ Facet.prototype = {
 	},
 	
 	clone: function(){
-		var facet = new Facet(this.cubie, this.color);
+		var facet = new Facet(this.name, this.color);
 		facet.geometry = this.geometry.clone();
 		facet.meshes = [facet.create_square_mesh(this.square_mesh.material.opacity), facet.create_edge_mesh()]
 		return facet;
@@ -65,28 +64,30 @@ Facet.prototype = {
 		this.meshes.forEach(x=>scene.add(x));
 	},
 	
-	remove_from_scene : function(scene){
+	remove_contents_from_scene : function(scene){
 		this.meshes.forEach(x=>scene.remove(x));
 	},
 }
 
-var Cubie = function(name, position, cube_config){
-	this.name = sort(name);
-	this.cube_config = cube_config;
-
-	var facets = [];
-	name.split('').forEach(face_name=>
-		{
-			var facet = new Facet(face_name, this, cube_config.facet_configs[face_name].color);
-			facet.construct(cube_config.facet_configs[face_name].bottom_left, cube_config.rotation_on_folded_configs[face_name].axis);
-			facets[face_name] = facet;
-		}
-	);
-	this.facets = facets;
-	this.set_position(position);
+var Cubie = function(name){
+	this.name = name;
 }
 
 Cubie.prototype = {
+	set_cubie_state : function(cubie_state, cube_config){
+		var facets = [];
+		cubie_state.name.split('').forEach(facet_name=>
+			{
+				var facet = new Facet(facet_name, cube_config.facet_configs[facet_name].color);
+				var facelet_name = cubie_state.facet_to_loc_map[facet_name];
+				facet.construct(cube_config.facelet_configs[facelet_name].bottom_left, cube_config.rotation_on_folded_configs[facelet_name].axis);
+				facets[facet_name] = facet;
+			}
+		);
+		this.facets = facets;
+		this.set_position(cube_config.cubicle_positions[cubie_state.cubicle]);
+	},
+
 	set_position : function(position){
 		this.position = position;
 		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.set_position(position));
@@ -102,16 +103,19 @@ Cubie.prototype = {
 	
 	add_contents_to_scene : function(scene){
 		Object.keys(this.facets).forEach(x=>this.facets[x].add_contents_to_scene(scene));
+	},
+
+	remove_contents_from_scene : function(scene){
+		Object.keys(this.facets).forEach(x=>this.facets[x].remove_contents_from_scene(scene));
 	}
 }
 
-var RubiksCube = function(){
+var RubiksCube = function(state){
 	this.cube_config = new CubeConfig(); 
 	this.position = new THREE.Vector3(0,0,0);
-	this.cube_state = new CubeState(SINGMASTER_SOLVED_STATE);
 	this.cubies = [];           //cubies index storing cubies per location(cubicle)
-	this.cube_config.cubie_configs.forEach(x=>this._add_cubie(x.name, x.position));
 	
+	this.set_cube_state(new CubeState(state));
 	this.is_in_animation = false;
 	this.commands = "";
 	this.enable_animation = true;
@@ -120,14 +124,28 @@ var RubiksCube = function(){
 }
 
 RubiksCube.prototype = {
-	_add_cubie : function(name, position){
-		var cubie = new Cubie(name, position, this.cube_config)
-		this.cubies[cubie.name] = cubie;
+	set_cube_state : function(cube_state){
+		Object.keys(this.cube_config.cubicle_positions)
+			.forEach(x=>this.set_cubie_state(cube_state.loc_to_cubie_map[x], this.cube_config));
+		this.cube_state = cube_state;
 	},
-	
+
+	set_cubie_state : function(cubie_state){
+		this.remove_cubie(cubie_state.name);
+		this.cubies[cubie_state.name] = new Cubie(cubie_state.name);
+		this.cubies[cubie_state.name].set_cubie_state(cubie_state, this.cube_config);
+	},
+
 	add_contents_to_scene : function(scene){
 		this.scene = scene;
 		Object.keys(this.cubies).forEach(x=>this.cubies[x].add_contents_to_scene(scene));
+	},
+
+	remove_cubie : function(cubie_name){
+		if (cubie_name in this.cubies){
+			this.cubies[cubie_name].remove_contents_from_scene(this.scene);
+			delete this.cubies[cubie_name];
+		}
 	},
 	
 	set_opacity : function(opacity){
@@ -143,30 +161,8 @@ RubiksCube.prototype = {
 	},
 
 	test : function(){
-		//this.time_per_animation_move = 20000;
-		/*
-		rotate_configs = [
-			{transform_type: "teleporter", cubie: "DFR", facet: "D", origin: 300,  out_bound:new THREE.Vector3(300, 0, -1600), in_bound:new THREE.Vector3(1100, 0, 0), target:500,  axis:AxisX, out_direction:1, in_direction:-1},
-			{transform_type: "teleporter", cubie: "DF", facet: "D", origin: 100,  out_bound:new THREE.Vector3(300, 0, -1600), in_bound:new THREE.Vector3(1100, 0, 0), target:700,  axis:AxisX, out_direction:1, in_direction:-1},
-		];
-		var transformers = []; 
-		for(rotate_config of rotate_configs){
-			transformers.push(new Teleporter(this.scene, this.cubies[rotate_config.cubie].facets[rotate_config.facet], rotate_config.origin, 
-					rotate_config.out_bound, rotate_config.in_bound, rotate_config.target,  rotate_config.axis, rotate_config.out_direction, rotate_config.in_direction));
-		}
-		this._with_animation(
-			function(args, total, delta){ 
-				for (var transformer of transformers){
-					transformer.transform(total, delta);
-				}
-				//console.log(total);
-			}, 
-			{cube: this},
-			function(args){ 
-			}
-		);
-		*/
-		//console.log(this.cubies);
+		this.remove_cubie_from_scene("FRU");
+		//console.log(this.get_state());
 	},
 	
 	_get_facet_from_location_face : function(loc, loc_face_name){
@@ -356,7 +352,7 @@ RubiksCube.prototype = {
 		return this.cube_state.clone();
 	},
 
-	get_cube_state_string : function(){
+	get_state : function(){
 		return this.cube_state.get_state();
 	},
 }
