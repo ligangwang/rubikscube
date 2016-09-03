@@ -110,10 +110,11 @@ Cubie.prototype = {
 	}
 }
 
-var RubiksCube = function(state){
+var RubiksCube = function(state, scene){
+	this.scene = scene;
 	this.cube_config = new CubeConfig(); 
 	this.position = new THREE.Vector3(0,0,0);
-	this.cubies = [];           //cubies index storing cubies per location(cubicle)
+	this.cubies = [];           
 	
 	this.set_cube_state(new CubeState(state));
 	this.is_in_animation = false;
@@ -128,6 +129,7 @@ RubiksCube.prototype = {
 		Object.keys(this.cube_config.cubicle_positions)
 			.forEach(x=>this.set_cubie_state(cube_state.loc_to_cubie_map[x], this.cube_config));
 		this.cube_state = cube_state;
+		this.add_contents_to_scene(this.scene);
 	},
 
 	set_cubie_state : function(cubie_state){
@@ -161,8 +163,9 @@ RubiksCube.prototype = {
 	},
 
 	test : function(){
-		this.remove_cubie_from_scene("FRU");
-		//console.log(this.get_state());
+		//this.remove_cubie("FRU");
+		console.log(this.get_state());
+		//this.set_cube_state(new CubeState("LF UR UB UL RF DR DB DL FU FD BR BL LFU URB UBL LDF RUF RFD DLB DBR"));
 	},
 	
 	_get_facet_from_location_face : function(loc, loc_face_name){
@@ -205,11 +208,11 @@ RubiksCube.prototype = {
 			{cube:this},
 			function(args){ 
 				cube.cube_state.rotate(op);
+				if (cube.cube_state.is_solved() && cube.is_in_solver_mode){
+					cube.set_is_in_solver_mode(false);
+				}
 			}
 		);
-
-		if (this.cube_state.is_solved() && this.is_in_solver_mode)
-			this.set_is_in_solver_mode(false);
 	},
 	
 	

@@ -3,7 +3,8 @@
  **/
 
 var CubeConsole = function(initial_state){
-	this.cube = new RubiksCube(initial_state);
+	var scene = new THREE.Scene();
+	this.cube = new RubiksCube(initial_state, scene);
 	this.cube.enable_animation = true;
 	this.input_text = "";
 	this.input_timer = null;
@@ -11,8 +12,7 @@ var CubeConsole = function(initial_state){
 
 CubeConsole.prototype = {
 	render : function(){
-		var scene = new THREE.Scene();
-		this.cube.add_contents_to_scene(scene);
+		var scene = this.cube.scene;
 		var renderer = new THREE.WebGLRenderer({ antialias: true });
 		var width = 800, height = 600;
 		renderer.setSize( width, height );
@@ -56,11 +56,13 @@ CubeConsole.prototype = {
 	},
 
 	input_char : function(ch){
-		ch = ch.toUpperCase();	
-		var prev_char = this.input_text.substr(this.input_text.length - 1)
-		if (this.cube.is_valid_input_char(prev_char, ch)){
-			this.input_text += ch;
-			this.reset_input_timer();
+		if (!this.cube.is_in_solver_mode) {
+			ch = ch.toUpperCase();	
+			var prev_char = this.input_text.substr(this.input_text.length - 1)
+			if (this.cube.is_valid_input_char(prev_char, ch)){
+				this.input_text += ch;
+				this.reset_input_timer();
+			}
 		}
 	},
 }
