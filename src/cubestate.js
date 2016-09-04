@@ -28,6 +28,7 @@ for (var op of FACE_NAMES){
     ROTATION_FACE_CYCLES[op + "'"] = ROTATION_FACE_CYCLES[op].slice().reverse();
 }
 
+OPERATIONS = Object.keys(ROTATION_FACE_CYCLES);
 ROTATION_FACE_MAP = [];
 for(var op_key in ROTATION_FACE_CYCLES){
     ROTATION_FACE_MAP[op_key] = _convert_cycle_to_map(ROTATION_FACE_CYCLES[op_key], 1);
@@ -76,6 +77,10 @@ var reverse_op = function(op){
     }
     else
         throw "not supported op: " + op;
+}
+
+function get_random_ops(){
+    return Array.from(Array(20).keys()).map(x=>OPERATIONS[get_random(0, OPERATIONS.length - 1)]);
 }
 
 var CubieState = function(facet_orientation, loc_orientation){

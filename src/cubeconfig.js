@@ -71,8 +71,6 @@ var CubeConfig = function(){
 	this.rotation_on_folded_configs["L'"] = {axis:new THREE.Vector3(-1, 0, 0), angle: Math.PI/2};
 	this.rotation_on_folded_configs["D'"] = {axis:new THREE.Vector3(0, -1, 0), angle: Math.PI/2};
 	this.rotation_on_folded_configs["B'"] = {axis:new THREE.Vector3(0, 0, -1), angle: Math.PI/2};
-	this.operations = [];
-	for(var key in this.rotation_on_folded_configs) { this.operations.push(key);}
 	
 	//config used for folding action 
 	this.facet_folding_config = [];

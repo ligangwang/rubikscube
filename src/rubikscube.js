@@ -116,7 +116,7 @@ var RubiksCube = function(state, scene){
 	this.position = new THREE.Vector3(0,0,0);
 	this.cubies = [];           
 	
-	this.set_cube_state(new CubeState(state));
+	this.set_cube_state(state);
 	this.is_in_animation = false;
 	this.commands = "";
 	this.enable_animation = true;
@@ -125,7 +125,8 @@ var RubiksCube = function(state, scene){
 }
 
 RubiksCube.prototype = {
-	set_cube_state : function(cube_state){
+	set_cube_state : function(state){
+		var cube_state = new CubeState(state);
 		Object.keys(this.cube_config.cubicle_positions)
 			.forEach(x=>this.set_cubie_state(cube_state.loc_to_cubie_map[x], this.cube_config));
 		this.cube_state = cube_state;
@@ -339,17 +340,10 @@ RubiksCube.prototype = {
 	randomize : function(){
 		var saved = this.enable_animation;
 		this.enable_animation = false;
-		for (var i = 0; i < 20; i++){
-			var op_i = this._get_random(0, this.cube_config.operations.length - 1);
-			var op = this.cube_config.operations[op_i];
-			this.rotate(op);
-		}
+		get_random_ops().forEach(x=>this.rotate(x));
 		this.enable_animation = saved; 	
 	},
 	
-	_get_random:function(min, max) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
-	},
 
 	get_cube_state : function(){
 		return this.cube_state.clone();
