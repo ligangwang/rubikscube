@@ -188,3 +188,64 @@ CubeState.prototype = {
         return new CubeState(this.get_state());
     }
 }
+
+function is_valid_cube_state(state){
+    var slots = SINGMASTER_SOLVED_SLOTS.map(x=>sort(x));
+    var cubies = state.split(' ').map(x=>sort(x));
+    if (!eq_set(new Set(slots), new Set(cubies))) return false;
+    var cycles = get_cycles(slots, cubies);
+    var swaps = cycles.map(x=>x.length - 1).reduce((a,b)=>a+b, 0);
+    if (swaps%2!=0) return false;
+    if (sum_of_corner(state) % 3 !=0) return false;
+    if (sum_of_edge(state) % 2 != 0) return false;
+    return true;
+}
+
+function sum_of_edge(state){
+    var edge_cubies = state.split(' ').filter(x=>x.length==2);
+    var fb_edges = edge_cubies.filter(x=>x.indexOf("U") < 0 && x.indexOf("D") < 0)
+    var ud_edges = edge_cubies.filter(x=>x.indexOf("U") >= 0 || x.indexOf("D") >= 0)
+    var edge_values = [];
+    ["U", "D"].forEach(f=>edge_values = edge_values.concat(ud_edges.map(x=>x.indexOf(f)).filter(x=>x>=0)));
+    ["F", "B"].forEach(f=>edge_values = edge_values.concat(fb_edges.map(x=>x.indexOf(f)).filter(x=>x>=0)));
+    return edge_values.reduce((a,b)=>a+b, 0);
+}
+
+function sum_of_corner(state){
+    var corner_cubies = state.split(' ').filter(x=>x.length==3);
+    var corner_values = [];
+    corner_values = corner_values.concat(corner_cubies.map(x=>Math.max(x.indexOf("U"))).filter(x=>x>=0));
+    corner_values = corner_values.concat(corner_cubies.map(x=>Math.max(x.indexOf("D"))).filter(x=>x>=0));
+    return corner_values.reduce((a,b)=>a+b, 0);
+}
+
+function get_cycles(slots, cubies){
+    var cubie_to_loc_map = [];
+    cubies.map((x,i)=>[cubies[i], slots[i]]).filter(x=>x[0] != x[1]).forEach(x=>cubie_to_loc_map[x[0]] = x[1]);
+    //from 0 to 1
+    var counts = 0;    
+    var cubie_names = Object.keys(cubie_to_loc_map);
+    if (cubie_names.length == 0) return [];
+    var cycle = [];
+    var cycles = [];
+    cubie_names.forEach(x=>{
+        if (x in cubie_to_loc_map){
+            var loc = cubie_to_loc_map[x];
+            delete cubie_to_loc_map[x];
+            if (cycle.length == 0) {
+                cycles.push(cycle);
+                cycle.push(x);
+            }
+            while (cycle[0]!=loc){
+                counts++;
+                if (counts>100) throw "error wrong somethere";
+                cycle.push(loc);
+                var loc1 = cubie_to_loc_map[loc];
+                delete cubie_to_loc_map[loc];
+                loc = loc1;
+            }
+            cycle = [];
+        }
+    });
+    return cycles;    
+}

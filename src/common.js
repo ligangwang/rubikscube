@@ -78,3 +78,9 @@ var Transform = function(){
 function get_random(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+function eq_set(as, bs){
+	if (as.size!=bs.size) return false;
+	for(var a of as) if (!bs.has(a)) return false;
+	return true;
+}
