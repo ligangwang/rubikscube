@@ -1,9 +1,10 @@
 /**
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
-var Facet = function(name, color){
+var Facet = function(name, color, cubie){
 	this.name = name;
 	this.color = color;
+	this.cubie = cubie;
 }
 
 Facet.prototype = {
@@ -25,6 +26,7 @@ Facet.prototype = {
 		this.square_mesh = this.create_square_mesh(1);
 		this.edge_mesh = this.create_edge_mesh();
 		this.meshes = [this.square_mesh, this.edge_mesh];
+		this.meshes.forEach(x=>x.facet = this);
 	},
 
 	create_square_mesh : function(opacity){
@@ -54,7 +56,7 @@ Facet.prototype = {
 	},
 	
 	clone: function(){
-		var facet = new Facet(this.name, this.color);
+		var facet = new Facet(this.name, this.color, this.cubie);
 		facet.geometry = this.geometry.clone();
 		facet.meshes = [facet.create_square_mesh(this.square_mesh.material.opacity), facet.create_edge_mesh()]
 		return facet;
@@ -78,7 +80,7 @@ Cubie.prototype = {
 		var facets = [];
 		cubie_state.name.split('').forEach(facet_name=>
 			{
-				var facet = new Facet(facet_name, cube_config.facet_configs[facet_name].color);
+				var facet = new Facet(facet_name, cube_config.facet_configs[facet_name].color, this);
 				var facelet_name = cubie_state.facet_to_loc_map[facet_name];
 				facet.construct(cube_config.facelet_configs[facelet_name].bottom_left, cube_config.rotation_on_folded_configs[facelet_name].axis);
 				facets[facet_name] = facet;
@@ -164,9 +166,9 @@ RubiksCube.prototype = {
 	},
 
 	test : function(){
-		//this.remove_cubie("FRU");
+		
 		console.log(this.get_state());
-		//this.set_cube_state(new CubeState("LF UR UB UL RF DR DB DL FU FD BR BL LFU URB UBL LDF RUF RFD DLB DBR"));
+		
 	},
 	
 	_get_facet_from_location_face : function(loc, loc_face_name){
@@ -174,12 +176,7 @@ RubiksCube.prototype = {
 		return this.cubies[cubie_state.name].facets[cubie_state.loc_to_facet_map[loc_face_name]];
 	},
 
-	rotate : function(op){
-		if (this.is_in_animation){
-			console.log("the cube is rotating. quiting ".concat(op))
-			return;
-		}
-		cube = this;
+	_get_transformers : function(op){
 		var op_face_name = op.slice(0, 1);
 		var rotate_cubies = this._get_cubies(op_face_name);
 		var  transformers = [];
@@ -201,7 +198,16 @@ RubiksCube.prototype = {
 				}
 			}
 		}
-		
+		return transformers;
+	},
+
+	rotate : function(op){
+		if (this.is_in_animation){
+			console.log("the cube is rotating. quiting ".concat(op))
+			return;
+		}
+		var transformers = this._get_transformers(op);	
+		var cube = this;	
 		this._with_animation(
 			function(args, total, delta){ 
 				transformers.forEach(x=>x.transform(total, delta));
@@ -239,7 +245,11 @@ RubiksCube.prototype = {
 			args.cube._do_next_command();
 		}
 	},
- 
+	
+	is_active : function(){
+		return this.is_in_animation || this.is_in_solver_mode || !this.is_folded;
+	},
+
 	_get_cubies : function(loc_face_name){
 		return this.cube_state.get_cubie_states(loc_face_name).map(cs=>this.cubies[cs.name]);
 	},

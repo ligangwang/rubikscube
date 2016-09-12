@@ -46,7 +46,8 @@
 			
 			Beginner's method solver, layer by layer: <a onclick="on_bottom_up_solver()" href="#">V</a>
 		</div>		
-		<div>
+		<div id="cube"></div>
+		<div><a href="mailto:cube@dingn.com?Subject=about%20rubiks%20cube" target="_top">Comments and Questions ?</a> </div>
 		<script src="lib/three.min.js"></script>
 		<script src="lib/controls/OrbitControls.js"></script>
 		<script src="lib/Tween.js"></script>
@@ -58,12 +59,28 @@
 		<script src="src/cubeconsole.js"></script>
 		<script src="src/bottomupsolver.js"></script>
 		<script>
-var cube_console = new CubeConsole(SINGMASTER_SOLVED_STATE);
+var cube_element = document.getElementById("cube");
+var cube_console = new CubeConsole(SINGMASTER_SOLVED_STATE, cube_element);
 cube_console.render();
 
 document.addEventListener( 'keypress', onDocumentKeyPress, false );
 document.addEventListener( 'keydown', onDocumentKeyDown, false );	
-			
+cube_console.renderer.domElement.addEventListener('mousemove', onMouseMove, false);
+cube_console.renderer.domElement.addEventListener('mousedown', onMouseDown, false);
+cube_console.renderer.domElement.addEventListener('mouseup', onMouseUp, false);
+
+function onMouseUp(event){
+	cube_console.on_mouse_up(event);
+}	
+
+function onMouseMove(event){
+	cube_console.on_mouse_move(event);
+}	
+
+function onMouseDown(event){
+	cube_console.on_mouse_down(event);
+}	
+
 function onDocumentKeyDown( event ) {
 	var keyCode = event.keyCode;
 	if ( keyCode == 8 ) {
@@ -116,10 +133,7 @@ function set_initial_position(){
 	}
 }
 		</script>
-		</div>
+		
 
-		<div><a href="mailto:cube@dingn.com?Subject=about%20rubiks%20cube" target="_top">Comments and Questions ?</a> 
-
-		</div>
 	</body>
 </html>

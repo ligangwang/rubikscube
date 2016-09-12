@@ -83,7 +83,6 @@ Teleporter.prototype = {
 	},
 	
 	_delete_clone : function(){
-		//console.log("deleting clone...");
 		this.facet_clone.remove_contents_from_scene(this.scene);
 		delete this.facet_clone;
 		this.facet_clone = null;
