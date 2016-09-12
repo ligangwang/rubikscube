@@ -13,7 +13,7 @@ This is a 3D 3x3x3 Rubik's Cube written in Javascript for Web and Mobile.
 
 
 
-**[Demo here.](http://ligangwang.github.io/rubikscube/)**
+**[Demo here.](http://dingn.com/)**
 <br/>
 <br/>
 <br/>
