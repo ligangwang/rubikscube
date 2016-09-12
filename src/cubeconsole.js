@@ -24,16 +24,8 @@ var CubeConsole = function(initial_state, parent_control){
 	this.camera.position.y = 1200;
 	this.camera.position.x = 1200;
 
-	this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-	this.controls.enableDamping = true;
-	this.controls.dampingFactor = 0.25;
-	this.controls.enableZoom = false;
-	this.is_in_drag_rotation = false;
-	this.raycaster = new THREE.Raycaster();
-	this.mouse = new THREE.Vector2();
-	this.rotate_axis = [AxisX, AxisY, AxisZ];
-	this.rotate_axis_plane = this.rotate_axis.map(x=>x.plane(300));
-	this.rotate_axis_index = -1;
+	this.interactive = new CubeInteractive(this.cube, this.camera, this.renderer.domElement);
+
 }
 
 CubeConsole.prototype = {
@@ -41,7 +33,7 @@ CubeConsole.prototype = {
 		var scene = this.cube.scene;
 		var renderer = this.renderer;
 		var camera = this.camera;
-		var controls = this.controls;
+		var controls = this.interactive.controls;
 		function animate() {
 			TWEEN.update();
 			controls.update();
@@ -79,64 +71,4 @@ CubeConsole.prototype = {
 			}
 		}
 	},
-
-	on_mouse_up : function(event){
-		this.is_in_drag_rotation = false;
-	},
-
-	on_mouse_move : function(event){
-		if (this.is_in_drag_rotation){
-			this._set_mouse_position(this.mouse, event);
-			this.raycaster.setFromCamera(this.mouse, this.camera);
-			if (this.rotate_axis_index < 0){
-				var max_angle = -1;
-				this.rotate_axis.forEach((axis, i)=>{
-					var intersect = this.raycaster.ray.intersectPlane(this.rotate_axis_plane[i]);
-					var angle = Math.abs(axis.get_vector2(intersect).angle() - axis.get_vector2(this.intersects[i]).angle());
-					if (angle>max_angle){
-						max_angle = angle;
-						this.rotate_axis_index = i;
-					}
-				});
-				this.intersect = this.intersects[this.rotate_axis_index];
-				//console.log("determined: ", this.rotate_axis_index, max_angle);
-			}else{
-				var intersect = this.raycaster.ray.intersectPlane(this.rotate_axis_plane[this.rotate_axis_index]);
-				//do rotate angle
-				var axis = this.rotate_axis[this.rotate_axis_index];
-				var angle = axis.get_vector2(intersect).angle() - axis.get_vector2(this.intersect).angle()
-				//console.log(this.rotate_axis_index, angle);
-
-				this.intersect = intersect;
-			}
-		}
-	},
-
-	_set_mouse_position : function(mouse, event){
-    	var p = element_position(this.renderer.domElement);
-		var x = event.pageX - p.x;
-		var y = event.pageY - p.y; 
-		mouse.x = (x / this.renderer.domElement.offsetWidth) * 2 - 1;
-		mouse.y = -(y / this.renderer.domElement.offsetHeight) * 2 + 1;
-	},
-
-	on_mouse_down : function(event){
-		if (this.cube.is_active()) return;
-		var mouse = new THREE.Vector2();
-		this._set_mouse_position(mouse, event);
-		var raycaster = new THREE.Raycaster();
-		raycaster.setFromCamera(mouse, this.camera);
-		var intersects = raycaster.intersectObjects(this.cube.scene.children);
-		if (intersects.length > 0){
-			this.is_in_drag_rotation = true;
-			this.intersects = this.rotate_axis.map((axis,i)=>raycaster.ray.intersectPlane(this.rotate_axis_plane[i]));
-			this.rotate_axis_index = -1;
-			//console.log(intersect.object.facet.name, intersect.object.facet.cubie.name);
-			//console.log(raycaster.ray, intersect.point);
-		}else{
-			this.is_in_drag_rotation = false;
-		}
-		this.controls.enabled = !this.is_in_drag_rotation;
-	}
-
 }

@@ -166,9 +166,7 @@ RubiksCube.prototype = {
 	},
 
 	test : function(){
-		
 		console.log(this.get_state());
-		
 	},
 	
 	_get_facet_from_location_face : function(loc, loc_face_name){
@@ -176,13 +174,14 @@ RubiksCube.prototype = {
 		return this.cubies[cubie_state.name].facets[cubie_state.loc_to_facet_map[loc_face_name]];
 	},
 
-	_get_transformers : function(op){
+	_get_transformers : function(op, init_angle = 0, total_angle = null){
 		var op_face_name = op.slice(0, 1);
 		var rotate_cubies = this._get_cubies(op_face_name);
 		var  transformers = [];
 		if (this.is_folded){
 			var rotate_axis = this.cube_config.rotation_on_folded_configs[op].axis;
-			var rotate_angle = this.cube_config.rotation_on_folded_configs[op].angle;
+			var rotate_angle = (total_angle===null)? this.cube_config.rotation_on_folded_configs[op].angle : total_angle;
+			rotate_angle -= init_angle;
 			transformers.push(new Rotater(rotate_cubies, this.cube_config.origin, rotate_axis, rotate_angle));
 		}else{//rotating on unfolded state
 			for(var rotate_config of this.cube_config.rotation_on_unfolded_configs[op]){
@@ -201,12 +200,16 @@ RubiksCube.prototype = {
 		return transformers;
 	},
 
-	rotate : function(op){
+	rotate_angle : function(op, angle){
+		this._get_transformers(op, 0, angle).forEach(x=>x.transform(1,1));
+	},
+
+	rotate : function(op, init_angle = 0){
 		if (this.is_in_animation){
 			console.log("the cube is rotating. quiting ".concat(op))
 			return;
 		}
-		var transformers = this._get_transformers(op);	
+		var transformers = this._get_transformers(op, init_angle, null);	
 		var cube = this;	
 		this._with_animation(
 			function(args, total, delta){ 

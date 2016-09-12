@@ -54,7 +54,7 @@ var AxisY = {
 	},
 
 	get_vector2 : function(obj){
-		return new THREE.Vector2(obj.x, obj.z);
+		return new THREE.Vector2(obj.z, obj.x);
 	},
 
 	plane : function(d){
