@@ -69,9 +69,9 @@ document.addEventListener( 'keydown', onDocumentKeyDown, false );
 cube_console.renderer.domElement.addEventListener('mousedown', onMouseDown, false);
 cube_console.renderer.domElement.addEventListener('mousemove', onMouseMove, false);
 cube_console.renderer.domElement.addEventListener('mouseup', onMouseUp, false);
-cube_console.renderer.domElement.addEventListener('touchstart', onMouseDown, false);
-cube_console.renderer.domElement.addEventListener('touchmove', onMouseMove, false);
-cube_console.renderer.domElement.addEventListener('touchend', onMouseUp, false);
+cube_console.renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+cube_console.renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+cube_console.renderer.domElement.addEventListener('touchend', onTouchEnd, false);
 
 function onMouseUp(event){
 	cube_console.interactive.on_mouse_up(event);
@@ -83,6 +83,17 @@ function onMouseMove(event){
 
 function onMouseDown(event){
 	cube_console.interactive.on_mouse_down(event);
+}	
+function onTouchStart(event){
+	cube_console.interactive.on_touch_start(event);
+}	
+
+function onTouchMove(event){
+	cube_console.interactive.on_touch_move(event);
+}	
+
+function onTouchEnd(event){
+	cube_console.interactive.on_touch_end(event);
 }	
 
 function onDocumentKeyDown( event ) {

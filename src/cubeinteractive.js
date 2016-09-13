@@ -53,6 +53,7 @@ CubeInteractive.prototype = {
 				var max_angle = -1;
 				Object.keys(this.intersects).forEach(face_name=>{
 					var intersect = this.raycaster.ray.intersectPlane(this.rotate_face_planes[face_name]);
+					//console.log("setting ", face_name, intersect, this.rotate_face_planes[face_name], event);
 					var face = this.rotate_faces[face_name];
                     var angle = this._get_small_angle(face.get_vector2(intersect).angle() - face.get_vector2(this.intersects[face_name]).angle());
 					angle = Math.abs(angle);
@@ -62,7 +63,7 @@ CubeInteractive.prototype = {
 					}
 				});
 				this.intersect = this.intersects[this.rotate_face_name];
-				console.log("determined: ", this.rotate_face_name, max_angle);
+				//console.log("determined: ", this.rotate_face_name, max_angle);
 			}else{
 				var intersect = this.raycaster.ray.intersectPlane(this.rotate_face_planes[this.rotate_face_name]);
 				//do rotate angle
@@ -89,6 +90,7 @@ CubeInteractive.prototype = {
 	},
 
 	on_mouse_down : function(event){
+		//console.log("down: ", event);
 		if (this.cube.is_active()) return;
 		var mouse = new THREE.Vector2();
 		this._set_mouse_position(mouse, event);
@@ -104,9 +106,9 @@ CubeInteractive.prototype = {
 			var facelet_name = this.cube.cube_state.loc_to_cubie_map[cubicle_name].facet_to_loc_map[facet_name];
 			
 			var rotate_face_names = cubicle_name.split('').filter(x=>x!=facelet_name);
-			//console.log(facelet_name, cubicle_name, rotate_face_names, this.rotate_face_planes);
 			this.intersects = [];
 			rotate_face_names.forEach(x=>this.intersects[x] = raycaster.ray.intersectPlane(this.rotate_face_planes[x]));
+			//console.log("selected: ", facelet_name, cubicle_name, this.intersects, event);
 			this.rotate_face_name = null;
             this.init_angle = 0;
 			
@@ -114,5 +116,17 @@ CubeInteractive.prototype = {
 			this.is_in_drag_rotation = false;
 		}
 		this.controls.enabled = !this.is_in_drag_rotation;
+	},
+
+	on_touch_start : function(event){
+		this.on_mouse_down(event.touches[0]);
+	},
+
+	on_touch_move : function(event){
+		this.on_mouse_move(event.touches[0]);
+	},
+
+	on_touch_end : function(event){
+		this.on_mouse_up(event.touches[0]);
 	}
 }
