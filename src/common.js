@@ -22,18 +22,6 @@ var AxisX = {
 	adjust : function(obj, v){
 		obj.x += v;	
 	},
-
-	get_vector2 : function(obj){
-		return new THREE.Vector2(obj.y, obj.z);
-	},
-
-	plane : function(d){
-		return new THREE.Plane(new THREE.Vector3(-1, 0, 0), d);
-	},
-	
-	get_op : function(){
-		return "R";
-	}
 };
 
 var AxisY = {
@@ -52,18 +40,6 @@ var AxisY = {
 	adjust : function(obj, v){
 		obj.y += v;	
 	},
-
-	get_vector2 : function(obj){
-		return new THREE.Vector2(obj.z, obj.x);
-	},
-
-	plane : function(d){
-		return new THREE.Plane(new THREE.Vector3(0,-1, 0), d);
-	},
-	
-	get_op : function(){
-		return "U";
-	}
 };
 
 var AxisZ = {
@@ -82,7 +58,9 @@ var AxisZ = {
 	adjust : function(obj, v){
 		obj.z += v;	
 	},
+};
 
+var F = {
 	get_vector2 : function(obj){
 		return new THREE.Vector2(obj.x, obj.y);
 	},
@@ -93,6 +71,76 @@ var AxisZ = {
 	
 	get_op : function(){
 		return "F";
+	}
+};
+
+var B = {
+	get_vector2 : function(obj){
+		return new THREE.Vector2(obj.y, obj.x);
+	},
+
+	plane : function(d){
+		return new THREE.Plane(new THREE.Vector3(0,0,1), d);
+	},
+	
+	get_op : function(){
+		return "B";
+	}
+};
+
+var U = {
+	get_vector2 : function(obj){
+		return new THREE.Vector2(obj.z, obj.x);
+	},
+
+	plane : function(d){
+		return new THREE.Plane(new THREE.Vector3(0, -1, 0), d);
+	},
+	
+	get_op : function(){
+		return "U";
+	}
+};
+
+var D = {
+	get_vector2 : function(obj){
+		return new THREE.Vector2(obj.x, obj.z);
+	},
+
+	plane : function(d){
+		return new THREE.Plane(new THREE.Vector3(0, 1, 0), d);
+	},
+	
+	get_op : function(){
+		return "D";
+	}
+};
+
+var R = {
+	get_vector2 : function(obj){
+		return new THREE.Vector2(obj.y, obj.z);
+	},
+
+	plane : function(d){
+		return new THREE.Plane(new THREE.Vector3(-1, 0, 0), d);
+	},
+	
+	get_op : function(){
+		return "R";
+	}
+};
+
+var L = {
+	get_vector2 : function(obj){
+		return new THREE.Vector2(obj.z, obj.y);
+	},
+
+	plane : function(d){
+		return new THREE.Plane(new THREE.Vector3(1, 0, 0), d);
+	},
+	
+	get_op : function(){
+		return "L";
 	}
 };
 
