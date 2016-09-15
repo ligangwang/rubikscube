@@ -8,7 +8,53 @@ var Facet = function(name, color, cubie){
 }
 
 Facet.prototype = {
-	construct : function(bottom_left, axis){
+	construct : function(bottom_left, axis, position){
+		//if (this.name == "R")
+		this.meshes = this.create_facet_meshes(200, 40, position);
+		//else
+		//this.meshes = [this.square_mesh, this.edge_mesh];
+		this.meshes.forEach(x=>x.facet = this);
+	},
+
+	create_facet_meshes : function(width, radius, position){
+		var shape = new THREE.Shape();
+		var height = width;
+		var x = -width/2; y = x;
+	
+		shape.moveTo( x, y + radius );
+		shape.lineTo( x, y + height - radius );
+		shape.quadraticCurveTo( x, y + height, x + radius, y + height );
+		shape.lineTo( x + width - radius, y + height) ;
+		shape.quadraticCurveTo( x + width, y + height, x + width, y + height - radius );
+		shape.lineTo( x + width, y + radius );
+		shape.quadraticCurveTo( x + width, y, x + width - radius, y );
+		shape.lineTo( x + radius, y );
+		shape.quadraticCurveTo( x, y, x, y + radius );
+
+		this.geometry = new THREE.ShapeGeometry( shape );
+
+		var m = new THREE.Matrix4();
+		if (this.name == "L" || this.name == "R") {
+			//mesh.rotation.set(0, Math.PI/2, 0);
+			m.makeRotationAxis(new THREE.Vector3(0,1,0), Math.PI/2);
+			this.geometry.applyMatrix(m);
+		}
+		else if (this.name == "U" || this.name == "D"){
+			//mesh.rotation.set(Math.PI/2, 0, 0);
+			m.makeRotationAxis(new THREE.Vector3(1,0,0), Math.PI/2);
+			this.geometry.applyMatrix(m);
+		}
+		m.makeTranslation(position.x, position.y, position.z);
+		this.geometry.applyMatrix(m);
+
+		return [this.create_facet_mesh()];
+	},
+
+	create_facet_mesh : function(){
+		return new THREE.Mesh( this.geometry, new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide }));
+	},
+
+	create_composite_meshes : function(){
 		var vertices = [];
 		var point0 = bottom_left.clone();
 		var point1 = point0.clone().applyAxisAngle(axis, Math.PI/2);
@@ -23,10 +69,9 @@ Facet.prototype = {
 		this.geometry.vertices = vertices;
 		this.geometry.faces.push(new THREE.Face3(0, 1, 2));
 		this.geometry.faces.push(new THREE.Face3(2, 3, 0));
-		this.square_mesh = this.create_square_mesh(1);
-		this.edge_mesh = this.create_edge_mesh();
-		this.meshes = [this.square_mesh, this.edge_mesh];
-		this.meshes.forEach(x=>x.facet = this);
+		square_mesh = this.create_square_mesh(1);
+		edge_mesh = this.create_edge_mesh();
+		return [square_mesh, edge_mesh];
 	},
 
 	create_square_mesh : function(opacity){
@@ -58,7 +103,8 @@ Facet.prototype = {
 	clone: function(){
 		var facet = new Facet(this.name, this.color, this.cubie);
 		facet.geometry = this.geometry.clone();
-		facet.meshes = [facet.create_square_mesh(this.square_mesh.material.opacity), facet.create_edge_mesh()]
+		//facet.meshes = [facet.create_square_mesh(1), facet.create_edge_mesh()]
+		facet.meshes = [facet.create_facet_mesh()];
 		return facet;
 	},
 	
@@ -82,7 +128,7 @@ Cubie.prototype = {
 			{
 				var facet = new Facet(facet_name, cube_config.facet_configs[facet_name].color, this);
 				var facelet_name = cubie_state.facet_to_loc_map[facet_name];
-				facet.construct(cube_config.facelet_configs[facelet_name].bottom_left, cube_config.rotation_on_folded_configs[facelet_name].axis);
+				facet.construct(cube_config.facelet_configs[facelet_name].bottom_left, cube_config.rotation_on_folded_configs[facelet_name].axis, cube_config.facelet_configs[facelet_name].position);
 				facets[facet_name] = facet;
 			}
 		);
@@ -166,7 +212,12 @@ RubiksCube.prototype = {
 	},
 
 	test : function(){
-		console.log(this.get_state());
+		//console.log(this.get_state());
+		
+		this.scene.add( x_normal_face_mesh );
+		this.scene.add( y_normal_face_mesh );
+		this.scene.add( z_normal_face_mesh );
+		y_normal_face_mesh.material.color.setHex(0xff0000);
 	},
 	
 	_get_facet_from_location_face : function(loc, loc_face_name){
@@ -324,7 +375,7 @@ RubiksCube.prototype = {
 				this.randomize();
 			}
 			else if(op == "O"){
-				this.fold();
+				//this.fold();
 			}
 			else if(op == "T"){
 				this.test();

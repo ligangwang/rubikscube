@@ -11,18 +11,20 @@ var CubeConsole = function(initial_state, parent_control){
 	this.render_width = 800;
 	this.render_height = 600;
 	this.renderer = new THREE.WebGLRenderer({ antialias: true });
-	//this.renderer.setPixelRatio( window.devicePixelRatio );
+	this.renderer.setPixelRatio( window.devicePixelRatio );
 	this.renderer.setSize( this.render_width, this.render_height );
-	this.renderer.setClearColor(0x606060);
+	this.renderer.setClearColor(0x262626);
 	
 	//this.renderer.autoClear = false;
 	this.parent_control.appendChild( this.renderer.domElement );
+	this.stats = new Stats();
+	this.parent_control.appendChild( this.stats.dom );
 
 	this.camera = new THREE.PerspectiveCamera( 50, this.render_width / this.render_height, 0.1, 10000 );
 	this.camera.lookAt(this.cube.scene.position);
-	this.camera.position.z = 1200;
-	this.camera.position.y = 1200;
-	this.camera.position.x = 1200;
+	this.camera.position.z = 1000;
+	this.camera.position.y = 1000;
+	this.camera.position.x = 1000;
 
 	this.interactive = new CubeInteractive(this.cube, this.camera, this.renderer.domElement);
 
@@ -34,9 +36,11 @@ CubeConsole.prototype = {
 		var renderer = this.renderer;
 		var camera = this.camera;
 		var controls = this.interactive.controls;
+		var stats = this.stats;
 		function animate() {
 			TWEEN.update();
 			controls.update();
+			stats.update();
 			renderer.render( scene, camera );
 			requestAnimationFrame( animate );
 		}
