@@ -66,11 +66,12 @@
 		<script src="src/bottomupsolver.js"></script>
 		<script src="lib/dat.gui.min.js"></script>
 		<script src="lib/stats.min.js"></script>
+		<script src="lib/slice.0.1.0.min.js"></script>
 		<script>
 var cube_element = document.getElementById("cube");
 var cube_console = new CubeConsole(SINGMASTER_SOLVED_STATE, cube_element);
 cube_console.render();
-
+//cube_console.input_char("O");
 document.addEventListener( 'keypress', onDocumentKeyPress, false );
 document.addEventListener( 'keydown', onDocumentKeyDown, false );	
 cube_console.renderer.domElement.addEventListener('mousedown', onMouseDown, false);
@@ -79,6 +80,7 @@ cube_console.renderer.domElement.addEventListener('mouseup', onMouseUp, false);
 cube_console.renderer.domElement.addEventListener('touchstart', onTouchStart, false);
 cube_console.renderer.domElement.addEventListener('touchmove', onTouchMove, false);
 cube_console.renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+
 
 function onMouseUp(event){
 	cube_console.interactive.on_mouse_up(event);

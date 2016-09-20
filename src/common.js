@@ -11,8 +11,15 @@ var AxisX = {
 		return obj.x;
 	},
 	
+	get_vector3 : function(value){
+		return new THREE.Vector3(value, 0, 0);
+	},
+
 	set: function(obj, v){
 		obj.x = v;
+	},
+	add: function(obj, v){
+		obj.x += v;
 	},
 	
 	make_translation: function(m, v){
@@ -28,9 +35,17 @@ var AxisY = {
 	get: function (obj) {
 		return obj.y;
 	},
+
+	get_vector3 : function(value){
+		return new THREE.Vector3(0, value, 0);
+	},
 	
 	set: function(obj, v){
 		obj.y = v;
+	},
+
+	add: function(obj, v){
+		obj.y += v;
 	},
 	   
 	make_translation: function(m, v){
@@ -47,8 +62,16 @@ var AxisZ = {
 		return obj.z;
 	},
 	
+	get_vector3 : function(value){
+		return new THREE.Vector3(0, 0, value);
+	},
+
 	set: function(obj, v){
 		obj.z = v;
+	},
+
+	add: function(obj, v){
+		obj.z += v;
 	},
 	
 	make_translation: function(m, v){

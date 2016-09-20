@@ -22,12 +22,19 @@ var CubeConsole = function(initial_state, parent_control){
 
 	this.camera = new THREE.PerspectiveCamera( 50, this.render_width / this.render_height, 0.1, 10000 );
 	this.camera.lookAt(this.cube.scene.position);
-	this.camera.position.z = 1000;
-	this.camera.position.y = 1000;
-	this.camera.position.x = 1000;
+	this.camera.position.z = 1200;
+	this.camera.position.y = 1200;
+	this.camera.position.x = 1200;
 
 	this.interactive = new CubeInteractive(this.cube, this.camera, this.renderer.domElement);
-
+/*	
+	var plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), -200);
+	var geom = new THREE.SphereGeometry(100, 100, 100);
+	geom = sliceGeometry(geom, plane);
+	var material = new THREE.MeshBasicMaterial({ wireframe: false });
+	var mesh = new THREE.Mesh(geom, material);
+	this.cube.scene.add(mesh);	
+*/	
 }
 
 CubeConsole.prototype = {
@@ -67,7 +74,7 @@ CubeConsole.prototype = {
 
 	input_char : function(ch){
 		if (!this.cube.is_in_solver_mode) {
-			ch = ch.toUpperCase();	
+			ch = ch.toUpperCase();
 			var prev_char = this.input_text.substr(this.input_text.length - 1)
 			if (this.cube.is_valid_input_char(prev_char, ch)){
 				this.input_text += ch;

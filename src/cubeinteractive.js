@@ -9,7 +9,7 @@ var CubeInteractive = function(cube, camera, element){
 	[R, L, U, D, F, B].forEach(x=>this.rotate_faces[x.get_op()] = x);
 	this.rotate_face_planes = [];
 	Object.keys(this.rotate_faces).forEach(x=>{
-			this.rotate_face_planes[x]=this.rotate_faces[x].plane(300);
+			this.rotate_face_planes[x]=(cube.is_folded)?this.rotate_faces[x].plane(300): U.plane(300);
 		}
 	);
 	this.rotate_face_name = null;
@@ -72,6 +72,7 @@ CubeInteractive.prototype = {
                 angle = this._get_small_angle(angle);
 				//console.log("rotating ", this.rotate_axis_index, angle, intersect, this.intersect);
 				var op = rotate_face.get_op();
+				if (angle > 0) op += "'";
 				this.cube.rotate_angle(op, angle);
                 this.init_angle += angle;
                 this.last_angle = angle;
@@ -91,7 +92,7 @@ CubeInteractive.prototype = {
 
 	on_mouse_down : function(event){
 		//console.log("down: ", event);
-		if (this.cube.is_active()) return;
+		if (this.cube.is_active() || !this.cube.is_folded) return;
 		var mouse = new THREE.Vector2();
 		this._set_mouse_position(mouse, event);
 		var raycaster = new THREE.Raycaster();
@@ -105,11 +106,12 @@ CubeInteractive.prototype = {
 			var cubicle_name = this.cube.cube_state.cubie_to_loc_map[cubie_name];
 			var facelet_name = this.cube.cube_state.loc_to_cubie_map[cubicle_name].facet_to_loc_map[facet_name];
 			
-			var rotate_face_names = cubicle_name.split('').filter(x=>x!=facelet_name);
+			var rotate_face_names = this.cube.is_folded? cubicle_name.split('').filter(x=>x!=facelet_name) : [facelet_name];
 			this.intersects = [];
 			rotate_face_names.forEach(x=>this.intersects[x] = raycaster.ray.intersectPlane(this.rotate_face_planes[x]));
-			//console.log("selected: ", facelet_name, cubicle_name, this.intersects, event);
+		//console.log("selected: ", facelet_name, cubicle_name, this.intersects, event);
 			this.rotate_face_name = null;
+			
             this.init_angle = 0;
 			
 		}else{

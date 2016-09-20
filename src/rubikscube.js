@@ -1,22 +1,62 @@
 /**
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
-var Facet = function(name, color, cubie){
+var SquareFrame = 0;
+var SquareFrameless = 1;
+var Facet = function(name, color, cubie, bottom_left, axis, position){
+	this.shape = SquareFrameless;
 	this.name = name;
 	this.color = color;
 	this.cubie = cubie;
+	this.bottom_left = bottom_left;
+	this.axis = axis;
+	this.position = position.clone();
+	this.create_geometry();
+	this.create_meshes();
+	this.set_facet_to_meshes();
+	this.clone_geometry_in_split = null;
+	this.split_mesh1 = null;
+	this.split_geometry1 = null;
+	this.split_mesh2 = null;
+	this.split_geometry2 = null;
 }
 
 Facet.prototype = {
-	construct : function(bottom_left, axis, position){
-		//if (this.name == "R")
-		this.meshes = this.create_facet_meshes(200, 40, position);
-		//else
-		//this.meshes = [this.square_mesh, this.edge_mesh];
+	set_facet_to_meshes : function(){
 		this.meshes.forEach(x=>x.facet = this);
 	},
 
-	create_facet_meshes : function(width, radius, position){
+	create_geometry : function(){
+		if (this.shape === SquareFrameless){
+			this.create_facet_geometry();
+		}
+		else{
+			this.create_composite_geometry();
+		}
+	},
+
+	create_meshes : function (){
+		if (this.shape === SquareFrameless){
+			this.create_facet_meshes();
+		}
+		else{
+			this.create_composite_meshes();
+		}
+	},
+
+	set_geometry : function(geometry){
+		var old_geometry = this.geometry;
+		this.geometry = geometry;
+		this.meshes.forEach(x=>{
+			x.geometry = geometry;
+		});
+		old_geometry.dispose();
+		this.geometry.verticesNeedUpdate = true;
+	},
+
+	create_facet_geometry : function(){
+		var width = 200, radius = 40;
+		var position = this.position;
 		var shape = new THREE.Shape();
 		var height = width;
 		var x = -width/2; y = x;
@@ -37,29 +77,56 @@ Facet.prototype = {
 		if (this.name == "L" || this.name == "R") {
 			//mesh.rotation.set(0, Math.PI/2, 0);
 			m.makeRotationAxis(new THREE.Vector3(0,1,0), Math.PI/2);
-			this.geometry.applyMatrix(m);
+			this.apply_matrix(m);
 		}
 		else if (this.name == "U" || this.name == "D"){
 			//mesh.rotation.set(Math.PI/2, 0, 0);
 			m.makeRotationAxis(new THREE.Vector3(1,0,0), Math.PI/2);
-			this.geometry.applyMatrix(m);
+			this.apply_matrix(m);
 		}
 		m.makeTranslation(position.x, position.y, position.z);
-		this.geometry.applyMatrix(m);
-
-		return [this.create_facet_mesh()];
+		this.apply_matrix(m);
 	},
 
-	create_facet_mesh : function(){
-		return new THREE.Mesh( this.geometry, new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide }));
+	create_facet_meshes : function(){
+		this.meshes = [new THREE.Mesh( this.geometry, new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide }))];
 	},
 
-	create_composite_meshes : function(){
+	update_split_geometries : function(scene, split_geometry1, split_geometry2){
+		if (this.split_mesh1 === null){
+			this.split_geometry1 = split_geometry1;
+			this.split_mesh1 = new THREE.Mesh( split_geometry1, new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide }));
+			scene.add(this.split_mesh1);
+			this.split_geometry2 = split_geometry2;
+			this.split_mesh2 = new THREE.Mesh( split_geometry2, new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide }));
+			scene.add(this.split_mesh2);
+			this.remove_contents_from_scene(scene);
+		}
+		this.split_mesh1.geometry = split_geometry1;
+		this.split_mesh2.geometry = split_geometry2;
+	},
+
+	remove_split_geometries : function(scene){
+		if (this.split_mesh1 !== null){
+			scene.remove(this.split_mesh1);
+			scene.remove(this.split_mesh2);
+			this.add_contents_to_scene(scene);
+			this.split_mesh1 = null;
+			this.split_mesh2 = null;
+			this.split_geometry1.dispose();
+			this.split_geometry2.dispose();
+			this.split_geometry1 = null;
+			this.split_geometry2 = null;
+		}
+	},
+	
+
+	create_composite_geometry : function(){
 		var vertices = [];
-		var point0 = bottom_left.clone();
-		var point1 = point0.clone().applyAxisAngle(axis, Math.PI/2);
-		var point2 = point1.clone().applyAxisAngle(axis, Math.PI/2);
-		var point3 = point2.clone().applyAxisAngle(axis, Math.PI/2);
+		var point0 = this.bottom_left.clone();
+		var point1 = point0.clone().applyAxisAngle(this.axis, Math.PI/2);
+		var point2 = point1.clone().applyAxisAngle(this.axis, Math.PI/2);
+		var point3 = point2.clone().applyAxisAngle(this.axis, Math.PI/2);
 		vertices.push(point0);
 		vertices.push(point1);
 		vertices.push(point2);
@@ -69,18 +136,19 @@ Facet.prototype = {
 		this.geometry.vertices = vertices;
 		this.geometry.faces.push(new THREE.Face3(0, 1, 2));
 		this.geometry.faces.push(new THREE.Face3(2, 3, 0));
-		square_mesh = this.create_square_mesh(1);
-		edge_mesh = this.create_edge_mesh();
-		return [square_mesh, edge_mesh];
+	},
+
+	create_composite_meshes : function(){
+		this.meshes = [this.create_square_mesh(1), this.create_edge_mesh()];
 	},
 
 	create_square_mesh : function(opacity){
-		var material = new THREE.MeshBasicMaterial( { color: this.color, side:THREE.DoubleSide, opacity: opacity, transparent: true } );
+		var material = new THREE.MeshBasicMaterial( { color: this.color, opacity: opacity, transparent: true, side: THREE.DoubleSide } );
 		return new THREE.Mesh( this.geometry, material );
 	},
 	
 	create_edge_mesh : function(){
-		var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 1, linewidth: 6 } );
+		var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 1, linewidth: 6, side: THREE.DoubleSide } );
 		return new THREE.Line(this.geometry, material);
 	},
 
@@ -92,19 +160,22 @@ Facet.prototype = {
 		var m = new THREE.Matrix4();
 		return function(position){
 			m.makeTranslation(position.x, position.y, position.z);
-			this.geometry.applyMatrix(m);
+			this.apply_matrix(m);
+			this.position.add(position);
 		}
 	}(),
 	
 	apply_matrix: function(matrix){	
 		this.geometry.applyMatrix(matrix);
+		this.geometry.computeFaceNormals();
+		this.geometry.computeVertexNormals();
 	},
 	
 	clone: function(){
-		var facet = new Facet(this.name, this.color, this.cubie);
+		var facet = new Facet(this.name, this.color, this.cubie, this.bottom_left, this.axis, this.position);
 		facet.geometry = this.geometry.clone();
-		//facet.meshes = [facet.create_square_mesh(1), facet.create_edge_mesh()]
-		facet.meshes = [facet.create_facet_mesh()];
+		facet.create_meshes();
+		facet.set_facet_to_meshes()
 		return facet;
 	},
 	
@@ -126,9 +197,9 @@ Cubie.prototype = {
 		var facets = [];
 		cubie_state.name.split('').forEach(facet_name=>
 			{
-				var facet = new Facet(facet_name, cube_config.facet_configs[facet_name].color, this);
 				var facelet_name = cubie_state.facet_to_loc_map[facet_name];
-				facet.construct(cube_config.facelet_configs[facelet_name].bottom_left, cube_config.rotation_on_folded_configs[facelet_name].axis, cube_config.facelet_configs[facelet_name].position);
+				var facet = new Facet(facet_name, cube_config.facet_configs[facet_name].color, this, 
+					cube_config.facelet_configs[facelet_name].bottom_left, cube_config.rotation_on_folded_configs[facelet_name].axis, cube_config.facelet_configs[facelet_name].position);
 				facets[facet_name] = facet;
 			}
 		);
@@ -171,7 +242,7 @@ var RubiksCube = function(state, scene){
 	this.is_folded = true;
 	this.set_is_in_solver_mode(false);
 }
-
+var debug_count = 0;
 RubiksCube.prototype = {
 	set_cube_state : function(state){
 		var cube_state = new CubeState(state);
@@ -214,10 +285,45 @@ RubiksCube.prototype = {
 	test : function(){
 		//console.log(this.get_state());
 		
-		this.scene.add( x_normal_face_mesh );
-		this.scene.add( y_normal_face_mesh );
-		this.scene.add( z_normal_face_mesh );
-		y_normal_face_mesh.material.color.setHex(0xff0000);
+		//console.log(this.cubies["DFR"].facets["F"].geometry.vertices.map(x=>x.z).reduce((a,b)=>a>b?a:b, -10000));
+		var cubie = this.cubies["DFL"].facets["L"];
+		// if (debug_count % 2 == 0)
+		// 	cubie.remove_contents_from_scene(this.scene);
+		// else
+		// 	cubie.add_contents_to_scene(this.scene);
+		debug_count += 1;
+		//cubie.geometry.computeFaceNormals();
+		//cubie.geometry.computeVertexNormals();
+		//R, L
+		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(0,0,-1), 800)); //OUT
+		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(0,0,1), -800)); //IN
+
+		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(0,0,1), 1400)); //OUT
+		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(0,0,-1), -1400)); //IN
+
+		//F
+		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(-1,0,0), 800)); //OUT
+		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(1,0,0), -800)); //IN
+
+		//F
+		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(1,0,0), 800)); //OUT
+		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(-1,0,0), -800)); //IN
+		
+		/*
+		geometry.vertices.forEach((v, i)=> 
+			{
+				if(v.z < 800)
+					console.log("not equal vertice: ", v);
+			}
+		)*/
+		/*
+		geometry.vertices.forEach(v=>{
+				v.y -= 200;
+			});
+		
+		mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide}));
+		this.scene.add(mesh);
+		*/
 	},
 	
 	_get_facet_from_location_face : function(loc, loc_face_name){
@@ -229,6 +335,7 @@ RubiksCube.prototype = {
 		var op_face_name = op.slice(0, 1);
 		var rotate_cubies = this._get_cubies(op_face_name);
 		var  transformers = [];
+		var total_ratio = Math.abs(total_angle)*2/Math.PI; var init_ratio = Math.abs(init_angle)*2/Math.PI;
 		if (this.is_folded){
 			var rotate_axis = this.cube_config.rotation_on_folded_configs[op].axis;
 			var rotate_angle = (total_angle===null)? this.cube_config.rotation_on_folded_configs[op].angle : total_angle;
@@ -238,13 +345,21 @@ RubiksCube.prototype = {
 			for(var rotate_config of this.cube_config.rotation_on_unfolded_configs[op]){
 				if (rotate_config.transform_type == "translater"){
 					var facets = this._get_facets_from_cubies(rotate_cubies, rotate_config.facets);
-					transformers.push(new Translater(facets, rotate_config.translation));
+					//console.log("translator: ",op, rotate_config.translation);
+					var translation = (total_angle === null)? rotate_config.translation : rotate_config.translation.clone().multiplyScalar(total_ratio);
+					translation.sub(rotate_config.translation.clone().multiplyScalar(init_ratio));
+					transformers.push(new Translater(facets, translation));
+					//console.log("translator post: ", translation)
 				}else if (rotate_config.transform_type == "rotater"){
 					var facets = this._get_facets_from_cubies(rotate_cubies, rotate_config.facets);
-					transformers.push(new Rotater(facets, rotate_config.origin, this.cube_config.axis_y, rotate_config.angle));
+					var rotate_angle = (total_angle===null)? rotate_config.angle : rotate_config.angle * total_ratio;
+					rotate_angle -= rotate_config.angle * init_ratio;
+					transformers.push(new Rotater(facets, rotate_config.origin, this.cube_config.axis_y, rotate_angle));
 				}else if (rotate_config.transform_type == "teleporter"){
-					transformers.push(new Teleporter(this.scene, this._get_facet_from_location_face(rotate_config.cubie, rotate_config.facet), rotate_config.origin, 
-					rotate_config.out_bound, rotate_config.in_bound, rotate_config.target,  rotate_config.axis, rotate_config.out_direction, rotate_config.in_direction));
+					var distance = (total_angle ===null)? rotate_config.distance : rotate_config.distance * total_ratio;
+					distance -= rotate_config.distance * init_ratio;
+					transformers.push(new Teleporter(this.scene, this._get_facet_from_location_face(rotate_config.cubicle, rotate_config.facet),  
+					distance,  rotate_config.out_bound, rotate_config.in_bound, rotate_config.axis, rotate_config.out_direction, rotate_config.in_direction, total_angle !== null));
 				}
 			}
 		}
@@ -301,7 +416,7 @@ RubiksCube.prototype = {
 	},
 	
 	is_active : function(){
-		return this.is_in_animation || this.is_in_solver_mode || !this.is_folded;
+		return this.is_in_animation || this.is_in_solver_mode;
 	},
 
 	_get_cubies : function(loc_face_name){
@@ -337,7 +452,8 @@ RubiksCube.prototype = {
 				var rotate_angle = folding_config.angle * delta;
 				m = Transform(translate, rotate_axis, do_unfolding? rotate_angle:-rotate_angle);
 				for (var facet of facets){
-					facet.geometry.applyMatrix(m);
+					facet.apply_matrix(m);
+					facet.position.applyMatrix4(m);
 				} 
 			}
 		}
@@ -349,8 +465,18 @@ RubiksCube.prototype = {
 				args.cube._fold(args.cube.is_folded, delta);
 			}, 
 			{cube:this},
-			function(args){ args.cube.is_folded  = !args.cube.is_folded;}
-		);
+			function(args){ 
+				args.cube.is_folded  = !args.cube.is_folded;
+				/*
+				for (var facet_name in args.cube.cube_config.facet_folding_config){
+					var facets = args.cube._get_facets(facet_name);
+					facets.forEach(facet=>{
+						facet.position.x = Math.round(facet.position.x);
+						facet.position.y = Math.round(facet.position.y);
+						facet.position.z = Math.round(facet.position.z);
+					});
+				}*/
+			});
 	},
 
 	is_valid_input_char:function(prev_char, char){
@@ -375,7 +501,7 @@ RubiksCube.prototype = {
 				this.randomize();
 			}
 			else if(op == "O"){
-				//this.fold();
+				this.fold();
 			}
 			else if(op == "T"){
 				this.test();

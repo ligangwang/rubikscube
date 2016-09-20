@@ -1,163 +1,104 @@
 /**
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
-
-var Teleporter = function(scene, facet, origin, out_bound, in_bound, target, axis, out_direction, in_direction){
+var TeleporterModeCompression = 0;
+var TeleporterModeSlice = 1;
+var TeleporterOut = 0;
+var TeleporterSplit = 1;
+var TeleporterIn = 2;
+var Teleporter = function(scene, facet, distance, out_bound, in_bound, axis, out_direction, in_direction, manual_rotate=false){
+	this.mode = TeleporterModeSlice;
 	this.scene = scene;
 	this.facet = facet;
-	this.origin = origin;       
 	this.axis = axis;
 	this.out_bound = out_bound; 
 	this.in_bound = in_bound;	
-	this.target = target;		
-	this.position = origin;
+	this.distance = distance;		
+	if (out_direction > 0){
+		this.position = Math.round(facet.geometry.vertices.map(x=>axis.get(x)).reduce((a,b)=>a>b?a:b, -10000));
+	}else{
+		this.position = Math.round(facet.geometry.vertices.map(x=>axis.get(x)).reduce((a,b)=>a>b?b:a, 10000));
+	}
 	this.facet_clone = null;
+	this.facet_in_clone = null;
 	this.length = 200;
 	this.in_bound_value = this.axis.get(this.in_bound);
 	this.out_bound_value = this.axis.get(this.out_bound);
-	this.distance = Math.abs(this.out_bound_value - origin) + Math.abs(target - this.in_bound_value);
+	//this.distance = Math.abs(this.out_bound_value - origin) + Math.abs(target - this.in_bound_value);
+	//console.log(this.distance);
 	this.out_direction = out_direction;
 	this.in_direction = in_direction;
-	this._setup();
-	this._jump_moving_out_phase = true;
+	this.cut_plane_to_out = new THREE.Plane(axis.get_vector3(-out_direction), this.out_bound_value * this.out_direction);//new THREE.Plane(new THREE.Vector3(0, 0,-1), 900);
+	this.cut_plane_to_in  = new THREE.Plane(axis.get_vector3(out_direction), -this.out_bound_value * this.out_direction);
+	this.in_plane  = new THREE.Plane(axis.get_vector3(in_direction), this.in_bound_value);//new THREE.Plane(new THREE.Vector3(0, 0, 1), 1500);
+	this.manual_rotate = manual_rotate;
+
+	this.teleport = new THREE.Matrix4();
+	var in_bound = this.in_bound.clone();
+	in_bound.sub(this.out_bound);
+	this.teleport.makeTranslation(in_bound.x, in_bound.y, in_bound.z);
+	this.status = TeleporterOut;
+	//console.log("init ", this.facet.name, this.facet.cubie.name);
 }
 
 Teleporter.prototype = {
-	_setup_index : function(){
-		this.out_vertices_adj_index = [];
-		this.out_vertices_noadj_index = [];
-		this.in_vertices_adj_index = [];
-		this.in_vertices_noadj_index = [];
-		var mean = 0;
-		for(var i = 0, len = this.facet.geometry.vertices.length; i < len; i++){
-			mean += this.axis.get(this.facet.geometry.vertices[i]);
-		}
-		mean /= this.facet.geometry.vertices.length;
-		//console.log(this.facet.geometry.vertices);
-		for(var i = 0, len = this.facet.geometry.vertices.length; i < len; i++){
-			var axis_value = this.axis.get(this.facet.geometry.vertices[i]);
-			if ((axis_value - mean) * this.out_direction > 0){
-				this.out_vertices_adj_index.push(i);
-			}else{
-				this.out_vertices_noadj_index.push(i);
-			} 
-			if((axis_value - mean) * this.in_direction < 0){
-				this.in_vertices_adj_index.push(i);
-			}else{
-				this.in_vertices_noadj_index.push(i);
-			}
-		}
-	},
-	
-	_setup : function(){
-		this._setup_index();
-		this.teleport = new THREE.Matrix4();
-		var in_bound = this.in_bound.clone();
-		in_bound.sub(this.out_bound);
-		
-		//console.log("teleporting to", in_bound);
-		this.teleport.makeTranslation(in_bound.x, in_bound.y, in_bound.z);
-	},
-	
-	_sqeeze : function(){//move in side
-		for(var i = 0, len = this.in_vertices_adj_index.length; i < len; i++){
-			var in_adj_index = this.in_vertices_adj_index[i];	
-			var in_noadj_index = this.in_vertices_noadj_index[i];	
-			this.axis.set(this.facet.geometry.vertices[in_adj_index], this.axis.get(this.facet.geometry.vertices[in_noadj_index]));
-		}
-	},
-	
-	_reset : function(){//move in side
-		var adjust = this.in_direction == 1? -this.length : this.length;
-		for(var i = 0, len = this.in_vertices_adj_index.length; i < len; i++){
-			var in_adj_index = this.in_vertices_adj_index[i];	
-			var in_noadj_index = this.in_vertices_noadj_index[i];
-			this.axis.set(this.facet.geometry.vertices[in_adj_index], this.axis.get(this.facet.geometry.vertices[in_noadj_index]) + adjust);
-		}
+	is_all_moved_out : function(){
+		//not exists vertice behind out bound value
+		return !this.facet.geometry.vertices.some(v=>(this.out_direction>0&&this.axis.get(v) < this.out_bound_value) || 
+				(this.out_direction < 0 && this.axis.get(v) > this.out_bound_value))
 	},
 
-	_create_clone : function(){
-		this.facet_clone = this.facet.clone();
-		this.facet_clone.add_contents_to_scene(this.scene);
-		this.facet.apply_matrix(this.teleport);
+	exists_moved_out : function(){
+		return this.facet.geometry.vertices.some(v=>(this.out_direction>0 && this.axis.get(v) > this.out_bound_value) ||
+				(this.out_direction < 0 && this.axis.get(v) < this.out_bound_value));
 	},
-	
-	_delete_clone : function(){
-		this.facet_clone.remove_contents_from_scene(this.scene);
-		delete this.facet_clone;
-		this.facet_clone = null;
-		this._reset();
-	},
-	
-	adjust_size : function(facet, vertice_index, adjust_size){
-		facet.geometry.dynamic = true;
-		for(var index of vertice_index){
-			var vertice = facet.geometry.vertices[index];
-			this.axis.adjust(vertice, adjust_size);
-		}	
-		facet.geometry.verticesNeedUpdate = true;
-	},
-	
+
 	transform : function(){
 		var out_translation = new THREE.Matrix4();
 		var in_translation = new THREE.Matrix4();
-		var mirror_translation = new THREE.Matrix4();
 		return function(total, delta){
 			var move_distance = delta * this.distance
-			var new_position = this.position + move_distance * this.out_direction;
-			var out_cut_len = (new_position - this.out_bound_value) * this.out_direction;
+
+			//console.log("new position: ", this.facet.name, this.facet.cubie.name, new_position, out_cut_len, this.distance);
 			this.axis.make_translation(out_translation, move_distance * this.out_direction);
 			this.axis.make_translation( in_translation, move_distance * this.in_direction);
-			if (out_cut_len > 0 && out_cut_len < this.length){
-				this._jump_moving_out_phase = false;
-				var out_adjust_size;
-				if (this.facet_clone == null){
-					//first cross boundary
-					this._create_clone();
-					out_adjust_size = Math.min(out_cut_len, move_distance);
-					if (this.out_direction != this.in_direction){
-						this.axis.make_translation(mirror_translation, 2* (move_distance - out_cut_len) * this.out_direction)
-						this.facet.apply_matrix(mirror_translation);
-					}
-					this._sqeeze();
-					
-				}else{
-					out_adjust_size = move_distance;
-				}
-				//clone, both moving 
+			if (this.status == TeleporterIn)
 				this.facet.apply_matrix(in_translation);
-				this.facet_clone.apply_matrix(out_translation);
+			else
+				this.facet.apply_matrix(out_translation);
+			var exists_moved_out = this.exists_moved_out();
+			var is_all_moved_out = this.is_all_moved_out();
+			//console.log("out bound value", this.out_bound_value);
+			if(this.status == TeleporterOut && exists_moved_out){
+				//console.log("cut plane: ", this.out_plane, this.out_cut_plane);
+				var in_geometry  = sliceGeometry(this.facet.geometry.clone(), this.cut_plane_to_in);
+				var out_geometry = sliceGeometry(this.facet.geometry.clone(), this.cut_plane_to_out);
+				//console.log("out_cut: ", in_geometry);
+				this.teleport_geometry_to_in_side(in_geometry);
+				//in_geometry.vertices.forEach(x=>this.axis.add(x, this.in_bound_value-this.out_bound_value));
+				this.facet.update_split_geometries(this.scene,  out_geometry, in_geometry);
+				this.status = TeleporterSplit;
+			}
 
-				this.adjust_size(this.facet_clone, 	this.out_vertices_adj_index, out_adjust_size * this.out_direction * -1);
-				this.adjust_size(this.facet, 		this.in_vertices_adj_index, out_adjust_size * this.in_direction * -1);
-			}else{
-				if (this.facet_clone != null){
-					this._delete_clone();
-				}
-				if (out_cut_len <=0){
-					this.facet.apply_matrix(out_translation);
-				}
-				else if(out_cut_len >= this.length){
-					//moving in
-					if (this._jump_moving_out_phase){
-						this.facet.apply_matrix(this.teleport);
-						if (this.out_direction != this.in_direction){
-							var gap = (this.out_bound_value - this.position) * this.out_direction;
-							this.axis.make_translation(mirror_translation, 2 * gap * this.out_direction)
-							this.facet.apply_matrix(mirror_translation);
-						}
-						this._jump_moving_out_phase = false;
-					}
-					this.facet.apply_matrix(in_translation);
+			if (is_all_moved_out || ((!this.manual_rotate) && total == 1 && exists_moved_out)){
+				if (this.status !== TeleporterIn){
+					//all moving out
+					//console.log("all moved out: ",this.status, this.facet.name, this.facet.cubie.name);
+					//this.facet.geometry.vertices.forEach(v=>this.axis.add(v, this.in_bound_value-this.out_bound_value));
+					this.teleport_geometry_to_in_side(this.facet.geometry);
+					this.facet.remove_split_geometries(this.scene);	
+					this.status = TeleporterIn;
 				}
 			}
-			if (total == 1 && this.facet_clone != null){
-				this._delete_clone();
-			}
-			this.position = new_position;
 		}
 	}(),
-	
+
+	teleport_geometry_to_in_side: function(geometry){
+		geometry.applyMatrix(this.teleport);
+		if (this.out_direction != this.in_direction){
+			geometry.vertices.forEach(v=>this.axis.add(v, -2 * (this.axis.get(v) - this.in_bound_value)));
+		}
+	}
 }
 
 var Translater = function(objects, translation){
