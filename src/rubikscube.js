@@ -89,16 +89,16 @@ Facet.prototype = {
 	},
 
 	create_facet_meshes : function(){
-		this.meshes = [new THREE.Mesh( this.geometry, new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide }))];
+		this.meshes = [new THREE.Mesh( this.geometry, new THREE.MeshBasicMaterial({opacity: 1, transparent: true, color: this.color, side: THREE.DoubleSide }))];
 	},
 
 	update_split_geometries : function(scene, split_geometry1, split_geometry2){
 		if (this.split_mesh1 === null){
 			this.split_geometry1 = split_geometry1;
-			this.split_mesh1 = new THREE.Mesh( split_geometry1, new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide }));
+			this.split_mesh1 = new THREE.Mesh( split_geometry1, new THREE.MeshBasicMaterial({opacity: this.meshes[0].material.opacity, transparent: true, color: this.color, side: THREE.DoubleSide }));
 			scene.add(this.split_mesh1);
 			this.split_geometry2 = split_geometry2;
-			this.split_mesh2 = new THREE.Mesh( split_geometry2, new THREE.MeshBasicMaterial({color: this.color, side: THREE.DoubleSide }));
+			this.split_mesh2 = new THREE.Mesh( split_geometry2, new THREE.MeshBasicMaterial({opacity: this.meshes[0].material.opacity, transparent: true, color: this.color, side: THREE.DoubleSide }));
 			scene.add(this.split_mesh2);
 			this.remove_contents_from_scene(scene);
 		}
@@ -153,7 +153,8 @@ Facet.prototype = {
 	},
 
 	set_opacity : function(opacity){
-		this.square_mesh.material.opacity = opacity;
+		console.log("set opacity: ", opacity);
+		this.meshes.forEach(m=>m.material.opacity = opacity);
 	},
 	
 	set_position : function(){
@@ -241,6 +242,8 @@ var RubiksCube = function(state, scene){
 	this.enable_animation = true;
 	this.is_folded = true;
 	this.set_is_in_solver_mode(false);
+	this.time_per_animation_move = 1000; //in ms
+	
 }
 var debug_count = 0;
 RubiksCube.prototype = {
@@ -275,10 +278,6 @@ RubiksCube.prototype = {
 	},
 	
 	set_is_in_solver_mode : function(enabled){
-		if(enabled){
-			this.time_per_animation_move = 200; //in ms
-		}else
-			this.time_per_animation_move = 600;
 		this.is_in_solver_mode = enabled;
 	},
 

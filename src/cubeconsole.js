@@ -1,6 +1,8 @@
 /**
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
+
+
 var CubeConsole = function(initial_state, parent_control){
 	this.cube = new RubiksCube(initial_state, new THREE.Scene());
 	this.cube.enable_animation = true;
@@ -8,8 +10,8 @@ var CubeConsole = function(initial_state, parent_control){
 	this.input_timer = null;
 	
 	this.parent_control = parent_control;
-	this.render_width = 800;
-	this.render_height = 600;
+	this.render_width = parent_control.offsetWidth;
+	this.render_height = parent_control.offsetHeight;
 	this.renderer = new THREE.WebGLRenderer({ antialias: true });
 	this.renderer.setPixelRatio( window.devicePixelRatio );
 	this.renderer.setSize( this.render_width, this.render_height );
@@ -22,11 +24,18 @@ var CubeConsole = function(initial_state, parent_control){
 
 	this.camera = new THREE.PerspectiveCamera( 50, this.render_width / this.render_height, 0.1, 10000 );
 	this.camera.lookAt(this.cube.scene.position);
-	this.camera.position.z = 1200;
-	this.camera.position.y = 1200;
-	this.camera.position.x = 1200;
+	this.camera.position.z = 1000;
+	this.camera.position.y = 1000;
+	this.camera.position.x = 1000;
 
 	this.interactive = new CubeInteractive(this.cube, this.camera, this.renderer.domElement);
+	
+	this.cubeController = {
+		speed : 5,
+		transparent : 0
+	};
+	this.init_controller();
+
 /*	
 	var plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), -200);
 	var geom = new THREE.SphereGeometry(100, 100, 100);
@@ -38,6 +47,22 @@ var CubeConsole = function(initial_state, parent_control){
 }
 
 CubeConsole.prototype = {
+	init_controller : function(){
+		var gui = new dat.GUI();
+		gui.add(this.cubeController, "speed", 1, 50, 5).onChange(v=>{
+			this.cube.time_per_animation_move = 5000/v; 
+		});
+		gui.add(this.cubeController, "transparent", 0, 100, 0).onChange(v=>{
+			var transparent = v;
+			var opacity = (100-transparent)/100;
+			this.cube.set_opacity(opacity);
+		});
+		var console = this;
+		gui.add({ F: function(){ console.input_char("F"); }},'F');
+		gui.add({ f: function(){ console.input_char("F'"); }},"f");
+
+	},
+
 	render : function(){
 		var scene = this.cube.scene;
 		var renderer = this.renderer;
