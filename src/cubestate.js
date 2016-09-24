@@ -1,15 +1,15 @@
-var face_pairs = [["F", "B"], ["L", "R"], ["U", "D"]];
+var FACE_PAIRS = [["F", "B"], ["L", "R"], ["U", "D"]];
 var SINGMASTER_SOLVED_STATE = "UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR";
 var SINGMASTER_SOLVED_SLOTS = SINGMASTER_SOLVED_STATE.split(' ');
-var FACE_NAMES = [].concat.apply([], face_pairs);
+var FACE_NAMES = [].concat.apply([], FACE_PAIRS);
 var ALL_SLOTS = SINGMASTER_SOLVED_SLOTS.concat(FACE_NAMES);
 var OPPOSITE_FACE_NAMES = [];
-face_pairs.forEach(x=>{
+FACE_PAIRS.forEach(x=>{
     OPPOSITE_FACE_NAMES[x[0]] = x[1];
     OPPOSITE_FACE_NAMES[x[1]] = x[0];
 });
 
-var _convert_cycle_to_map = function(cycle, repeat_times){
+var convertCycleToMap = function(cycle, repeat_times){
     map = []
     for (var i = 0, len=cycle.length; i < len; i++){
         map[cycle[i]] = cycle[(i+repeat_times)%len];
@@ -30,26 +30,26 @@ for (var op of FACE_NAMES){
 
 OPERATIONS = Object.keys(ROTATION_FACE_CYCLES);
 ROTATION_FACE_MAP = [];
-for(var op_key in ROTATION_FACE_CYCLES){
-    ROTATION_FACE_MAP[op_key] = _convert_cycle_to_map(ROTATION_FACE_CYCLES[op_key], 1);
-    ROTATION_FACE_MAP[op_key.repeat(2)] = _convert_cycle_to_map(ROTATION_FACE_CYCLES[op_key], 2);
-    op_face = op_key.slice(0, 1);
-    map[op_face] = op_face; //the same face not changed.
-    ROTATION_FACE_MAP[op_key][op_face] = op_face; 
-    ROTATION_FACE_MAP[op_key.repeat(2)][op_face] = op_face; 
+for(var opKey in ROTATION_FACE_CYCLES){
+    ROTATION_FACE_MAP[opKey] = convertCycleToMap(ROTATION_FACE_CYCLES[opKey], 1);
+    ROTATION_FACE_MAP[opKey.repeat(2)] = convertCycleToMap(ROTATION_FACE_CYCLES[opKey], 2);
+    var opFace = opKey.slice(0, 1);
+    map[opFace] = opFace; //the same face not changed.
+    ROTATION_FACE_MAP[opKey][opFace] = opFace; 
+    ROTATION_FACE_MAP[opKey.repeat(2)][opFace] = opFace; 
 }
 
 //console.log(ROTATION_FACE_MAP);
-var get_command_from_path = function(rotate_face, from_side, to_side){
-    cycle = ROTATION_FACE_CYCLES[rotate_face];
-    start_pos = cycle.indexOf(from_side);
-    if (start_pos < 0)
+var getCommandFromPath = function(rotateFace, fromSide, toSide){
+    var cycle = ROTATION_FACE_CYCLES[rotateFace];
+    var startPos = cycle.indexOf(fromSide);
+    if (startPos < 0)
         return null;
-    steps = 0;
-    matched = false;
-    for(var i=( start_pos + 1 ) % cycle.length; i!=start_pos; i=(i+1) % cycle.length){
+    var steps = 0;
+    var matched = false;
+    for(var i=( startPos + 1 ) % cycle.length; i!=startPos; i=(i+1) % cycle.length){
         steps ++;
-        if (cycle[i] == to_side)
+        if (cycle[i] == toSide)
         {
             matched = true;
             break;
@@ -58,7 +58,7 @@ var get_command_from_path = function(rotate_face, from_side, to_side){
     if (!matched)
         return null;
 
-    return steps > cycle.length/2 ? (rotate_face + "'").repeat(steps-cycle.length/2) : rotate_face.repeat(steps); 
+    return steps > cycle.length/2 ? (rotateFace + "'").repeat(steps-cycle.length/2) : rotateFace.repeat(steps); 
 }
 
 CUBE_FACES = [];	//cube index storing locations(cubicles) per face 
@@ -68,7 +68,7 @@ ALL_SLOTS.forEach(x=>{
 		loc.split('').forEach(x=>CUBE_FACES[x].push(loc))
     });
 
-var reverse_op = function(op){
+var reverseOp = function(op){
     if (op.length == 1)
         return op + "'";
     else if (op.length == 2){
@@ -79,159 +79,159 @@ var reverse_op = function(op){
         throw "not supported op: " + op;
 }
 
-function get_random_ops(){
-    return Array.from(Array(20).keys()).map(x=>OPERATIONS[get_random(0, OPERATIONS.length - 1)]);
+function getRandomOps(){
+    return Array.from(Array(20).keys()).map(x=>OPERATIONS[getRandom(0, OPERATIONS.length - 1)]);
 }
 
-var CubieState = function(facet_orientation, loc_orientation){
-    this.name = sort(facet_orientation);
-    this.cubicle = sort(loc_orientation);
-    this.loc_to_facet_map = [];
-    this.facet_to_loc_map = [];
-    facet_orientation.split('').forEach((x, i)=>{
-            this.facet_to_loc_map[x] = loc_orientation[i];
-            this.loc_to_facet_map[loc_orientation[i]] = x;
+var CubieState = function(facetOrientation, locOrientation){
+    this.name = sort(facetOrientation);
+    this.cubicle = sort(locOrientation);
+    this.locToFacetMap = [];
+    this.facetToLocMap = [];
+    facetOrientation.split('').forEach((x, i)=>{
+            this.facetToLocMap[x] = locOrientation[i];
+            this.locToFacetMap[locOrientation[i]] = x;
         }
     );
 }
 
 CubieState.prototype = {
     rotate : function(op){
-        loc_to_facet_map = []
-        Object.keys(this.loc_to_facet_map).forEach(from_loc=>
+        var locToFacetMap = []
+        Object.keys(this.locToFacetMap).forEach(fromLoc=>
             {
-                to_loc = ROTATION_FACE_MAP[op][from_loc];
-                facet_name = this.loc_to_facet_map[from_loc];
-                loc_to_facet_map[to_loc] = facet_name;
-                this.facet_to_loc_map[facet_name] = to_loc;
+                toLoc = ROTATION_FACE_MAP[op][fromLoc];
+                facetName = this.locToFacetMap[fromLoc];
+                locToFacetMap[toLoc] = facetName;
+                this.facetToLocMap[facetName] = toLoc;
             }
         );
-        this.loc_to_facet_map = loc_to_facet_map;
-        this.cubicle = Object.keys(loc_to_facet_map).sort().join('');
+        this.locToFacetMap = locToFacetMap;
+        this.cubicle = Object.keys(locToFacetMap).sort().join('');
         return this.cubicle; //returning new location
     },
 
-	is_solved : function(){
-		return Object.keys(this.loc_to_facet_map).every(x=>x == this.loc_to_facet_map[x]);
+	isSolved : function(){
+		return Object.keys(this.locToFacetMap).every(x=>x == this.locToFacetMap[x]);
 	},
     
-    get_number_of_facet_solved : function(){
-        return Object.keys(this.facet_to_loc_map).filter(x=>this.facet_to_loc_map[x] == x).length;
+    getNumberOfFacetSolved : function(){
+        return Object.keys(this.facetToLocMap).filter(x=>this.facetToLocMap[x] == x).length;
     },
 
     clone : function(){
-        var facets = Object.keys(this.facet_to_loc_map);
-        var locs = facets.map(x=>this.facet_to_loc_map[x]);
+        var facets = Object.keys(this.facetToLocMap);
+        var locs = facets.map(x=>this.facetToLocMap[x]);
         return new CubieState(facets.join(''), locs.join(''));
     },
    
 }
 
 var CubeState = function(state){
-    this.loc_to_cubie_map = [];
-    this.cubie_to_loc_map = [];
-    this.init_state = state;
+    this.locToCubieMap = [];
+    this.cubieToLocMap = [];
+    this.initState = state;
     var cubies = state.split(' ').concat(FACE_NAMES);
     if (ALL_SLOTS.length != cubies.length) throw "Length not matched for cubicle and cubie";
-    ALL_SLOTS.forEach((x, i)=>this.add_cubie_state(ALL_SLOTS[i], cubies[i]));
+    ALL_SLOTS.forEach((x, i)=>this.addCubieState(ALL_SLOTS[i], cubies[i]));
 }
 
 CubeState.prototype = {
-    get_state : function(){
+    getState : function(){
         return SINGMASTER_SOLVED_SLOTS
-            .map(x=>x.split('').map(o=>this.loc_to_cubie_map[sort(x)].loc_to_facet_map[o]))
+            .map(x=>x.split('').map(o=>this.locToCubieMap[sort(x)].locToFacetMap[o]))
             .map(x=>x.join('')).join(' ');
     },
 
 
-    add_cubie_state : function(loc_orientation, facet_orientation){
-        var loc = sort(loc_orientation);
-        var cubie_state = new CubieState(facet_orientation, loc_orientation);
-        this.loc_to_cubie_map[loc] = cubie_state;
-        this.cubie_to_loc_map[cubie_state.name] = loc;
+    addCubieState : function(locOrientation, facetOrientation){
+        var loc = sort(locOrientation);
+        var cubieState = new CubieState(facetOrientation, locOrientation);
+        this.locToCubieMap[loc] = cubieState;
+        this.cubieToLocMap[cubieState.name] = loc;
     },
 
     rotate : function(op){
-        var loc_to_cubie_map = [];
-        var op_face_name = op.slice(0, 1);
-        CUBE_FACES[op_face_name].forEach(from_loc=>
+        var locToCubieMap = [];
+        var opFaceName = op.slice(0, 1);
+        CUBE_FACES[opFaceName].forEach(fromLoc=>
             {
-                cubie_state = this.loc_to_cubie_map[from_loc];
-                var to_loc = cubie_state.rotate(op);
-                this.cubie_to_loc_map[cubie_state.name] = to_loc;
-                loc_to_cubie_map[to_loc] = cubie_state;
+                cubieState = this.locToCubieMap[fromLoc];
+                var toLoc = cubieState.rotate(op);
+                this.cubieToLocMap[cubieState.name] = toLoc;
+                locToCubieMap[toLoc] = cubieState;
             }
         );
 
-        Object.keys(loc_to_cubie_map).forEach(loc=>this.loc_to_cubie_map[loc] = loc_to_cubie_map[loc]);
+        Object.keys(locToCubieMap).forEach(loc=>this.locToCubieMap[loc] = locToCubieMap[loc]);
     },
 
-    get_cubie_states : function(loc_face_name){
-        return CUBE_FACES[loc_face_name].map(loc=>this.loc_to_cubie_map[loc]);
+    getCubieStates : function(locFaceName){
+        return CUBE_FACES[locFaceName].map(loc=>this.locToCubieMap[loc]);
     },
 
-    get_cubie_state : function(cubie_name){
-        return this.loc_to_cubie_map[this.cubie_to_loc_map[cubie_name]];
+    getCubieState : function(cubieName){
+        return this.locToCubieMap[this.cubieToLocMap[cubieName]];
     },
 
-	is_solved : function(){
-		return Object.keys(this.loc_to_cubie_map).map(loc=>this.loc_to_cubie_map[loc]).every(cubie_state=>cubie_state.is_solved());
+	isSolved : function(){
+		return Object.keys(this.locToCubieMap).map(loc=>this.locToCubieMap[loc]).every(cubieState=>cubieState.isSolved());
 	},
 
-    get_num_of_facets_solved : function(locations){
-        return locations.map(loc=>Object.keys(this.loc_to_cubie_map[loc].loc_to_facet_map)
-                    .filter(x=>x==this.loc_to_cubie_map[loc].loc_to_facet_map[x]).length)
+    getNumOfFacetsSolved : function(locations){
+        return locations.map(loc=>Object.keys(this.locToCubieMap[loc].locToFacetMap)
+                    .filter(x=>x==this.locToCubieMap[loc].locToFacetMap[x]).length)
                     .reduce((a,b)=>a+b, 0);
     },
 
     clone : function(){
-        return new CubeState(this.get_state());
+        return new CubeState(this.getState());
     }
 }
 
-function is_valid_cube_state(state){
+function isValidCubeState(state){
     var slots = SINGMASTER_SOLVED_SLOTS.map(x=>sort(x));
     var cubies = state.split(' ').map(x=>sort(x));
-    if (!eq_set(new Set(slots), new Set(cubies))) return false;
-    var cycles = get_cycles(slots, cubies);
+    if (!eqSet(new Set(slots), new Set(cubies))) return false;
+    var cycles = getCycles(slots, cubies);
     var swaps = cycles.map(x=>x.length - 1).reduce((a,b)=>a+b, 0);
     if (swaps%2!=0) return false;
-    if (sum_of_corner(state) % 3 !=0) return false;
-    if (sum_of_edge(state) % 2 != 0) return false;
+    if (sumOfCorner(state) % 3 !=0) return false;
+    if (sumOfEdge(state) % 2 != 0) return false;
     return true;
 }
 
-function sum_of_edge(state){
-    var edge_cubies = state.split(' ').filter(x=>x.length==2);
-    var fb_edges = edge_cubies.filter(x=>x.indexOf("U") < 0 && x.indexOf("D") < 0)
-    var ud_edges = edge_cubies.filter(x=>x.indexOf("U") >= 0 || x.indexOf("D") >= 0)
-    var edge_values = [];
-    ["U", "D"].forEach(f=>edge_values = edge_values.concat(ud_edges.map(x=>x.indexOf(f)).filter(x=>x>=0)));
-    ["F", "B"].forEach(f=>edge_values = edge_values.concat(fb_edges.map(x=>x.indexOf(f)).filter(x=>x>=0)));
-    return edge_values.reduce((a,b)=>a+b, 0);
+function sumOfEdge(state){
+    var edgeCubies = state.split(' ').filter(x=>x.length==2);
+    var fbEdges = edgeCubies.filter(x=>x.indexOf("U") < 0 && x.indexOf("D") < 0)
+    var udEdges = edgeCubies.filter(x=>x.indexOf("U") >= 0 || x.indexOf("D") >= 0)
+    var edgeValues = [];
+    ["U", "D"].forEach(f=>edgeValues = edgeValues.concat(udEdges.map(x=>x.indexOf(f)).filter(x=>x>=0)));
+    ["F", "B"].forEach(f=>edgeValues = edgeValues.concat(fbEdges.map(x=>x.indexOf(f)).filter(x=>x>=0)));
+    return edgeValues.reduce((a,b)=>a+b, 0);
 }
 
-function sum_of_corner(state){
-    var corner_cubies = state.split(' ').filter(x=>x.length==3);
-    var corner_values = [];
-    corner_values = corner_values.concat(corner_cubies.map(x=>Math.max(x.indexOf("U"))).filter(x=>x>=0));
-    corner_values = corner_values.concat(corner_cubies.map(x=>Math.max(x.indexOf("D"))).filter(x=>x>=0));
-    return corner_values.reduce((a,b)=>a+b, 0);
+function sumOfCorner(state){
+    var cornerCubies = state.split(' ').filter(x=>x.length==3);
+    var cornerValues = [];
+    cornerValues = cornerValues.concat(cornerCubies.map(x=>Math.max(x.indexOf("U"))).filter(x=>x>=0));
+    cornerValues = cornerValues.concat(cornerCubies.map(x=>Math.max(x.indexOf("D"))).filter(x=>x>=0));
+    return cornerValues.reduce((a,b)=>a+b, 0);
 }
 
-function get_cycles(slots, cubies){
-    var cubie_to_loc_map = [];
-    cubies.map((x,i)=>[cubies[i], slots[i]]).filter(x=>x[0] != x[1]).forEach(x=>cubie_to_loc_map[x[0]] = x[1]);
+function getCycles(slots, cubies){
+    var cubieToLocMap = [];
+    cubies.map((x,i)=>[cubies[i], slots[i]]).filter(x=>x[0] != x[1]).forEach(x=>cubieToLocMap[x[0]] = x[1]);
     //from 0 to 1
     var counts = 0;    
-    var cubie_names = Object.keys(cubie_to_loc_map);
-    if (cubie_names.length == 0) return [];
+    var cubieNames = Object.keys(cubieToLocMap);
+    if (cubieNames.length == 0) return [];
     var cycle = [];
     var cycles = [];
-    cubie_names.forEach(x=>{
-        if (x in cubie_to_loc_map){
-            var loc = cubie_to_loc_map[x];
-            delete cubie_to_loc_map[x];
+    cubieNames.forEach(x=>{
+        if (x in cubieToLocMap){
+            var loc = cubieToLocMap[x];
+            delete cubieToLocMap[x];
             if (cycle.length == 0) {
                 cycles.push(cycle);
                 cycle.push(x);
@@ -240,8 +240,8 @@ function get_cycles(slots, cubies){
                 counts++;
                 if (counts>100) throw "error wrong somethere";
                 cycle.push(loc);
-                var loc1 = cubie_to_loc_map[loc];
-                delete cubie_to_loc_map[loc];
+                var loc1 = cubieToLocMap[loc];
+                delete cubieToLocMap[loc];
                 loc = loc1;
             }
             cycle = [];

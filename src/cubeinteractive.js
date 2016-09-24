@@ -2,133 +2,132 @@ var CubeInteractive = function(cube, camera, element){
     this.cube = cube;
     this.camera = camera;
     this.element = element;
-	this.is_in_drag_rotation = false;
+	this.isInDragRotation = false;
 	this.raycaster = new THREE.Raycaster();
 	this.mouse = new THREE.Vector2();
-	this.rotate_faces = []; 
-	[R, L, U, D, F, B].forEach(x=>this.rotate_faces[x.get_op()] = x);
-	this.rotate_face_planes = [];
-	Object.keys(this.rotate_faces).forEach(x=>{
-			this.rotate_face_planes[x]=(cube.is_folded)?this.rotate_faces[x].plane(300): U.plane(300);
+	this.rotateFaces = []; 
+	[R, L, U, D, F, B].forEach(x=>this.rotateFaces[x.getOp()] = x);
+	this.rotateFacePlanes = [];
+	Object.keys(this.rotateFaces).forEach(x=>{
+			this.rotateFacePlanes[x]=(cube.isFolded)?this.rotateFaces[x].plane(300): U.plane(300);
 		}
 	);
-	this.rotate_face_name = null;
+	this.rotateFaceName = null;
 	this.controls = new THREE.OrbitControls(this.camera, this.element);
 	this.controls.enableDamping = true;
 	this.controls.dampingFactor = 0.25;
 	this.controls.enableZoom = false;
-    this.init_angle = 0;
-    this.last_angle = 0;
+    this.initAngle = 0;
+    this.lastAngle = 0;
     this.intersect = null;
 }
 
 CubeInteractive.prototype = {
-	on_mouse_up : function(event){
-		if (this.is_in_drag_rotation && this.rotate_face_name !== null){
+	onMouseUp : function(event){
+		if (this.isInDragRotation && this.rotateFaceName !== null){
 			//rotating remaining part
-            var op = this.rotate_faces[this.rotate_face_name].get_op();
-            if (this.last_angle * this.init_angle < 0){
+            var op = this.rotateFaces[this.rotateFaceName].getOp();
+            if (this.lastAngle * this.initAngle < 0){
                 //cancel op
-                this.cube.rotate_angle(op, -this.init_angle);
+                this.cube.rotateAngle(op, -this.initAngle);
             }else{
-                if (this.init_angle > 0) op = op + "'";
-                this.cube.rotate(op, this.init_angle, null);
+                if (this.initAngle > 0) op = op + "'";
+                this.cube.rotate(op, this.initAngle, null);
             }
 		}
-		this.is_in_drag_rotation = false;
-        this.rotate_face_name = null;
+		this.isInDragRotation = false;
+        this.rotateFaceName = null;
 	},
 
-    _get_small_angle : function(angle){
+    getSmallAngle : function(angle){
         if (angle > Math.PI) angle = Math.PI * 2 - angle;
         if (angle < -Math.PI) angle = Math.PI * 2 + angle;
         return angle;
     },
 
-	on_mouse_move : function(event){
-		if (this.is_in_drag_rotation){
-			this._set_mouse_position(this.mouse, event);
+	onMouseMove : function(event){
+		if (this.isInDragRotation){
+			this.setMousePosition(this.mouse, event);
 			this.raycaster.setFromCamera(this.mouse, this.camera);
-			if (this.rotate_face_name === null){
-				var max_angle = -1;
-				Object.keys(this.intersects).forEach(face_name=>{
-					var intersect = this.raycaster.ray.intersectPlane(this.rotate_face_planes[face_name]);
-					//console.log("setting ", face_name, intersect, this.rotate_face_planes[face_name], event);
-					var face = this.rotate_faces[face_name];
-                    var angle = this._get_small_angle(face.get_vector2(intersect).angle() - face.get_vector2(this.intersects[face_name]).angle());
+			if (this.rotateFaceName === null){
+				var maxAngle = -1;
+				Object.keys(this.intersects).forEach(faceName=>{
+					var intersect = this.raycaster.ray.intersectPlane(this.rotateFacePlanes[faceName]);
+					//console.log("setting ", faceName, intersect, this.rotateFacePlanes[faceName], event);
+					var face = this.rotateFaces[faceName];
+                    var angle = this.getSmallAngle(face.getVector2(intersect).angle() - face.getVector2(this.intersects[faceName]).angle());
 					angle = Math.abs(angle);
-					if (angle>max_angle){
-						max_angle = angle;
-						this.rotate_face_name = face_name;
+					if (angle>maxAngle){
+						maxAngle = angle;
+						this.rotateFaceName = faceName;
 					}
 				});
-				this.intersect = this.intersects[this.rotate_face_name];
-				//console.log("determined: ", this.rotate_face_name, max_angle);
+				this.intersect = this.intersects[this.rotateFaceName];
+				//console.log("determined: ", this.rotateFaceName, maxAngle);
 			}else{
-				var intersect = this.raycaster.ray.intersectPlane(this.rotate_face_planes[this.rotate_face_name]);
+				var intersect = this.raycaster.ray.intersectPlane(this.rotateFacePlanes[this.rotateFaceName]);
 				//do rotate angle
-				var rotate_face = this.rotate_faces[this.rotate_face_name];
-				var angle = rotate_face.get_vector2(intersect).angle() - rotate_face.get_vector2(this.intersect).angle()
-                angle = this._get_small_angle(angle);
-				//console.log("rotating ", this.rotate_axis_index, angle, intersect, this.intersect);
-				var op = rotate_face.get_op();
+				var rotateFace = this.rotateFaces[this.rotateFaceName];
+				var angle = rotateFace.getVector2(intersect).angle() - rotateFace.getVector2(this.intersect).angle()
+                angle = this.getSmallAngle(angle);
+				var op = rotateFace.getOp();
 				if (angle > 0) op += "'";
-				this.cube.rotate_angle(op, angle);
-                this.init_angle += angle;
-                this.last_angle = angle;
+				this.cube.rotateAngle(op, angle);
+                this.initAngle += angle;
+                this.lastAngle = angle;
 				this.intersect = intersect;
                 
 			}
 		}
 	},
 
-	_set_mouse_position : function(mouse, event){
-    	var p = element_position(this.element);
+	setMousePosition : function(mouse, event){
+    	var p = elementPosition(this.element);
 		var x = event.pageX - p.x;
 		var y = event.pageY - p.y; 
 		mouse.x = (x / this.element.offsetWidth) * 2 - 1;
 		mouse.y = -(y / this.element.offsetHeight) * 2 + 1;
 	},
 
-	on_mouse_down : function(event){
+	onMouseDown : function(event){
 		//console.log("down: ", event);
-		if (this.cube.is_active() || !this.cube.is_folded) return;
+		if (this.cube.isActive() || !this.cube.isFolded) return;
 		var mouse = new THREE.Vector2();
-		this._set_mouse_position(mouse, event);
+		this.setMousePosition(mouse, event);
 		var raycaster = new THREE.Raycaster();
 		raycaster.setFromCamera(mouse, this.camera);
 		var intersects = raycaster.intersectObjects(this.cube.scene.children);
 		if (intersects.length > 0){
-			this.is_in_drag_rotation = true;
+			this.isInDragRotation = true;
 
-			var facet_name = intersects[0].object.facet.name;
-			var cubie_name = intersects[0].object.facet.cubie.name;
-			var cubicle_name = this.cube.cube_state.cubie_to_loc_map[cubie_name];
-			var facelet_name = this.cube.cube_state.loc_to_cubie_map[cubicle_name].facet_to_loc_map[facet_name];
+			var facetName = intersects[0].object.facet.name;
+			var cubieName = intersects[0].object.facet.cubie.name;
+			var cubicleName = this.cube.cubeState.cubieToLocMap[cubieName];
+			var faceletName = this.cube.cubeState.locToCubieMap[cubicleName].facetToLocMap[facetName];
 			
-			var rotate_face_names = this.cube.is_folded? cubicle_name.split('').filter(x=>x!=facelet_name) : [facelet_name];
+			var rotateFaceNames = this.cube.isFolded? cubicleName.split('').filter(x=>x!=faceletName) : [faceletName];
 			this.intersects = [];
-			rotate_face_names.forEach(x=>this.intersects[x] = raycaster.ray.intersectPlane(this.rotate_face_planes[x]));
-		//console.log("selected: ", facelet_name, cubicle_name, this.intersects, event);
-			this.rotate_face_name = null;
+			rotateFaceNames.forEach(x=>this.intersects[x] = raycaster.ray.intersectPlane(this.rotateFacePlanes[x]));
+		//console.log("selected: ", faceletName, cubicleName, this.intersects, event);
+			this.rotateFaceName = null;
 			
-            this.init_angle = 0;
+            this.initAngle = 0;
 			
 		}else{
-			this.is_in_drag_rotation = false;
+			this.isInDragRotation = false;
 		}
-		this.controls.enabled = !this.is_in_drag_rotation;
+		this.controls.enabled = !this.isInDragRotation;
 	},
 
-	on_touch_start : function(event){
-		this.on_mouse_down(event.touches[0]);
+	onTouchStart : function(event){
+		this.onMouseDown(event.touches[0]);
 	},
 
-	on_touch_move : function(event){
-		this.on_mouse_move(event.touches[0]);
+	onTouchMove : function(event){
+		this.onMouseMove(event.touches[0]);
 	},
 
-	on_touch_end : function(event){
-		this.on_mouse_up(event.touches[0]);
+	onTouchEnd : function(event){
+		this.onMouseUp(event.touches[0]);
 	}
 }

@@ -41,463 +41,462 @@
         //4.2.a.2 M,N: N'XNX' until M,N solved, using Z', to move M,N then repeating untill all fixed
 
 var BottomupSolver = function(state){
-    this.cube_state = new CubeState(state); //store facets per each location
-    this.count_limited = 0;
+    this.cubeState = new CubeState(state); //store facets per each location
+    this.countLimited = 0;
 }
 
 BottomupSolver.prototype = {
     solve : function(){
-        var all_ops = []
+        var allOps = []
         var ops;
-        if (! this.cube_state.is_solved()){
-            var X = this._determine_the_first_layer_to_solve();
+        if (! this.cubeState.isSolved()){
+            var X = this.determineTheFirstLayerToSolve();
             console.log("determined the first layer to solve: %s", X);
-            ops = this._solve_first_layer_edge_cubies(X);
+            ops = this.solveFirstLayerEdgeCubies(X);
             console.log("solved the first layer edge cubies: %s", ops.toString());
-            all_ops = all_ops.concat(ops);
+            allOps = allOps.concat(ops);
             var Z = OPPOSITE_FACE_NAMES[X];
-            ops = this._solve_first_layer_corner_cubies(X, Z);
+            ops = this.solveFirstLayerCornerCubies(X, Z);
             console.log("solved the first layer corner cubies: " + ops);
-            all_ops = all_ops.concat(ops);
-            ops = this._solve_second_layer_edge_cubies(X, Z);
+            allOps = allOps.concat(ops);
+            ops = this.solveSecondLayerEdgeCubies(X, Z);
             console.log("solved the second layer edge cubies: " + ops);
-            all_ops = all_ops.concat(ops);
-            ops = this._solve_third_layer_edge_cubies_cross(Z);
+            allOps = allOps.concat(ops);
+            ops = this.solveThirdLayerEdgeCubiesCross(Z);
             console.log("solved the third layer edge cubies cross: " + ops);
-            all_ops = all_ops.concat(ops);
-            ops = this._solve_third_layer_edge_cubies_position(Z);
+            allOps = allOps.concat(ops);
+            ops = this.solveThirdLayerEdgeCubiesPosition(Z);
             console.log("solved the third layer edge cubies position: " + ops);
-            all_ops = all_ops.concat(ops);
-            this.count_limited = 0;
-            ops = this._solve_third_layer_corner_cubies_position(Z);
+            allOps = allOps.concat(ops);
+            this.countLimited = 0;
+            ops = this.solveThirdLayerCornerCubiesPosition(Z);
             console.log("solved the third layer corner cubies position: " + ops);
-            all_ops = all_ops.concat(ops);
-            ops = this._solve_third_layer_corner_cubies_rotation(X, Z);
+            allOps = allOps.concat(ops);
+            ops = this.solveThirdLayerCornerCubiesRotation(X, Z);
             console.log("solved the third layer corner cubies rotation: " + ops);
-            all_ops = all_ops.concat(ops);
-            ops = this._solve_whole_cube(X, Z);
+            allOps = allOps.concat(ops);
+            ops = this.solveWholeCube(X, Z);
             console.log("solved the whole cube " + ops);
-            all_ops = all_ops.concat(ops);
+            allOps = allOps.concat(ops);
         }
-        return all_ops;
+        return allOps;
     },
 
-    _solve_whole_layer : function(face){
+    solveWholeLayer : function(face){
         var side = ROTATION_FACE_CYCLES[face][0];
         var loc = sort(side+face);
-        var side_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[side];
-        return side == side_facet ? null : get_command_from_path(face, side, side_facet);
+        var sideFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[side];
+        return side == sideFacet ? null : getCommandFromPath(face, side, sideFacet);
     }, 
-    _solve_whole_cube : function (X, Z){
+    solveWholeCube : function (X, Z){
         var ops = [];
-        var op = this._solve_whole_layer(X); 
+        var op = this.solveWholeLayer(X); 
         if (op != null) ops.push(op);
-        op = this._solve_whole_layer(Z); 
+        op = this.solveWholeLayer(Z); 
         if (op != null) ops.push(op);
         return ops;
     },
 
-    _twister_third_layer_corner_cubies : function(loc, X, Z, n){
-        this.count_limited ++;
-        if(this.count_limited > 100) throw "Wrong logic";
+    twisterThirdLayerCornerCubies : function(loc, X, Z, n){
+        this.countLimited ++;
+        if(this.countLimited > 100) throw "Wrong logic";
         var ops = [];
-        var corner_locs = CUBE_FACES[Z].filter(x=>x.length==3);
-        var locs = corner_locs.filter(x=>this.cube_state.loc_to_cubie_map[x].loc_to_facet_map[Z] != Z);
+        var cornerLocs = CUBE_FACES[Z].filter(x=>x.length==3);
+        var locs = cornerLocs.filter(x=>this.cubeState.locToCubieMap[x].locToFacetMap[Z] != Z);
         if (locs.length == 0) return [];
-        //console.log("solving: " , locs, this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[Z], Z);
-        var op = reverse_op(Z);
-        while (this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[Z] == Z) {
-            ops.push(op); this.cube_state.rotate(op);
+        //console.log("solving: " , locs, this.cubeState.locToCubieMap[loc].locToFacetMap[Z], Z);
+        var op = reverseOp(Z);
+        while (this.cubeState.locToCubieMap[loc].locToFacetMap[Z] == Z) {
+            ops.push(op); this.cubeState.rotate(op);
             //console.log("rotating: " + op);
         } 
-        var repeat_times = (this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[n] == Z) ? 2 : 4;
-        var nr = reverse_op(n); var xr = reverse_op(X);
+        var repeatTimes = (this.cubeState.locToCubieMap[loc].locToFacetMap[n] == Z) ? 2 : 4;
+        var nr = reverseOp(n); var xr = reverseOp(X);
         var macro = [];
-        for(var i = 0; i < repeat_times; i++) macro = macro.concat([nr, xr, n, X]);
-        macro.forEach(op=>this.cube_state.rotate(op));  
+        for(var i = 0; i < repeatTimes; i++) macro = macro.concat([nr, xr, n, X]);
+        macro.forEach(op=>this.cubeState.rotate(op));  
         ops = ops.concat(macro);
         //console.log("macro: ", macro);
-        ops = ops.concat(this._twister_third_layer_corner_cubies(loc, X, Z, n));
+        ops = ops.concat(this.twisterThirdLayerCornerCubies(loc, X, Z, n));
         return ops;
     },
 
-    _solve_third_layer_corner_cubies_rotation : function(X, Z){
+    solveThirdLayerCornerCubiesRotation : function(X, Z){
         var ops = [];
-        var locs = CUBE_FACES[Z].filter(loc=>loc.length==3).filter(loc=>!this.cube_state.loc_to_cubie_map[loc].is_solved());
+        var locs = CUBE_FACES[Z].filter(loc=>loc.length==3).filter(loc=>!this.cubeState.locToCubieMap[loc].isSolved());
         if (locs.length > 0){
             var loc = locs[0];
-            var side_locs = loc.split('').filter(side=>side!=Z);
-            var n = (get_command_from_path(Z, side_locs[0], side_locs[1]) == Z) ? side_locs[0] : side_locs[1];
+            var sideLocs = loc.split('').filter(side=>side!=Z);
+            var n = (getCommandFromPath(Z, sideLocs[0], sideLocs[1]) == Z) ? sideLocs[0] : sideLocs[1];
             //console.log("locating to %s", loc);
             //console.log(X, Z, loc, n);
-            ops = ops.concat(this._twister_third_layer_corner_cubies(loc, X, Z, n));
+            ops = ops.concat(this.twisterThirdLayerCornerCubies(loc, X, Z, n));
         }
         return ops;
     },
 
-    _rotate_corner_on_third_layer : function(Z, n){
-        var p = OPPOSITE_FACE_NAMES[n]; var nr = reverse_op(n); var pr = reverse_op(p);
-        var zr = reverse_op(Z);
+    rotateCornerOnThirdLayer : function(Z, n){
+        var p = OPPOSITE_FACE_NAMES[n]; var nr = reverseOp(n); var pr = reverseOp(p);
+        var zr = reverseOp(Z);
         var ops = [Z, n, zr, pr, Z, nr, zr, p];
-        ops.forEach(op=>this.cube_state.rotate(op));
+        ops.forEach(op=>this.cubeState.rotate(op));
         //console.log(Z, n, ops);
         return ops;
     },
 
-    _solve_third_layer_corner_cubies_position : function(Z){
-        this.count_limited ++;
-        if (this.count_limited > 100) throw "Error wrong loop";
-        var corner_locs = CUBE_FACES[Z].filter(loc=>loc.length==3);
-        var position_solved_locs = corner_locs.filter(loc=>this.cube_state.loc_to_cubie_map[loc].name == loc);
-        //console.log("position solved: " + position_solved_locs);
-        //console.log("locations: " + corner_locs);
+    solveThirdLayerCornerCubiesPosition : function(Z){
+        this.countLimited ++;
+        if (this.countLimited > 100) throw "Error wrong loop";
+        var cornerLocs = CUBE_FACES[Z].filter(loc=>loc.length==3);
+        var positionSolvedLocs = cornerLocs.filter(loc=>this.cubeState.locToCubieMap[loc].name == loc);
+        //console.log("position solved: " + positionSolvedLocs);
+        //console.log("locations: " + cornerLocs);
 
         var ops = [];
-        if (position_solved_locs.length == 4)
+        if (positionSolvedLocs.length == 4)
             return ops;
-        if (position_solved_locs.length == 2 || position_solved_locs.length == 3) throw "Wrong status";
+        if (positionSolvedLocs.length == 2 || positionSolvedLocs.length == 3) throw "Wrong status";
         var n;
-        if (position_solved_locs.length == 1){
-            var loc = position_solved_locs[0];
-            var side_locs = loc.split('').filter(side=>side!=Z);
-            n = (get_command_from_path(Z, side_locs[0], side_locs[1]) == Z) ? side_locs[0] : side_locs[1];
+        if (positionSolvedLocs.length == 1){
+            var loc = positionSolvedLocs[0];
+            var sideLocs = loc.split('').filter(side=>side!=Z);
+            n = (getCommandFromPath(Z, sideLocs[0], sideLocs[1]) == Z) ? sideLocs[0] : sideLocs[1];
 
-        }else if(position_solved_locs.length == 0){
+        }else if(positionSolvedLocs.length == 0){
             n = ROTATION_FACE_CYCLES[Z][0];
         }
-        ops = ops.concat(this._rotate_corner_on_third_layer(Z, n));
-        ops = ops.concat(this._solve_third_layer_corner_cubies_position(Z));
+        ops = ops.concat(this.rotateCornerOnThirdLayer(Z, n));
+        ops = ops.concat(this.solveThirdLayerCornerCubiesPosition(Z));
         return ops;
     },
 
-    _switch_edge_position_on_third_layer : function(Z, m, n){
-        var p = OPPOSITE_FACE_NAMES[m]; var pr = reverse_op(p);
+    switchEdgePositionOnThirdLayer : function(Z, m, n){
+        var p = OPPOSITE_FACE_NAMES[m]; var pr = reverseOp(p);
         var ops = [p, Z, pr, Z, p, Z.repeat(2), pr, Z];
-        ops.forEach(op=>this.cube_state.rotate(op));
+        ops.forEach(op=>this.cubeState.rotate(op));
         return ops;
     },
 
-    _solve_third_layer_edge_cubies_position : function(Z){
-        var side_index = [];
-        var index_side = [];
+    solveThirdLayerEdgeCubiesPosition : function(Z){
+        var sideIndex = [];
+        var indexSide = [];
         var ops = [];
-        ROTATION_FACE_CYCLES[Z].forEach((x, i) => {side_index[x] = i; index_side[i] = x;});
-        var current_position = ROTATION_FACE_CYCLES[Z]
-            .map(x=>this.cube_state.loc_to_cubie_map[sort(x+Z)].loc_to_facet_map[x])
-            .map(side=>side_index[side]);
+        ROTATION_FACE_CYCLES[Z].forEach((x, i) => {sideIndex[x] = i; indexSide[i] = x;});
+        var currentPosition = ROTATION_FACE_CYCLES[Z]
+            .map(x=>this.cubeState.locToCubieMap[sort(x+Z)].locToFacetMap[x])
+            .map(side=>sideIndex[side]);
         var n = null; var m = null;
-        for(var i=0; i<current_position.length; i++){
-            var next_i = (i+1) % current_position.length;
-            if ((current_position[next_i] + 1) % current_position.length == current_position[i]){
-                n = index_side[i]; m=index_side[next_i];
+        for(var i=0; i<currentPosition.length; i++){
+            var next = (i+1) % currentPosition.length;
+            if ((currentPosition[next] + 1) % currentPosition.length == currentPosition[i]){
+                n = indexSide[i]; m=indexSide[next];
                 break;
             }
         }
         if (n!=null){
-            ops = ops.concat(this._switch_edge_position_on_third_layer(Z, m, n));
-            ops = ops.concat(this._solve_third_layer_edge_cubies_position(Z));
+            ops = ops.concat(this.switchEdgePositionOnThirdLayer(Z, m, n));
+            ops = ops.concat(this.solveThirdLayerEdgeCubiesPosition(Z));
         }else{ //check last 
-            var side_loc = ROTATION_FACE_CYCLES[Z][0];
-            var side_facet = this.cube_state.loc_to_cubie_map[sort(side_loc+Z)].loc_to_facet_map[side_loc];
-            if (side_loc!=side_facet){
-                var op = get_command_from_path(Z, side_loc, side_facet);
-                ops.push(op); this.cube_state.rotate(op);
-                //ops = ops.concat(this._solve_third_layer_edge_cubies_position(Z));
+            var sideLoc = ROTATION_FACE_CYCLES[Z][0];
+            var sideFacet = this.cubeState.locToCubieMap[sort(sideLoc+Z)].locToFacetMap[sideLoc];
+            if (sideLoc!=sideFacet){
+                var op = getCommandFromPath(Z, sideLoc, sideFacet);
+                ops.push(op); this.cubeState.rotate(op);
+                //ops = ops.concat(this.solveThirdLayerEdgeCubiesPosition(Z));
             }
         }
         return ops;
     },
 
-    _rotate_edge_cubies_on_third_layer : function(Z, m){
-        var zr = reverse_op(Z);
-        var mr = reverse_op(m);
-        var y = ROTATION_FACE_MAP[zr][m]; var yr = reverse_op(y);
+    rotateEdgeCubiesOnThirdLayer : function(Z, m){
+        var zr = reverseOp(Z);
+        var mr = reverseOp(m);
+        var y = ROTATION_FACE_MAP[zr][m]; var yr = reverseOp(y);
         var ops = [m, Z, y, zr, yr, mr];
-        ops.forEach(x=>this.cube_state.rotate(x));
+        ops.forEach(x=>this.cubeState.rotate(x));
         return ops;
     },
 
-    _solve_third_layer_edge_cubies_cross : function(Z){
+    solveThirdLayerEdgeCubiesCross : function(Z){
         //Z: 
         var ops = [];
         //console.log("hello ", Z, ROTATION_FACE_CYCLES[Z]);
-        var z_edge_sides_solved_with_z = ROTATION_FACE_CYCLES[Z].filter(side=>this.cube_state.loc_to_cubie_map[sort(side+Z)].loc_to_facet_map[Z] == Z);
-        if (z_edge_sides_solved_with_z.length == 4) return ops;
+        var zEdgeSidesSolvedWithZ = ROTATION_FACE_CYCLES[Z].filter(side=>this.cubeState.locToCubieMap[sort(side+Z)].locToFacetMap[Z] == Z);
+        if (zEdgeSidesSolvedWithZ.length == 4) return ops;
         var m;
-        if (z_edge_sides_solved_with_z.length == 0){
+        if (zEdgeSidesSolvedWithZ.length == 0){
             m = ROTATION_FACE_CYCLES[Z][0];
-        }else if(z_edge_sides_solved_with_z.length == 1){
-            m = OPPOSITE_FACE_NAMES[z_edge_sides_solved_with_z[0]];
-        }else if(z_edge_sides_solved_with_z.length == 2){
-            if (OPPOSITE_FACE_NAMES[z_edge_sides_solved_with_z[0]] == z_edge_sides_solved_with_z[1])
-                m = ROTATION_FACE_CYCLES[Z].find(side=>!z_edge_sides_solved_with_z.some(x=>x==side));
+        }else if(zEdgeSidesSolvedWithZ.length == 1){
+            m = OPPOSITE_FACE_NAMES[zEdgeSidesSolvedWithZ[0]];
+        }else if(zEdgeSidesSolvedWithZ.length == 2){
+            if (OPPOSITE_FACE_NAMES[zEdgeSidesSolvedWithZ[0]] == zEdgeSidesSolvedWithZ[1])
+                m = ROTATION_FACE_CYCLES[Z].find(side=>!zEdgeSidesSolvedWithZ.some(x=>x==side));
             else{ 
-                if (get_command_from_path(Z, z_edge_sides_solved_with_z[0], z_edge_sides_solved_with_z[1]) == Z)
-                    m = OPPOSITE_FACE_NAMES[z_edge_sides_solved_with_z[1]];
+                if (getCommandFromPath(Z, zEdgeSidesSolvedWithZ[0], zEdgeSidesSolvedWithZ[1]) == Z)
+                    m = OPPOSITE_FACE_NAMES[zEdgeSidesSolvedWithZ[1]];
                 else
-                    m = OPPOSITE_FACE_NAMES[z_edge_sides_solved_with_z[0]]; 
+                    m = OPPOSITE_FACE_NAMES[zEdgeSidesSolvedWithZ[0]]; 
             }
         }else throw "not expected here"
-        ops = ops.concat(this._rotate_edge_cubies_on_third_layer(Z, m));
-        ops = ops.concat(this._solve_third_layer_edge_cubies_cross(Z));
+        ops = ops.concat(this.rotateEdgeCubiesOnThirdLayer(Z, m));
+        ops = ops.concat(this.solveThirdLayerEdgeCubiesCross(Z));
         return ops;
     },
 
-    _solve_second_layer_edge_Z_to_y_on_m : function(m, Z, y){
-        var c = get_command_from_path(Z, m, y); var j = get_command_from_path(y, m, Z); var k = get_command_from_path(m, y, Z);
+    solveSecondLayerEdgeZtoYonM : function(m, Z, y){
+        var c = getCommandFromPath(Z, m, y); var j = getCommandFromPath(y, m, Z); var k = getCommandFromPath(m, y, Z);
         //console.log(c, Z, m, y);
         //console.log(j, y, m, Z);
         //console.log(k, m, Z, y);
-        var cr = reverse_op(c); var jr = reverse_op(j); var kr = reverse_op(k);
+        var cr = reverseOp(c); var jr = reverseOp(j); var kr = reverseOp(k);
         var ops = [cr,j,c,jr,c,k,cr,kr];
         //console.log("OPS now: " + z_to_y);
-        ops.forEach(op=>this.cube_state.rotate(op));
+        ops.forEach(op=>this.cubeState.rotate(op));
         return ops;
     },
 
-    _solve_second_layer_edge_cubies : function(X, Z){
-        var z_edge_locs = CUBE_FACES[Z].filter(loc=>loc.length == 2)
-                .filter(loc=>! (Z in this.cube_state.loc_to_cubie_map[loc].facet_to_loc_map))
-                .map(loc=> [1-this.cube_state.loc_to_cubie_map[loc].get_number_of_facet_solved(), loc])
+    solveSecondLayerEdgeCubies : function(X, Z){
+        var zEdgeLocs = CUBE_FACES[Z].filter(loc=>loc.length == 2)
+                .filter(loc=>! (Z in this.cubeState.locToCubieMap[loc].facetToLocMap))
+                .map(loc=> [1-this.cubeState.locToCubieMap[loc].getNumberOfFacetSolved(), loc])
                 .sort().map(x=>x[1]);
         var ops = [];
         var op;
-        this.count_limited ++;
-        if (this.count_limited > 100) throw "something wrong";
-        //console.log("z_edge_locs: " + z_edge_locs);
-        if (z_edge_locs.length>0){
-            var loc = z_edge_locs[0];
-            var side_loc = loc.split('').find(x=>x!=Z);
-            var side_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[side_loc];
-            var z_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[Z];
-            //console.log("solving %s", loc, side_loc, side_facet);
-            if (side_loc != side_facet){
-                op = get_command_from_path(Z, side_loc, side_facet); //solving side facet
-                ops.push(op); this.cube_state.rotate(op);
+        this.countLimited ++;
+        if (this.countLimited > 100) throw "something wrong";
+        //console.log("zEdgeLocs: " + zEdgeLocs);
+        if (zEdgeLocs.length>0){
+            var loc = zEdgeLocs[0];
+            var sideLoc = loc.split('').find(x=>x!=Z);
+            var sideFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[sideLoc];
+            var zFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[Z];
+            //console.log("solving %s", loc, sideLoc, sideFacet);
+            if (sideLoc != sideFacet){
+                op = getCommandFromPath(Z, sideLoc, sideFacet); //solving side facet
+                ops.push(op); this.cubeState.rotate(op);
                 //console.log("OP Now: " + op);
                 
             }else{
-                //:Z --> z_facet, z_y
-                ops = ops.concat(this._solve_second_layer_edge_Z_to_y_on_m(side_facet, Z, z_facet));
+                //:Z --> zFacet, z_y
+                ops = ops.concat(this.solveSecondLayerEdgeZtoYonM(sideFacet, Z, zFacet));
             }
-            ops = ops.concat(this._solve_second_layer_edge_cubies(X, Z));
+            ops = ops.concat(this.solveSecondLayerEdgeCubies(X, Z));
         }
         var edges = ROTATION_FACE_CYCLES[Z];
-        var neighbor_edges = edges.slice(1, edges.length).concat(edges.slice(0,1));
-        var edge_locs = edges.map((side, i)=>sort(edges[i]+neighbor_edges[i]));
-        //console.log(edge_locs);
-        var m_edge_locs = edge_locs.filter(loc=>!this.cube_state.loc_to_cubie_map[loc].is_solved());
-        if (m_edge_locs.length > 0){
-            var loc = m_edge_locs[0].split('');
-            ops = ops.concat(this._solve_second_layer_edge_Z_to_y_on_m(loc[0], Z, loc[1]));
-            ops = ops.concat(this._solve_second_layer_edge_cubies(X, Z));
+        var neighborEdges = edges.slice(1, edges.length).concat(edges.slice(0,1));
+        var edgeLocs = edges.map((side, i)=>sort(edges[i]+neighborEdges[i]));
+        //console.log(edgeLocs);
+        var mEdgeLocs = edgeLocs.filter(loc=>!this.cubeState.locToCubieMap[loc].isSolved());
+        if (mEdgeLocs.length > 0){
+            var loc = mEdgeLocs[0].split('');
+            ops = ops.concat(this.solveSecondLayerEdgeZtoYonM(loc[0], Z, loc[1]));
+            ops = ops.concat(this.solveSecondLayerEdgeCubies(X, Z));
         }
         return ops;
     },
 
-    _get_loc_when_side_facet_on_side_loc : function(locs, X, Z){
+    getLocWhenSideFacetOnSideLoc : function(locs, X, Z){
         for(var loc of locs){
-            //loc = corner_cubies_x_not_at_z[0];
-            var facet_x_on = this.cube_state.loc_to_cubie_map[loc].facet_to_loc_map[X];
-            var side_loc = loc.split('').find(x=>x!=Z && x!=facet_x_on);
-            var side_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[side_loc];
-            //console.log("side loc and facet: " + side_loc + " " + side_facet);
-            if (side_loc == side_facet) return loc;
+            //loc = cornerCubiesXnotAtZ[0];
+            var facetXon = this.cubeState.locToCubieMap[loc].facetToLocMap[X];
+            var sideLoc = loc.split('').find(x=>x!=Z && x!=facetXon);
+            var sideFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[sideLoc];
+            //console.log("side loc and facet: " + sideLoc + " " + sideFacet);
+            if (sideLoc == sideFacet) return loc;
         }
         return null;
     },
 
-    _get_loc_when_side_facet_on_other_side_loc : function(locs, Z){
+    getLocWhenSideFacetOnOtherSideLoc : function(locs, Z){
         for(var loc of locs){
-            var side_locs = loc.split('').filter(x=>x!=Z);
-            var a_loc = side_locs[0]; b_loc = side_locs[1];
-            var a_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[a_loc]; 
-            var b_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[b_loc];
-            if (b_loc == a_facet) return loc;
+            var sideLocs = loc.split('').filter(x=>x!=Z);
+            var aLoc = sideLocs[0]; bLoc = sideLocs[1];
+            var aFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[aLoc]; 
+            var bFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[bLoc];
+            if (bLoc == aFacet) return loc;
         }
         return null;
     },
 
     
 
-    _solve_first_layer_corner_cubies : function(X, Z){
-        this.count_limited ++;
-        if (this.count_limited > 100) throw "bad loop";
+    solveFirstLayerCornerCubies : function(X, Z){
+        this.countLimited ++;
+        if (this.countLimited > 100) throw "bad loop";
         var ops = [];
-        var op, push_op, loc, side_locs;
-        var z_corner_locs = CUBE_FACES[Z].filter(loc=>loc.length == 3);
-        var corner_cubies_x_not_at_z = z_corner_locs.filter(loc=>X in this.cube_state.loc_to_cubie_map[loc].facet_to_loc_map &&
-            this.cube_state.loc_to_cubie_map[loc].facet_to_loc_map[X] != Z);
-        //console.log("corner_cubies_x_not_at_z: " + corner_cubies_x_not_at_z);
-        if (corner_cubies_x_not_at_z.length >0){
-            //console.log("corner_cubies_x_not_at_z cubies state: ", this.cube_state.get_state());
-            //console.log("corner_cubies_x_not_at_z: " + corner_cubies_x_not_at_z);
+        var op, pushOp, loc, sideLocs;
+        var zCornerLocs = CUBE_FACES[Z].filter(loc=>loc.length == 3);
+        var cornerCubiesXnotAtZ = zCornerLocs.filter(loc=>X in this.cubeState.locToCubieMap[loc].facetToLocMap &&
+            this.cubeState.locToCubieMap[loc].facetToLocMap[X] != Z);
+        //console.log("cornerCubiesXnotAtZ: " + cornerCubiesXnotAtZ);
+        if (cornerCubiesXnotAtZ.length >0){
+            //console.log("cornerCubiesXnotAtZ cubies state: ", this.cubeState.get_state());
+            //console.log("cornerCubiesXnotAtZ: " + cornerCubiesXnotAtZ);
 
-            var loc = this._get_loc_when_side_facet_on_side_loc(corner_cubies_x_not_at_z, X, Z);
+            var loc = this.getLocWhenSideFacetOnSideLoc(cornerCubiesXnotAtZ, X, Z);
             if (loc==null){
-                loc = corner_cubies_x_not_at_z[0];
+                loc = cornerCubiesXnotAtZ[0];
             }
-            var facet_x_on = this.cube_state.loc_to_cubie_map[loc].facet_to_loc_map[X]
-            var side_loc = loc.split('').find(x=>x!=Z && x!=facet_x_on)
-            var side_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[side_loc];
-            //console.log("side loc and facet: " + side_loc + " " + side_facet);
-            if (side_loc != side_facet){
-                op = get_command_from_path(Z, side_loc, side_facet);
-                ops.push(op); this.cube_state.rotate(op);
+            var facetXon = this.cubeState.locToCubieMap[loc].facetToLocMap[X]
+            var sideLoc = loc.split('').find(x=>x!=Z && x!=facetXon)
+            var sideFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[sideLoc];
+            //console.log("side loc and facet: " + sideLoc + " " + sideFacet);
+            if (sideLoc != sideFacet){
+                op = getCommandFromPath(Z, sideLoc, sideFacet);
+                ops.push(op); this.cubeState.rotate(op);
                 //console.log("maving to right corner x not at z: ", op);
             }
             else{
-                //one is Z,facet_x_on in loc
-                push_op = get_command_from_path(facet_x_on, X, side_loc);
-                if (push_op == null || push_op == undefined) throw "error: " + facet_x_on + " " + X + " " + side_loc;
-                ops.push(push_op); this.cube_state.rotate(push_op);
-                //console.log(push_op);
-                op = get_command_from_path(Z, facet_x_on, side_loc);
-                if (op == null || op == undefined) throw "error: " + Z + " " + facet_x_on + " " + side_loc;
-                ops.push(op); this.cube_state.rotate(op);
+                //one is Z,facetXon in loc
+                pushOp = getCommandFromPath(facetXon, X, sideLoc);
+                if (pushOp == null || pushOp == undefined) throw "error: " + facetXon + " " + X + " " + sideLoc;
+                ops.push(pushOp); this.cubeState.rotate(pushOp);
+                //console.log(pushOp);
+                op = getCommandFromPath(Z, facetXon, sideLoc);
+                if (op == null || op == undefined) throw "error: " + Z + " " + facetXon + " " + sideLoc;
+                ops.push(op); this.cubeState.rotate(op);
                 //console.log(op);
-                op = reverse_op(push_op); 
+                op = reverseOp(pushOp); 
                 if (op == null || op == undefined) throw "error:";
-                ops.push(op); this.cube_state.rotate(op);
+                ops.push(op); this.cubeState.rotate(op);
                 //console.log(op);
             }
-            ops = ops.concat(this._solve_first_layer_corner_cubies(X, Z));
+            ops = ops.concat(this.solveFirstLayerCornerCubies(X, Z));
 
         }
-        var corner_cubies_x_at_z = z_corner_locs.filter(loc=>this.cube_state.loc_to_cubie_map[loc].facet_to_loc_map[X] == Z);
-        //console.log("corner_cubies_x_at_z: (%s, %s): ", X, Z);
+        var cornerCubiesXatZ = zCornerLocs.filter(loc=>this.cubeState.locToCubieMap[loc].facetToLocMap[X] == Z);
+        //console.log("cornerCubiesXatZ: (%s, %s): ", X, Z);
         
-        //console.log(corner_cubies_x_at_z.map(loc=>this.cube_state.loc_to_cubie_map[loc]));
-        if (corner_cubies_x_at_z.length > 0){
-            //console.log("corner_cubies_x_at_z cubies state: ", this.cube_state.get_state());
-            //console.log("corner_cubies_x_at_z:" + corner_cubies_x_at_z);
-            var loc = this._get_loc_when_side_facet_on_other_side_loc(corner_cubies_x_at_z, Z);
-            if (loc == null) loc = corner_cubies_x_at_z[0];
-            var side_locs = loc.split('').filter(x=>x!=Z);
-            var a_loc = side_locs[0]; b_loc = side_locs[1];
-            var a_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[a_loc]; 
-            var b_facet = this.cube_state.loc_to_cubie_map[loc].loc_to_facet_map[b_loc];
-            if (b_loc != a_facet){
-                op = get_command_from_path(Z, b_loc, a_facet);
-                //if (op == null || op == undefined) throw "error: " + Z + " " + b_loc + " " + a_facet;
-                ops.push(op); this.cube_state.rotate(op);
+        //console.log(cornerCubiesXatZ.map(loc=>this.cubeState.locToCubieMap[loc]));
+        if (cornerCubiesXatZ.length > 0){
+            //console.log("cornerCubiesXatZ cubies state: ", this.cubeState.get_state());
+            //console.log("cornerCubiesXatZ:" + cornerCubiesXatZ);
+            var loc = this.getLocWhenSideFacetOnOtherSideLoc(cornerCubiesXatZ, Z);
+            if (loc == null) loc = cornerCubiesXatZ[0];
+            var sideLocs = loc.split('').filter(x=>x!=Z);
+            var aLoc = sideLocs[0]; bLoc = sideLocs[1];
+            var aFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[aLoc]; 
+            var bFacet = this.cubeState.locToCubieMap[loc].locToFacetMap[bLoc];
+            if (bLoc != aFacet){
+                op = getCommandFromPath(Z, bLoc, aFacet);
+                //if (op == null || op == undefined) throw "error: " + Z + " " + bLoc + " " + aFacet;
+                ops.push(op); this.cubeState.rotate(op);
                 //console.log("turning to right x->z: %s", op);
             }else{
-                push_op = get_command_from_path(a_facet, X, b_facet); 
-                //if (push_op == null || push_op == undefined) throw "error: " + a_facet + " " + X + " " + b_facet;
-                ops.push(push_op); this.cube_state.rotate(push_op);
-                //console.log(push_op);
-                var z_op = get_command_from_path(Z, b_facet, a_facet); 
-                //if (z_op == null || z_op == undefined) throw "error: " + Z + " " + b_facet + " " + a_facet;
-                ops.push(z_op.repeat(2)); this.cube_state.rotate(z_op.repeat(2));
-                //console.log(z_op.repeat(2));
-                op = reverse_op(push_op); ops.push(op); this.cube_state.rotate(op);
+                var pushOp = getCommandFromPath(aFacet, X, bFacet); 
+                //if (pushOp == null || pushOp == undefined) throw "error: " + aFacet + " " + X + " " + bFacet;
+                ops.push(pushOp); this.cubeState.rotate(pushOp);
+                //console.log(pushOp);
+                var zOp = getCommandFromPath(Z, bFacet, aFacet); 
+                //if (zOp == null || zOp == undefined) throw "error: " + Z + " " + bFacet + " " + aFacet;
+                ops.push(zOp.repeat(2)); this.cubeState.rotate(zOp.repeat(2));
+                //console.log(zOp.repeat(2));
+                op = reverseOp(pushOp); ops.push(op); this.cubeState.rotate(op);
                 //console.log(op);
-                ops.push(z_op); this.cube_state.rotate(z_op);
-                //console.log(z_op);
+                ops.push(zOp); this.cubeState.rotate(zOp);
+                //console.log(zOp);
             }
-            ops = ops.concat(this._solve_first_layer_corner_cubies(X, Z));
+            ops = ops.concat(this.solveFirstLayerCornerCubies(X, Z));
         }
-        var x_corner_locs = CUBE_FACES[X].filter(loc=>loc.length == 3).filter(loc=>!this.cube_state.loc_to_cubie_map[loc].is_solved());
-        //console.log("x_corner_locs: " + x_corner_locs);
-        if (x_corner_locs.length > 0){
-            //console.log("x_corner_locs: " + x_corner_locs);
-            loc = x_corner_locs[0];
-            side_locs = loc.split('').filter(x=>x!=X);
-            var a_loc = side_locs[0]; var b_loc = side_locs[1];
-            push_op = get_command_from_path(a_loc, X, b_loc); ops.push(push_op); this.cube_state.rotate(push_op);
-            //console.log(push_op);
-            op = get_command_from_path(Z, b_loc, a_loc); ops.push(op); this.cube_state.rotate(op);
+        var xCornerLocs = CUBE_FACES[X].filter(loc=>loc.length == 3).filter(loc=>!this.cubeState.locToCubieMap[loc].isSolved());
+        //console.log("xCornerLocs: " + xCornerLocs);
+        if (xCornerLocs.length > 0){
+            //console.log("xCornerLocs: " + xCornerLocs);
+            loc = xCornerLocs[0];
+            sideLocs = loc.split('').filter(x=>x!=X);
+            var aLoc = sideLocs[0]; var bLoc = sideLocs[1];
+            pushOp = getCommandFromPath(aLoc, X, bLoc); ops.push(pushOp); this.cubeState.rotate(pushOp);
+            //console.log(pushOp);
+            op = getCommandFromPath(Z, bLoc, aLoc); ops.push(op); this.cubeState.rotate(op);
             //console.log(op);
-            op = reverse_op(push_op); ops.push(op); this.cube_state.rotate(op);
+            op = reverseOp(pushOp); ops.push(op); this.cubeState.rotate(op);
             //console.log(op);
-            ops = ops.concat(this._solve_first_layer_corner_cubies(X, Z));
+            ops = ops.concat(this.solveFirstLayerCornerCubies(X, Z));
         }
         return ops;
     },
 
-    _exists_solved_cubie_on_face : function(face_name)
+    existsSolvedCubieOnFace : function(faceName)
     {
-        return ROTATION_FACE_CYCLES[face_name].some(side=>this.cube_state.loc_to_cubie_map[sort(side+face_name)].is_solved());
+        return ROTATION_FACE_CYCLES[faceName].some(side=>this.cubeState.locToCubieMap[sort(side+faceName)].isSolved());
     },
 
-    _solve_first_layer_edge_facets: function(facet_to_solve, side_name, cubie_name, X){
+    solveFirstLayerEdgeFacets: function(facetToSolve, sideName, cubieName, X){
         var ops = [];
         var op;
-        var cubie_loc = this.cube_state.cubie_to_loc_map[cubie_name];
-        var facet_loc = this.cube_state.loc_to_cubie_map[cubie_loc].facet_to_loc_map[facet_to_solve];
-        var side_loc = this.cube_state.loc_to_cubie_map[cubie_loc].facet_to_loc_map[side_name];
-        if (facet_loc == facet_to_solve)//solved
+        var cubieLoc = this.cubeState.cubieToLocMap[cubieName];
+        var facetLoc = this.cubeState.locToCubieMap[cubieLoc].facetToLocMap[facetToSolve];
+        var sideLoc = this.cubeState.locToCubieMap[cubieLoc].facetToLocMap[sideName];
+        if (facetLoc == facetToSolve)//solved
             return ops;
-        if (side_loc==facet_to_solve||side_loc == OPPOSITE_FACE_NAMES[facet_to_solve]){
-            if (facet_loc != X && facet_loc != OPPOSITE_FACE_NAMES[X])
-                op = get_command_from_path(facet_loc, X, side_loc);
-            else op = facet_loc;
-            //console.log("solving %s of %s", facet_to_solve, cubie_name);
-            //console.log("got: %s at %s (%s) : %s --> %s ", op, facet_loc, X, side_name, side_loc);
-            ops.push(op); this.cube_state.rotate(op);
-            ops = ops.concat(this._solve_first_layer_edge_facets(facet_to_solve, side_name, cubie_name, X));
+        if (sideLoc==facetToSolve||sideLoc == OPPOSITE_FACE_NAMES[facetToSolve]){
+            if (facetLoc != X && facetLoc != OPPOSITE_FACE_NAMES[X])
+                op = getCommandFromPath(facetLoc, X, sideLoc);
+            else op = facetLoc;
+            //console.log("solving %s of %s", facetToSolve, cubieName);
+            //console.log("got: %s at %s (%s) : %s --> %s ", op, facetLoc, X, sideName, sideLoc);
+            ops.push(op); this.cubeState.rotate(op);
+            ops = ops.concat(this.solveFirstLayerEdgeFacets(facetToSolve, sideName, cubieName, X));
         }else{
-            //console.log("getting command for %s @ %s, %s @ %s", side_name, side_loc, facet_to_solve, facet_loc);
-            if (side_loc == X && this._exists_solved_cubie_on_face(X)){
-                op = facet_loc.repeat(2); //moving the cubie to Z side
+            //console.log("getting command for %s @ %s, %s @ %s", sideName, sideLoc, facetToSolve, facetLoc);
+            if (sideLoc == X && this.existsSolvedCubieOnFace(X)){
+                op = facetLoc.repeat(2); //moving the cubie to Z side
             }else{
-                op = get_command_from_path(side_loc, facet_loc, facet_to_solve);
+                op = getCommandFromPath(sideLoc, facetLoc, facetToSolve);
             }
             //console.log("got command is %s ", op);
             // if (op == null || op == undefined){
-            //     console.log("no op matched for %s, %s, %s", side_loc, facet_loc, facet_to_solve);
+            //     console.log("no op matched for %s, %s, %s", sideLoc, facetLoc, facetToSolve);
             //     throw "Error !";
             // }
-            ops.push(op); this.cube_state.rotate(op);
-            ops = ops.concat(this._solve_first_layer_edge_facets(facet_to_solve, side_name, cubie_name, X));
+            ops.push(op); this.cubeState.rotate(op);
+            ops = ops.concat(this.solveFirstLayerEdgeFacets(facetToSolve, sideName, cubieName, X));
         }
         return ops;
     },
 
-    _solve_first_layer_edge_cubies : function(X){
+    solveFirstLayerEdgeCubies : function(X){
         var ops = [];
-        var sides_to_solve  = ROTATION_FACE_CYCLES[X]
-            .map(side=>[X in this.cube_state.loc_to_cubie_map[sort(side+X)].loc_to_facet_map, 
-                        this.cube_state.loc_to_cubie_map[sort(side+X)].get_number_of_facet_solved(), side])
+        var sidesToSolve  = ROTATION_FACE_CYCLES[X]
+            .map(side=>[X in this.cubeState.locToCubieMap[sort(side+X)].locToFacetMap, 
+                        this.cubeState.locToCubieMap[sort(side+X)].getNumberOfFacetSolved(), side])
             .filter(x=>x[1]!=2).sort().map(x=>x[2]);
-        if (sides_to_solve.length > 0){
-            var side = sides_to_solve[0];
+        if (sidesToSolve.length > 0){
+            var side = sidesToSolve[0];
             var name = sort(side + X);
             var loc = name;
-            if (!this.cube_state.loc_to_cubie_map[loc].is_solved()){
+            if (!this.cubeState.locToCubieMap[loc].isSolved()){
                 //console.log("solving %s on %s ...", side, name);
-                var op = this._solve_first_layer_edge_facets(side, X, name, X)
+                var op = this.solveFirstLayerEdgeFacets(side, X, name, X)
                 ops = ops.concat(op);
                 //console.log("done: " + op);
                 //console.log("solving %s on %s ...", X, name);
-                op = this._solve_first_layer_edge_facets(X, side, name, X)
+                op = this.solveFirstLayerEdgeFacets(X, side, name, X)
                 ops = ops.concat(op);
                 //console.log("done: " + op);
-                this.count_limited ++;
-                //console.log(this.count_limited);
-                if(this.count_limited > 100)
+                this.countLimited ++;
+                //console.log(this.countLimited);
+                if(this.countLimited > 100)
                     throw "count limit hit !";
             }
-            ops = ops.concat(this._solve_first_layer_edge_cubies(X));
+            ops = ops.concat(this.solveFirstLayerEdgeCubies(X));
         };
         return ops;
     },
 
-    _determine_the_first_layer_to_solve : function(){
-        var num_of_edge_facets_solved = [];
-        FACE_NAMES.forEach(face_name=>
+    determineTheFirstLayerToSolve : function(){
+        var numOfEdgeFacetsSolved = [];
+        FACE_NAMES.forEach(faceName=>
             {
-                var count_key =
+                var countKey =
                 [
-                    this.cube_state.get_num_of_facets_solved(CUBE_FACES[face_name].filter(loc=>loc.length==2)),
-                    this.cube_state.get_num_of_facets_solved(CUBE_FACES[face_name].filter(loc=>loc.length==3))
+                    this.cubeState.getNumOfFacetsSolved(CUBE_FACES[faceName].filter(loc=>loc.length==2)),
+                    this.cubeState.getNumOfFacetsSolved(CUBE_FACES[faceName].filter(loc=>loc.length==3))
                 ].map(x=>x<10?"0" + x.toString() : x.toString()).join('');
-                num_of_edge_facets_solved[count_key] = face_name;
+                numOfEdgeFacetsSolved[countKey] = faceName;
             }
         );
-        //console.log(num_of_edge_facets_solved);
-        var max_number_of_facets_solved = Object.keys(num_of_edge_facets_solved).reduce((a,b)=>a>b?a:b);
-        return num_of_edge_facets_solved[max_number_of_facets_solved];
+        //console.log(numOfEdgeFacetsSolved);
+        return numOfEdgeFacetsSolved[Object.keys(numOfEdgeFacetsSolved).reduce((a,b)=>a>b?a:b)];
     },
 }

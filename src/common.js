@@ -11,7 +11,7 @@ var AxisX = {
 		return obj.x;
 	},
 	
-	get_vector3 : function(value){
+	getVector3 : function(value){
 		return new THREE.Vector3(value, 0, 0);
 	},
 
@@ -22,7 +22,7 @@ var AxisX = {
 		obj.x += v;
 	},
 	
-	make_translation: function(m, v){
+	makeTranslation: function(m, v){
 		m.makeTranslation(v, 0, 0);
 	},
 	
@@ -36,7 +36,7 @@ var AxisY = {
 		return obj.y;
 	},
 
-	get_vector3 : function(value){
+	getVector3 : function(value){
 		return new THREE.Vector3(0, value, 0);
 	},
 	
@@ -48,7 +48,7 @@ var AxisY = {
 		obj.y += v;
 	},
 	   
-	make_translation: function(m, v){
+	makeTranslation: function(m, v){
 		m.makeTranslation(0, v, 0);
 	},
 	  
@@ -62,7 +62,7 @@ var AxisZ = {
 		return obj.z;
 	},
 	
-	get_vector3 : function(value){
+	getVector3 : function(value){
 		return new THREE.Vector3(0, 0, value);
 	},
 
@@ -74,7 +74,7 @@ var AxisZ = {
 		obj.z += v;
 	},
 	
-	make_translation: function(m, v){
+	makeTranslation: function(m, v){
 		m.makeTranslation(0, 0, v);
 	},
 	  
@@ -84,7 +84,7 @@ var AxisZ = {
 };
 
 var F = {
-	get_vector2 : function(obj){
+	getVector2 : function(obj){
 		return new THREE.Vector2(obj.x, obj.y);
 	},
 
@@ -92,13 +92,13 @@ var F = {
 		return new THREE.Plane(new THREE.Vector3(0,0,-1), d);
 	},
 	
-	get_op : function(){
+	getOp : function(){
 		return "F";
 	}
 };
 
 var B = {
-	get_vector2 : function(obj){
+	getVector2 : function(obj){
 		return new THREE.Vector2(obj.y, obj.x);
 	},
 
@@ -106,13 +106,13 @@ var B = {
 		return new THREE.Plane(new THREE.Vector3(0,0,1), d);
 	},
 	
-	get_op : function(){
+	getOp : function(){
 		return "B";
 	}
 };
 
 var U = {
-	get_vector2 : function(obj){
+	getVector2 : function(obj){
 		return new THREE.Vector2(obj.z, obj.x);
 	},
 
@@ -120,13 +120,13 @@ var U = {
 		return new THREE.Plane(new THREE.Vector3(0, -1, 0), d);
 	},
 	
-	get_op : function(){
+	getOp : function(){
 		return "U";
 	}
 };
 
 var D = {
-	get_vector2 : function(obj){
+	getVector2 : function(obj){
 		return new THREE.Vector2(obj.x, obj.z);
 	},
 
@@ -134,13 +134,13 @@ var D = {
 		return new THREE.Plane(new THREE.Vector3(0, 1, 0), d);
 	},
 	
-	get_op : function(){
+	getOp : function(){
 		return "D";
 	}
 };
 
 var R = {
-	get_vector2 : function(obj){
+	getVector2 : function(obj){
 		return new THREE.Vector2(obj.y, obj.z);
 	},
 
@@ -148,13 +148,13 @@ var R = {
 		return new THREE.Plane(new THREE.Vector3(-1, 0, 0), d);
 	},
 	
-	get_op : function(){
+	getOp : function(){
 		return "R";
 	}
 };
 
 var L = {
-	get_vector2 : function(obj){
+	getVector2 : function(obj){
 		return new THREE.Vector2(obj.z, obj.y);
 	},
 
@@ -162,7 +162,7 @@ var L = {
 		return new THREE.Plane(new THREE.Vector3(1, 0, 0), d);
 	},
 	
-	get_op : function(){
+	getOp : function(){
 		return "L";
 	}
 };
@@ -170,23 +170,23 @@ var L = {
 var Transform = function(){
 	var translation = new THREE.Matrix4();
 	var rotation = new THREE.Matrix4();
-	var inverse_translation = new THREE.Matrix4();
+	var inverseTranslation = new THREE.Matrix4();
 	return function(translate, axis, angle){
 		translation.makeTranslation(-translate.x, -translate.y, -translate.z);
-		inverse_translation.makeTranslation(translate.x, translate.y, translate.z);
+		inverseTranslation.makeTranslation(translate.x, translate.y, translate.z);
 		rotation.makeRotationAxis(axis, angle);
 		var m = translation.multiplyMatrices(rotation, translation);	
-		m.multiplyMatrices(inverse_translation, m);
+		m.multiplyMatrices(inverseTranslation, m);
 		return m;
 	};
 }()
 
 
-function get_random(min, max) {
+function getRandom(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function eq_set(as, bs){
+function eqSet(as, bs){
 	if (as.size!=bs.size) return false;
 	for(var a of as) if (!bs.has(a)) return false;
 	return true;
@@ -196,7 +196,7 @@ function getNumericStyleProperty(style, prop){
     return parseInt(style.getPropertyValue(prop),10) ;
 }
 
-function element_position(e) {
+function elementPosition(e) {
     var x = 0, y = 0;
     var inner = true ;
     do {

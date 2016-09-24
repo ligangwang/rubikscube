@@ -50,8 +50,8 @@
 			Rotate Down Face: <a onclick="onCommand('D')" href="#">D</a>
 			Rotate Down Face Counterclockwise: <a onclick="onCommand('D\'')" href="#">D'</a><br/>
 			Singmaster cubicle notation: <label></label>UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR<br/>
-			Initial singmaster position: <input type="text" name="init_position" id="init_position" size="67" maxlength="67"> <button type="button" onclick="set_initial_position()"> Set</button> <label id="message" style="color:red"></label><br/>
-			Beginner's method solver, layer by layer: <a onclick="on_bottom_up_solver()" href="#">V</a>
+			Initial singmaster position: <input type="text" name="initPosition" id="initPosition" size="67" maxlength="67"> <button type="button" onclick="setInitialPosition()"> Set</button> <label id="message" style="color:red"></label><br/>
+			Beginner's method solver, layer by layer: <a onclick="onBottomUpSolver()" href="#">V</a>
 		</div>		
 		<br/>-->
 		<div><a href="mailto:ligang@dingn.com?Subject=about%20rubiks%20cube" target="_top">Comments and Questions ?</a> </div>
@@ -70,48 +70,48 @@
 		<script src="lib/stats.min.js"></script>
 		<script src="lib/slice.0.1.0.min.js"></script>
 		<script>
-var cube_element = document.getElementById("cube");
-var cube_console = new CubeConsole(SINGMASTER_SOLVED_STATE, cube_element);
-cube_console.render();
-//cube_console.input_char("O");
+var cubeElement = document.getElementById("cube");
+var cubeConsole = new CubeConsole(SINGMASTER_SOLVED_STATE, cubeElement);
+cubeConsole.render();
+//cubeConsole.input_char("O");
 document.addEventListener( 'keypress', onDocumentKeyPress, false );
 document.addEventListener( 'keydown', onDocumentKeyDown, false );	
-cube_console.renderer.domElement.addEventListener('mousedown', onMouseDown, false);
-cube_console.renderer.domElement.addEventListener('mousemove', onMouseMove, false);
-cube_console.renderer.domElement.addEventListener('mouseup', onMouseUp, false);
-cube_console.renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-cube_console.renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-cube_console.renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+cubeConsole.renderer.domElement.addEventListener('mousedown', onMouseDown, false);
+cubeConsole.renderer.domElement.addEventListener('mousemove', onMouseMove, false);
+cubeConsole.renderer.domElement.addEventListener('mouseup', onMouseUp, false);
+cubeConsole.renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+cubeConsole.renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+cubeConsole.renderer.domElement.addEventListener('touchend', onTouchEnd, false);
 
 
 function onMouseUp(event){
-	cube_console.interactive.on_mouse_up(event);
+	cubeConsole.interactive.onMouseUp(event);
 }	
 
 function onMouseMove(event){
-	cube_console.interactive.on_mouse_move(event);
+	cubeConsole.interactive.onMouseMove(event);
 }	
 
 function onMouseDown(event){
-	cube_console.interactive.on_mouse_down(event);
+	cubeConsole.interactive.onMouseDown(event);
 }	
 function onTouchStart(event){
-	cube_console.interactive.on_touch_start(event);
+	cubeConsole.interactive.onTouchStart(event);
 }	
 
 function onTouchMove(event){
-	cube_console.interactive.on_touch_move(event);
+	cubeConsole.interactive.onTouchMove(event);
 }	
 
 function onTouchEnd(event){
-	cube_console.interactive.on_touch_end(event);
+	cubeConsole.interactive.onTouchEnd(event);
 }	
 
 function onDocumentKeyDown( event ) {
 	var keyCode = event.keyCode;
 	if ( keyCode == 8 ) {
 		//event.preventDefault();
-		cube_console.delete_char();
+		cubeConsole.deleteChar();
 		//console.log("deleting");
 		//return false;
 	}
@@ -125,37 +125,36 @@ function onDocumentKeyPress ( event ) {
 	} else if (document.activeElement.nodeName == "BODY"){
 		var ch = String.fromCharCode( keyCode );
 		if(ch.toUpperCase()=="V"){
-			on_bottom_up_solver();
+			onBottomUpSolver();
 		}else
-			cube_console.input_char(ch);
+			cubeConsole.inputChar(ch);
 	}
 }	
 
 function onCommand(op){
-	cube_console.cube.command(op);
+	cubeConsole.cube.command(op);
 }
 
 function onChangeTransparent(value){
-	transparent = value;
-	opacity = (100-transparent)/100;
-	cube_console.cube.set_opacity(opacity);
+	var opacity = (100-value)/100;
+	cubeConsole.cube.setOpacity(opacity);
 }
 
-function on_bottom_up_solver(){
-	cube_console.cube.set_is_in_solver_mode(true);
-	var solver = new BottomupSolver(cube_console.cube.get_state());
-	solver.solve().forEach(op=>cube_console.cube.command(op));
+function onBottomUpSolver(){
+	cubeConsole.cube.setIsInSolverMode(true);
+	var solver = new BottomupSolver(cubeConsole.cube.getState());
+	solver.solve().forEach(op=>cubeConsole.cube.command(op));
 }
 
-function set_initial_position(){
-	var init_state = document.getElementById("init_position").value;
-	if (!is_valid_cube_state(init_state)){
-		document.getElementById("init_position").select();
+function setInitialPosition(){
+	var initState = document.getElementById("initPosition").value;
+	if (!isValidCubeState(initState)){
+		document.getElementById("initPosition").select();
 		document.getElementById("message").innerText = "invalid state !";
 		return;
 	}else{
 		document.getElementById("message").innerText = "";
-		cube_console.cube.set_cube_state(init_state);
+		cubeConsole.cube.setCubeState(initState);
 	}
 }
 		</script>

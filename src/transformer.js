@@ -6,97 +6,97 @@ var TeleporterModeSlice = 1;
 var TeleporterOut = 0;
 var TeleporterSplit = 1;
 var TeleporterIn = 2;
-var Teleporter = function(scene, facet, distance, out_bound, in_bound, axis, out_direction, in_direction, manual_rotate=false){
+var Teleporter = function(scene, facet, distance, outBound, inBound, axis, outDirection, inDirection, manualRotate=false){
 	this.mode = TeleporterModeSlice;
 	this.scene = scene;
 	this.facet = facet;
 	this.axis = axis;
-	this.out_bound = out_bound; 
-	this.in_bound = in_bound;	
+	this.outBound = outBound; 
+	this.inBound = inBound;	
 	this.distance = distance;		
-	if (out_direction > 0){
+	if (outDirection > 0){
 		this.position = Math.round(facet.geometry.vertices.map(x=>axis.get(x)).reduce((a,b)=>a>b?a:b, -10000));
 	}else{
 		this.position = Math.round(facet.geometry.vertices.map(x=>axis.get(x)).reduce((a,b)=>a>b?b:a, 10000));
 	}
-	this.facet_clone = null;
-	this.facet_in_clone = null;
+	this.facetClone = null;
+	this.facetInSideClone = null;
 	this.length = 200;
-	this.in_bound_value = this.axis.get(this.in_bound);
-	this.out_bound_value = this.axis.get(this.out_bound);
-	//this.distance = Math.abs(this.out_bound_value - origin) + Math.abs(target - this.in_bound_value);
+	this.inBoundValue = this.axis.get(this.inBound);
+	this.outBoundValue = this.axis.get(this.outBound);
+	//this.distance = Math.abs(this.outBoundValue - origin) + Math.abs(target - this.inBoundValue);
 	//console.log(this.distance);
-	this.out_direction = out_direction;
-	this.in_direction = in_direction;
-	this.cut_plane_to_out = new THREE.Plane(axis.get_vector3(-out_direction), this.out_bound_value * this.out_direction);//new THREE.Plane(new THREE.Vector3(0, 0,-1), 900);
-	this.cut_plane_to_in  = new THREE.Plane(axis.get_vector3(out_direction), -this.out_bound_value * this.out_direction);
-	this.in_plane  = new THREE.Plane(axis.get_vector3(in_direction), this.in_bound_value);//new THREE.Plane(new THREE.Vector3(0, 0, 1), 1500);
-	this.manual_rotate = manual_rotate;
+	this.outDirection = outDirection;
+	this.inDirection = inDirection;
+	this.cutPlaneToOut = new THREE.Plane(axis.getVector3(-outDirection), this.outBoundValue * this.outDirection);//new THREE.Plane(new THREE.Vector3(0, 0,-1), 900);
+	this.cutPlaneToIn  = new THREE.Plane(axis.getVector3(outDirection), -this.outBoundValue * this.outDirection);
+	this.inSidePlane  = new THREE.Plane(axis.getVector3(inDirection), this.inBoundValue);//new THREE.Plane(new THREE.Vector3(0, 0, 1), 1500);
+	this.manualRotate = manualRotate;
 
 	this.teleport = new THREE.Matrix4();
-	var in_bound = this.in_bound.clone();
-	in_bound.sub(this.out_bound);
-	this.teleport.makeTranslation(in_bound.x, in_bound.y, in_bound.z);
+	var inBound = this.inBound.clone();
+	inBound.sub(this.outBound);
+	this.teleport.makeTranslation(inBound.x, inBound.y, inBound.z);
 	this.status = TeleporterOut;
 	//console.log("init ", this.facet.name, this.facet.cubie.name);
 }
 
 Teleporter.prototype = {
-	is_all_moved_out : function(){
+	isAllMovedOut : function(){
 		//not exists vertice behind out bound value
-		return !this.facet.geometry.vertices.some(v=>(this.out_direction>0&&this.axis.get(v) < this.out_bound_value) || 
-				(this.out_direction < 0 && this.axis.get(v) > this.out_bound_value))
+		return !this.facet.geometry.vertices.some(v=>(this.outDirection>0&&this.axis.get(v) < this.outBoundValue) || 
+				(this.outDirection < 0 && this.axis.get(v) > this.outBoundValue))
 	},
 
-	exists_moved_out : function(){
-		return this.facet.geometry.vertices.some(v=>(this.out_direction>0 && this.axis.get(v) > this.out_bound_value) ||
-				(this.out_direction < 0 && this.axis.get(v) < this.out_bound_value));
+	existsMovedOut : function(){
+		return this.facet.geometry.vertices.some(v=>(this.outDirection>0 && this.axis.get(v) > this.outBoundValue) ||
+				(this.outDirection < 0 && this.axis.get(v) < this.outBoundValue));
 	},
 
 	transform : function(){
-		var out_translation = new THREE.Matrix4();
-		var in_translation = new THREE.Matrix4();
+		var outTranslation = new THREE.Matrix4();
+		var inTranslation = new THREE.Matrix4();
 		return function(total, delta){
-			var move_distance = delta * this.distance
+			var moveDistance = delta * this.distance
 
 			//console.log("new position: ", this.facet.name, this.facet.cubie.name, new_position, out_cut_len, this.distance);
-			this.axis.make_translation(out_translation, move_distance * this.out_direction);
-			this.axis.make_translation( in_translation, move_distance * this.in_direction);
+			this.axis.makeTranslation(outTranslation, moveDistance * this.outDirection);
+			this.axis.makeTranslation( inTranslation, moveDistance * this.inDirection);
 			if (this.status == TeleporterIn)
-				this.facet.apply_matrix(in_translation);
+				this.facet.applyMatrix(inTranslation);
 			else
-				this.facet.apply_matrix(out_translation);
-			var exists_moved_out = this.exists_moved_out();
-			var is_all_moved_out = this.is_all_moved_out();
-			//console.log("out bound value", this.out_bound_value);
-			if(this.status == TeleporterOut && exists_moved_out){
+				this.facet.applyMatrix(outTranslation);
+			var existsMovedOut = this.existsMovedOut();
+			var isAllMovedOut = this.isAllMovedOut();
+			//console.log("out bound value", this.outBoundValue);
+			if(this.status == TeleporterOut && existsMovedOut){
 				//console.log("cut plane: ", this.out_plane, this.out_cut_plane);
-				var in_geometry  = sliceGeometry(this.facet.geometry.clone(), this.cut_plane_to_in);
-				var out_geometry = sliceGeometry(this.facet.geometry.clone(), this.cut_plane_to_out);
-				//console.log("out_cut: ", in_geometry);
-				this.teleport_geometry_to_in_side(in_geometry);
-				//in_geometry.vertices.forEach(x=>this.axis.add(x, this.in_bound_value-this.out_bound_value));
-				this.facet.update_split_geometries(this.scene,  out_geometry, in_geometry);
+				var inGeometry  = sliceGeometry(this.facet.geometry.clone(), this.cutPlaneToIn);
+				var outGeometry = sliceGeometry(this.facet.geometry.clone(), this.cutPlaneToOut);
+				//console.log("out_cut: ", inGeometry);
+				this.teleportGeometryToInSide(inGeometry);
+				//inGeometry.vertices.forEach(x=>this.axis.add(x, this.inBoundValue-this.outBoundValue));
+				this.facet.updateSplitGeometries(this.scene,  outGeometry, inGeometry);
 				this.status = TeleporterSplit;
 			}
 
-			if (is_all_moved_out || ((!this.manual_rotate) && total == 1 && exists_moved_out)){
+			if (isAllMovedOut || ((!this.manualRotate) && total == 1 && existsMovedOut)){
 				if (this.status !== TeleporterIn){
 					//all moving out
 					//console.log("all moved out: ",this.status, this.facet.name, this.facet.cubie.name);
-					//this.facet.geometry.vertices.forEach(v=>this.axis.add(v, this.in_bound_value-this.out_bound_value));
-					this.teleport_geometry_to_in_side(this.facet.geometry);
-					this.facet.remove_split_geometries(this.scene);	
+					//this.facet.geometry.vertices.forEach(v=>this.axis.add(v, this.inBoundValue-this.outBoundValue));
+					this.teleportGeometryToInSide(this.facet.geometry);
+					this.facet.removeSplitGeometries(this.scene);	
 					this.status = TeleporterIn;
 				}
 			}
 		}
 	}(),
 
-	teleport_geometry_to_in_side: function(geometry){
+	teleportGeometryToInSide: function(geometry){
 		geometry.applyMatrix(this.teleport);
-		if (this.out_direction != this.in_direction){
-			geometry.vertices.forEach(v=>this.axis.add(v, -2 * (this.axis.get(v) - this.in_bound_value)));
+		if (this.outDirection != this.inDirection){
+			geometry.vertices.forEach(v=>this.axis.add(v, -2 * (this.axis.get(v) - this.inBoundValue)));
 		}
 	}
 }
@@ -112,7 +112,7 @@ Translater.prototype = {
 		return function(total, delta){
 			m.makeTranslation(this.translation.x * delta, this.translation.y * delta, this.translation.z * delta);
 			for (var obj of this.objects){
-				obj.apply_matrix(m);
+				obj.applyMatrix(m);
 			}
 		}
 	}(),
@@ -135,7 +135,7 @@ Rotater.prototype = {
 				m.makeRotationAxis(this.axis, this.angle * delta);
 			}
 			for (var obj of this.objects){
-				obj.apply_matrix(m);
+				obj.applyMatrix(m);
 			}
 		}
 	}(),
