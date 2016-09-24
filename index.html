@@ -3,7 +3,7 @@
 	<head>
 		<meta charset=utf-8>
 		<title>Rubik's Cube</title>
-	
+
 	<style>
 			body {
 				background-color: #262626;
@@ -21,17 +21,17 @@
 			}
 
 			#info {
-				color: #ffffff;
+				color: #0078ff;
 				position: absolute;
 				top: 10px;
 				width: 100%;
 			}
 
-		</style>		
+		</style>
 	</head>
 	<body>
-		<div id="cube" style="width: 100%; height:100vh">
-			
+		<div id="cube" style="width: 100%; height:90vh">
+
 		</div>
 		<!--</br>
 		<div class="info">
@@ -52,9 +52,11 @@
 			Singmaster cubicle notation: <label></label>UF UR UB UL DF DR DB DL FR FL BR BL UFR URB UBL ULF DRF DFL DLB DBR<br/>
 			Initial singmaster position: <input type="text" name="initPosition" id="initPosition" size="67" maxlength="67"> <button type="button" onclick="setInitialPosition()"> Set</button> <label id="message" style="color:red"></label><br/>
 			Beginner's method solver, layer by layer: <a onclick="onBottomUpSolver()" href="#">V</a>
-		</div>		
+		</div>
 		<br/>-->
-		<div><a href="mailto:ligang@dingn.com?Subject=about%20rubiks%20cube" target="_top">Comments and Questions ?</a> </div>
+		<div style="color:#0078ff;">
+			rotation commands: F, F', B, B', U, U', D, D', L, L', R, R'   scramble: S, solving: V<br/>
+			<a href="mailto:ligang@dingn.com?Subject=about%20rubiks%20cube" target="_top">Comments and Questions ?</a> </div>
 		<script src="lib/three.min.js"></script>
 		<script src="lib/controls/OrbitControls.js"></script>
 		<script src="lib/Tween.js"></script>
@@ -75,7 +77,7 @@ var cubeConsole = new CubeConsole(SINGMASTER_SOLVED_STATE, cubeElement);
 cubeConsole.render();
 //cubeConsole.input_char("O");
 document.addEventListener( 'keypress', onDocumentKeyPress, false );
-document.addEventListener( 'keydown', onDocumentKeyDown, false );	
+document.addEventListener( 'keydown', onDocumentKeyDown, false );
 cubeConsole.renderer.domElement.addEventListener('mousedown', onMouseDown, false);
 cubeConsole.renderer.domElement.addEventListener('mousemove', onMouseMove, false);
 cubeConsole.renderer.domElement.addEventListener('mouseup', onMouseUp, false);
@@ -86,26 +88,26 @@ cubeConsole.renderer.domElement.addEventListener('touchend', onTouchEnd, false);
 
 function onMouseUp(event){
 	cubeConsole.interactive.onMouseUp(event);
-}	
+}
 
 function onMouseMove(event){
 	cubeConsole.interactive.onMouseMove(event);
-}	
+}
 
 function onMouseDown(event){
 	cubeConsole.interactive.onMouseDown(event);
-}	
+}
 function onTouchStart(event){
 	cubeConsole.interactive.onTouchStart(event);
-}	
+}
 
 function onTouchMove(event){
 	cubeConsole.interactive.onTouchMove(event);
-}	
+}
 
 function onTouchEnd(event){
 	cubeConsole.interactive.onTouchEnd(event);
-}	
+}
 
 function onDocumentKeyDown( event ) {
 	var keyCode = event.keyCode;
@@ -129,7 +131,7 @@ function onDocumentKeyPress ( event ) {
 		}else
 			cubeConsole.inputChar(ch);
 	}
-}	
+}
 
 function onCommand(op){
 	cubeConsole.cube.command(op);
@@ -158,7 +160,7 @@ function setInitialPosition(){
 	}
 }
 		</script>
-		
+
 
 	</body>
 </html>

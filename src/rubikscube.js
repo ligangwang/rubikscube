@@ -1,14 +1,10 @@
 /**
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
-var SquareFrame = 0;
-var SquareFrameless = 1;
-var Facet = function(name, color, cubie, bottomLeft, axis, position){
-	this.shape = SquareFrameless;
+var Facet = function(name, color, cubie, axis, position){
 	this.name = name;
 	this.color = color;
 	this.cubie = cubie;
-	this.bottomLeft = bottomLeft;
 	this.axis = axis;
 	this.position = position.clone();
 	this.createGeometry();
@@ -27,21 +23,11 @@ Facet.prototype = {
 	},
 
 	createGeometry : function(){
-		if (this.shape === SquareFrameless){
 			this.createFacetGeometry();
-		}
-		else{
-			this.createCompositeGeometry();
-		}
 	},
 
 	createMeshes : function (){
-		if (this.shape === SquareFrameless){
 			this.createFacetMeshes();
-		}
-		else{
-			this.createCompositeMeshes();
-		}
 	},
 
 	setGeometry : function(geometry){
@@ -60,7 +46,7 @@ Facet.prototype = {
 		var shape = new THREE.Shape();
 		var height = width;
 		var x = -width/2; y = x;
-	
+
 		shape.moveTo( x, y + radius );
 		shape.lineTo( x, y + height - radius );
 		shape.quadraticCurveTo( x, y + height, x + radius, y + height );
@@ -119,44 +105,12 @@ Facet.prototype = {
 			this.splitGeometry2 = null;
 		}
 	},
-	
-
-	createCompositeGeometry : function(){
-		var vertices = [];
-		var point0 = this.bottomLeft.clone();
-		var point1 = point0.clone().applyAxisAngle(this.axis, Math.PI/2);
-		var point2 = point1.clone().applyAxisAngle(this.axis, Math.PI/2);
-		var point3 = point2.clone().applyAxisAngle(this.axis, Math.PI/2);
-		vertices.push(point0);
-		vertices.push(point1);
-		vertices.push(point2);
-		vertices.push(point3);
-		
-		this.geometry = new THREE.Geometry();
-		this.geometry.vertices = vertices;
-		this.geometry.faces.push(new THREE.Face3(0, 1, 2));
-		this.geometry.faces.push(new THREE.Face3(2, 3, 0));
-	},
-
-	createCompositeMeshes : function(){
-		this.meshes = [this.createSquareMesh(1), this.createEdgeMesh()];
-	},
-
-	createSquareMesh : function(opacity){
-		var material = new THREE.MeshBasicMaterial( { color: this.color, opacity: opacity, transparent: true, side: THREE.DoubleSide } );
-		return new THREE.Mesh( this.geometry, material );
-	},
-	
-	createEdgeMesh : function(){
-		var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 1, linewidth: 6, side: THREE.DoubleSide } );
-		return new THREE.Line(this.geometry, material);
-	},
 
 	setOpacity : function(opacity){
 		console.log("set opacity: ", opacity);
 		this.meshes.forEach(m=>m.material.opacity = opacity);
 	},
-	
+
 	setPosition : function(){
 		var m = new THREE.Matrix4();
 		return function(position){
@@ -165,25 +119,25 @@ Facet.prototype = {
 			this.position.add(position);
 		}
 	}(),
-	
-	applyMatrix: function(matrix){	
+
+	applyMatrix: function(matrix){
 		this.geometry.applyMatrix(matrix);
 		this.geometry.computeFaceNormals();
 		this.geometry.computeVertexNormals();
 	},
-	
+
 	clone: function(){
-		var facet = new Facet(this.name, this.color, this.cubie, this.bottomLeft, this.axis, this.position);
+		var facet = new Facet(this.name, this.color, this.cubie, this.axis, this.position);
 		facet.geometry = this.geometry.clone();
 		facet.createMeshes();
 		facet.setFacetToMeshes()
 		return facet;
 	},
-	
+
 	addContentsToScene : function(scene){
 		this.meshes.forEach(x=>scene.add(x));
 	},
-	
+
 	removeContentsFromScene : function(scene){
 		this.meshes.forEach(x=>scene.remove(x));
 	},
@@ -199,8 +153,8 @@ Cubie.prototype = {
 		cubieState.name.split('').forEach(facetName=>
 			{
 				var faceletName = cubieState.facetToLocMap[facetName];
-				var facet = new Facet(facetName, cubeConfig.facetConfigs[facetName].color, this, 
-					cubeConfig.faceletConfigs[faceletName].bottomLeft, cubeConfig.rotationOnFoldedConfigs[faceletName].axis, cubeConfig.faceletConfigs[faceletName].position);
+				var facet = new Facet(facetName, cubeConfig.facetConfigs[facetName].color, this,
+					 cubeConfig.rotationOnFoldedConfigs[faceletName].axis, cubeConfig.faceletConfigs[faceletName].position);
 				facets[facetName] = facet;
 			}
 		);
@@ -212,7 +166,7 @@ Cubie.prototype = {
 		this.position = position;
 		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.setPosition(position));
 	},
-	
+
 	setOpacity : function(opacity){
 		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.setOpacity(opacity));
 	},
@@ -220,7 +174,7 @@ Cubie.prototype = {
 	applyMatrix: function(matrix){
 		Object.keys(this.facets).map(x=>this.facets[x]).forEach(facet=>facet.applyMatrix(matrix));
 	},
-	
+
 	addContentsToScene : function(scene){
 		Object.keys(this.facets).forEach(x=>this.facets[x].addContentsToScene(scene));
 	},
@@ -232,18 +186,18 @@ Cubie.prototype = {
 
 var RubiksCube = function(state, scene){
 	this.scene = scene;
-	this.cubeConfig = new CubeConfig(); 
+	this.cubeConfig = new CubeConfig();
 	this.position = new THREE.Vector3(0,0,0);
-	this.cubies = [];           
-	
+	this.cubies = [];
+
 	this.setCubeState(state);
 	this.isInAnimation = false;
 	this.commands = "";
 	this.enableAnimation = true;
 	this.isFolded = true;
 	this.setIsInSolverMode(false);
-	this.timePerAnimationMove = 1000; //in ms
-	
+	this.timePerAnimationMove = 5000/10; //in ms
+
 }
 //var debug_count = 0;
 RubiksCube.prototype = {
@@ -272,18 +226,18 @@ RubiksCube.prototype = {
 			delete this.cubies[cubieName];
 		}
 	},
-	
+
 	setOpacity : function(opacity){
 		Object.keys(this.cubies).map(x=>this.cubies[x]).forEach(x=>x.setOpacity(opacity));
 	},
-	
+
 	setIsInSolverMode : function(enabled){
 		this.isInSolverMode = enabled;
 	},
 
 	test : function(){
 		//console.log(this.getState());
-		
+
 		//console.log(this.cubies["DFR"].facets["F"].geometry.vertices.map(x=>x.z).reduce((a,b)=>a>b?a:b, -10000));
 		var cubie = this.cubies["DFL"].facets["L"];
 		// if (debug_count % 2 == 0)
@@ -307,9 +261,9 @@ RubiksCube.prototype = {
 		//F
 		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(1,0,0), 800)); //OUT
 		//geometry = sliceGeometry(cubie.geometry, new THREE.Plane(new THREE.Vector3(-1,0,0), -800)); //IN
-		
+
 		/*
-		geometry.vertices.forEach((v, i)=> 
+		geometry.vertices.forEach((v, i)=>
 			{
 				if(v.z < 800)
 					console.log("not equal vertice: ", v);
@@ -319,12 +273,12 @@ RubiksCube.prototype = {
 		geometry.vertices.forEach(v=>{
 				v.y -= 200;
 			});
-		
+
 		mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide}));
 		this.scene.add(mesh);
 		*/
 	},
-	
+
 	getFacetFromLocationFace : function(loc, locFaceName){
 		cubieState = this.cubeState.locToCubieMap[loc]
 		return this.cubies[cubieState.name].facets[cubieState.locToFacetMap[locFaceName]];
@@ -353,11 +307,11 @@ RubiksCube.prototype = {
 					var facets = this.getFacetsFromCubies(rotateCubies, rotateConfig.facets);
 					var rotateAngle = (totalAngle===null)? rotateConfig.angle : rotateConfig.angle * totalRatio;
 					rotateAngle -= rotateConfig.angle * initRatio;
-					transformers.push(new Rotater(facets, rotateConfig.origin, this.cubeConfig.axis_y, rotateAngle));
+					transformers.push(new Rotater(facets, rotateConfig.origin, this.cubeConfig.axisY, rotateAngle));
 				}else if (rotateConfig.transformType == "teleporter"){
 					var distance = (totalAngle ===null)? rotateConfig.distance : rotateConfig.distance * totalRatio;
 					distance -= rotateConfig.distance * initRatio;
-					transformers.push(new Teleporter(this.scene, this.getFacetFromLocationFace(rotateConfig.cubicle, rotateConfig.facet),  
+					transformers.push(new Teleporter(this.scene, this.getFacetFromLocationFace(rotateConfig.cubicle, rotateConfig.facet),
 					distance,  rotateConfig.outBound, rotateConfig.inBound, rotateConfig.axis, rotateConfig.outDirection, rotateConfig.inDirection, totalAngle !== null));
 				}
 			}
@@ -374,14 +328,14 @@ RubiksCube.prototype = {
 			console.log("the cube is rotating. quiting ".concat(op))
 			return;
 		}
-		var transformers = this.getTransformers(op, initAngle, null);	
-		var cube = this;	
-		this.WithAnimation(
-			function(args, total, delta){ 
+		var transformers = this.getTransformers(op, initAngle, null);
+		var cube = this;
+		this.withAnimation(
+			function(args, total, delta){
 				transformers.forEach(x=>x.transform(total, delta));
-			}, 
+			},
 			{cube:this},
-			function(args){ 
+			function(args){
 				cube.cubeState.rotate(op);
 				if (cube.cubeState.isSolved() && cube.isInSolverMode){
 					cube.setIsInSolverMode(false);
@@ -389,9 +343,9 @@ RubiksCube.prototype = {
 			}
 		);
 	},
-	
-	
-	WithAnimation: function(action, args, onComplete){
+
+
+	withAnimation: function(action, args, onComplete){
 		if (this.enableAnimation){
 			this.isInAnimation = true;
 			var tween = new TWEEN.Tween({value:0.0}).to({value: 1.0}, this.timePerAnimationMove);
@@ -413,7 +367,7 @@ RubiksCube.prototype = {
 			args.cube.doNextCommand();
 		}
 	},
-	
+
 	isActive : function(){
 		return this.isInAnimation || this.isInSolverMode;
 	},
@@ -436,7 +390,7 @@ RubiksCube.prototype = {
 	getFacetsFromCubies : function(cubies, locFaceNames){
 		return [].concat.apply([], locFaceNames.split('').map(locFace=>this.getFacetsByLocFace(cubies, locFace)));
 	},
-	
+
 	doFold: function(doUnfolding, delta){
 		for (var facetName in this.cubeConfig.facetFoldingConfig){
 			var facets = this.getFacets(facetName);
@@ -453,18 +407,18 @@ RubiksCube.prototype = {
 				for (var facet of facets){
 					facet.applyMatrix(m);
 					facet.position.applyMatrix4(m);
-				} 
+				}
 			}
 		}
 	},
-	
+
 	fold : function(){
-		this.WithAnimation(
-			function(args, total, delta){ 
+		this.withAnimation(
+			function(args, total, delta){
 				args.cube.doFold(args.cube.isFolded, delta);
-			}, 
+			},
 			{cube:this},
-			function(args){ 
+			function(args){
 				args.cube.isFolded  = !args.cube.isFolded;
 				/*
 				for (var facetName in args.cube.cubeConfig.facetFoldingConfig){
@@ -486,13 +440,13 @@ RubiksCube.prototype = {
 	},
 
 	command : function(command){
-		this.commands = this.commands.concat(command);	
+		this.commands = this.commands.concat(command);
 		if (!this.isInAnimation){
 			this.doNextCommand();
 		}
 	},
-	
-	
+
+
 	doNextCommand : function(){
 		var op = this.getNextOp();
 		if (op != ""){
@@ -508,7 +462,7 @@ RubiksCube.prototype = {
 			else{this.rotate(op);}
 		}
 	},
-	
+
 	getNextOp : function(){
 		var len = this.commands.length;
 		var lookAt = 0;
@@ -525,14 +479,14 @@ RubiksCube.prototype = {
 		this.commands = this.commands.slice(lookAt);
 		return op;
 	},
-	
+
 	randomize : function(){
 		var saved = this.enableAnimation;
 		this.enableAnimation = false;
 		getRandomOps().forEach(x=>this.rotate(x));
-		this.enableAnimation = saved; 	
+		this.enableAnimation = saved;
 	},
-	
+
 
 	getCubeState : function(){
 		return this.cubeState.clone();

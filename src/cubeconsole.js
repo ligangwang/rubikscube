@@ -8,7 +8,7 @@ var CubeConsole = function(initialState, parentControl){
 	this.cube.enableAnimation = true;
 	this.inputText = "";
 	this.inputTimer = null;
-	
+
 	this.parentControl = parentControl;
 	this.renderWidth = parentControl.offsetWidth;
 	this.renderHeight = parentControl.offsetHeight;
@@ -16,7 +16,7 @@ var CubeConsole = function(initialState, parentControl){
 	this.renderer.setPixelRatio( window.devicePixelRatio );
 	this.renderer.setSize( this.renderWidth, this.renderHeight );
 	this.renderer.setClearColor(0x262626);
-	
+
 	//this.renderer.autoClear = false;
 	this.parentControl.appendChild( this.renderer.domElement );
 	this.stats = new Stats();
@@ -29,34 +29,37 @@ var CubeConsole = function(initialState, parentControl){
 	this.camera.position.x = 1000;
 
 	this.interactive = new CubeInteractive(this.cube, this.camera, this.renderer.domElement);
-	
+
 	this.cubeController = {
-		speed : 5,
+		speed : 10,
 		transparent : 0
 	};
 	this.initController();
 
-/*	
+/*
 	var plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), -200);
 	var geom = new THREE.SphereGeometry(100, 100, 100);
 	geom = sliceGeometry(geom, plane);
 	var material = new THREE.MeshBasicMaterial({ wireframe: false });
 	var mesh = new THREE.Mesh(geom, material);
-	this.cube.scene.add(mesh);	
-*/	
+	this.cube.scene.add(mesh);
+*/
 }
 
 CubeConsole.prototype = {
 	initController : function(){
 		var gui = new dat.GUI();
-		gui.add(this.cubeController, "speed", 1, 50, 5).onChange(v=>{
-			this.cube.timePerAnimationMove = 5000/v; 
+		gui.add(this.cubeController, "speed", 1, 50, 10).onChange(v=>{
+			this.cube.timePerAnimationMove = 5000/v;
 		});
 		gui.add(this.cubeController, "transparent", 0, 100, 0).onChange(v=>{
 			var transparent = v;
 			var opacity = (100-transparent)/100;
 			this.cube.setOpacity(opacity);
 		});
+		
+		gui.closed = true;
+
 	},
 
 	render : function(){
@@ -73,13 +76,13 @@ CubeConsole.prototype = {
 			requestAnimationFrame( animate );
 		}
 		animate();
-	},	
-	
+	},
+
 	resetInputTimer : function(){
 		window.clearTimeout(this.inputTimer);
 		this.inputTimer = window.setTimeout(this.onTimer, 1000, this);
 	},
-	
+
 
 	onTimer : function(console){
 		if (console.inputText.length > 0){
@@ -88,7 +91,7 @@ CubeConsole.prototype = {
 		}
 	},
 
-	deleteChar : function(){	
+	deleteChar : function(){
 		this.inputText = this.inputText.substring( 0, this.inputText.length - 1 );
 		this.resetInputTimer();
 	},
