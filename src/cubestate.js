@@ -35,8 +35,8 @@ for(var opKey in ROTATION_FACE_CYCLES){
     ROTATION_FACE_MAP[opKey.repeat(2)] = convertCycleToMap(ROTATION_FACE_CYCLES[opKey], 2);
     var opFace = opKey.slice(0, 1);
     map[opFace] = opFace; //the same face not changed.
-    ROTATION_FACE_MAP[opKey][opFace] = opFace; 
-    ROTATION_FACE_MAP[opKey.repeat(2)][opFace] = opFace; 
+    ROTATION_FACE_MAP[opKey][opFace] = opFace;
+    ROTATION_FACE_MAP[opKey.repeat(2)][opFace] = opFace;
 }
 
 //console.log(ROTATION_FACE_MAP);
@@ -58,10 +58,10 @@ var getCommandFromPath = function(rotateFace, fromSide, toSide){
     if (!matched)
         return null;
 
-    return steps > cycle.length/2 ? (rotateFace + "'").repeat(steps-cycle.length/2) : rotateFace.repeat(steps); 
+    return steps > cycle.length/2 ? (rotateFace + "'").repeat(steps-cycle.length/2) : rotateFace.repeat(steps);
 }
 
-CUBE_FACES = [];	//cube index storing locations(cubicles) per face 
+CUBE_FACES = [];	//cube index storing locations(cubicles) per face
 FACE_NAMES.forEach(x=>CUBE_FACES[x] = []);
 ALL_SLOTS.forEach(x=>{
         var loc = sort(x);
@@ -83,7 +83,8 @@ function getRandomOps(){
     return Array.from(Array(20).keys()).map(x=>OPERATIONS[getRandom(0, OPERATIONS.length - 1)]);
 }
 
-var CubieState = function(facetOrientation, locOrientation){
+class CubieState{
+  constructor(facetOrientation, locOrientation){
     this.name = sort(facetOrientation);
     this.cubicle = sort(locOrientation);
     this.locToFacetMap = [];
@@ -93,100 +94,98 @@ var CubieState = function(facetOrientation, locOrientation){
             this.locToFacetMap[locOrientation[i]] = x;
         }
     );
-}
+  }
 
-CubieState.prototype = {
-    rotate : function(op){
-        var locToFacetMap = []
-        Object.keys(this.locToFacetMap).forEach(fromLoc=>
-            {
-                toLoc = ROTATION_FACE_MAP[op][fromLoc];
-                facetName = this.locToFacetMap[fromLoc];
-                locToFacetMap[toLoc] = facetName;
-                this.facetToLocMap[facetName] = toLoc;
-            }
-        );
-        this.locToFacetMap = locToFacetMap;
-        this.cubicle = Object.keys(locToFacetMap).sort().join('');
-        return this.cubicle; //returning new location
-    },
+  rotate(op){
+      let locToFacetMap = []
+      Object.keys(this.locToFacetMap).forEach(fromLoc=>
+          {
+              let toLoc = ROTATION_FACE_MAP[op][fromLoc];
+              let facetName = this.locToFacetMap[fromLoc];
+              locToFacetMap[toLoc] = facetName;
+              this.facetToLocMap[facetName] = toLoc;
+          }
+      );
+      this.locToFacetMap = locToFacetMap;
+      this.cubicle = Object.keys(locToFacetMap).sort().join('');
+      return this.cubicle; //returning new location
+  }
 
-	isSolved : function(){
+	isSolved(){
 		return Object.keys(this.locToFacetMap).every(x=>x == this.locToFacetMap[x]);
-	},
-    
-    getNumberOfFacetSolved : function(){
-        return Object.keys(this.facetToLocMap).filter(x=>this.facetToLocMap[x] == x).length;
-    },
+	}
 
-    clone : function(){
-        var facets = Object.keys(this.facetToLocMap);
-        var locs = facets.map(x=>this.facetToLocMap[x]);
-        return new CubieState(facets.join(''), locs.join(''));
-    },
-   
+  getNumberOfFacetSolved(){
+      return Object.keys(this.facetToLocMap).filter(x=>this.facetToLocMap[x] == x).length;
+  }
+
+  clone(){
+      var facets = Object.keys(this.facetToLocMap);
+      var locs = facets.map(x=>this.facetToLocMap[x]);
+      return new CubieState(facets.join(''), locs.join(''));
+  }
 }
 
-var CubeState = function(state){
+class CubeState{
+  constructor(state){
     this.locToCubieMap = [];
     this.cubieToLocMap = [];
     this.initState = state;
     var cubies = state.split(' ').concat(FACE_NAMES);
     if (ALL_SLOTS.length != cubies.length) throw "Length not matched for cubicle and cubie";
     ALL_SLOTS.forEach((x, i)=>this.addCubieState(ALL_SLOTS[i], cubies[i]));
-}
+  }
 
-CubeState.prototype = {
-    getState : function(){
-        return SINGMASTER_SOLVED_SLOTS
-            .map(x=>x.split('').map(o=>this.locToCubieMap[sort(x)].locToFacetMap[o]))
-            .map(x=>x.join('')).join(' ');
-    },
+  getState(){
+      return SINGMASTER_SOLVED_SLOTS
+          .map(x=>x.split('').map(o=>this.locToCubieMap[sort(x)].locToFacetMap[o]))
+          .map(x=>x.join('')).join(' ');
+  }
 
 
-    addCubieState : function(locOrientation, facetOrientation){
-        var loc = sort(locOrientation);
-        var cubieState = new CubieState(facetOrientation, locOrientation);
-        this.locToCubieMap[loc] = cubieState;
-        this.cubieToLocMap[cubieState.name] = loc;
-    },
+  addCubieState(locOrientation, facetOrientation){
+      var loc = sort(locOrientation);
+      var cubieState = new CubieState(facetOrientation, locOrientation);
+      this.locToCubieMap[loc] = cubieState;
+      this.cubieToLocMap[cubieState.name] = loc;
+  }
 
-    rotate : function(op){
-        var locToCubieMap = [];
-        var opFaceName = op.slice(0, 1);
-        CUBE_FACES[opFaceName].forEach(fromLoc=>
-            {
-                cubieState = this.locToCubieMap[fromLoc];
-                var toLoc = cubieState.rotate(op);
-                this.cubieToLocMap[cubieState.name] = toLoc;
-                locToCubieMap[toLoc] = cubieState;
-            }
-        );
+  rotate(op){
+      let locToCubieMap = [];
+      let opFaceName = op.slice(0, 1);
+      CUBE_FACES[opFaceName].forEach(fromLoc=>
+          {
+              let cubieState = this.locToCubieMap[fromLoc];
+              let toLoc = cubieState.rotate(op);
+              this.cubieToLocMap[cubieState.name] = toLoc;
+              locToCubieMap[toLoc] = cubieState;
+          }
+      );
 
-        Object.keys(locToCubieMap).forEach(loc=>this.locToCubieMap[loc] = locToCubieMap[loc]);
-    },
+      Object.keys(locToCubieMap).forEach(loc=>this.locToCubieMap[loc] = locToCubieMap[loc]);
+  }
 
-    getCubieStates : function(locFaceName){
-        return CUBE_FACES[locFaceName].map(loc=>this.locToCubieMap[loc]);
-    },
+  getCubieStates(locFaceName){
+      return CUBE_FACES[locFaceName].map(loc=>this.locToCubieMap[loc]);
+  }
 
-    getCubieState : function(cubieName){
-        return this.locToCubieMap[this.cubieToLocMap[cubieName]];
-    },
+  getCubieState(cubieName){
+      return this.locToCubieMap[this.cubieToLocMap[cubieName]];
+  }
 
-	isSolved : function(){
+	isSolved(){
 		return Object.keys(this.locToCubieMap).map(loc=>this.locToCubieMap[loc]).every(cubieState=>cubieState.isSolved());
-	},
+	}
 
-    getNumOfFacetsSolved : function(locations){
-        return locations.map(loc=>Object.keys(this.locToCubieMap[loc].locToFacetMap)
-                    .filter(x=>x==this.locToCubieMap[loc].locToFacetMap[x]).length)
-                    .reduce((a,b)=>a+b, 0);
-    },
+  getNumOfFacetsSolved(locations){
+      return locations.map(loc=>Object.keys(this.locToCubieMap[loc].locToFacetMap)
+                  .filter(x=>x==this.locToCubieMap[loc].locToFacetMap[x]).length)
+                  .reduce((a,b)=>a+b, 0);
+  }
 
-    clone : function(){
-        return new CubeState(this.getState());
-    }
+  clone(){
+      return new CubeState(this.getState());
+  }
 }
 
 function isValidCubeState(state){
@@ -223,7 +222,7 @@ function getCycles(slots, cubies){
     var cubieToLocMap = [];
     cubies.map((x,i)=>[cubies[i], slots[i]]).filter(x=>x[0] != x[1]).forEach(x=>cubieToLocMap[x[0]] = x[1]);
     //from 0 to 1
-    var counts = 0;    
+    var counts = 0;
     var cubieNames = Object.keys(cubieToLocMap);
     if (cubieNames.length == 0) return [];
     var cycle = [];
@@ -247,5 +246,5 @@ function getCycles(slots, cubies){
             cycle = [];
         }
     });
-    return cycles;    
+    return cycles;
 }

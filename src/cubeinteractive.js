@@ -1,51 +1,51 @@
-var CubeInteractive = function(cube, camera, element){
+class CubeInteractive{
+  constructor(cube, camera, element){
     this.cube = cube;
     this.camera = camera;
     this.element = element;
-	this.isInDragRotation = false;
-	this.raycaster = new THREE.Raycaster();
-	this.mouse = new THREE.Vector2();
-	this.rotateFaces = []; 
-	[R, L, U, D, F, B].forEach(x=>this.rotateFaces[x.getOp()] = x);
-	this.rotateFacePlanes = [];
-	Object.keys(this.rotateFaces).forEach(x=>{
-			this.rotateFacePlanes[x]=(cube.isFolded)?this.rotateFaces[x].plane(300): U.plane(300);
-		}
-	);
-	this.rotateFaceName = null;
-	this.controls = new THREE.OrbitControls(this.camera, this.element);
-	this.controls.enableDamping = true;
-	this.controls.dampingFactor = 0.25;
-	this.controls.enableZoom = false;
+  	this.isInDragRotation = false;
+  	this.raycaster = new THREE.Raycaster();
+  	this.mouse = new THREE.Vector2();
+  	this.rotateFaces = [];
+  	[R, L, U, D, F, B].forEach(x=>this.rotateFaces[x.getOp()] = x);
+  	this.rotateFacePlanes = [];
+  	Object.keys(this.rotateFaces).forEach(x=>{
+  			this.rotateFacePlanes[x]=(cube.isFolded)?this.rotateFaces[x].plane(300): U.plane(300);
+  		}
+  	);
+  	this.rotateFaceName = null;
+  	this.controls = new THREE.OrbitControls(this.camera, this.element);
+  	this.controls.enableDamping = true;
+  	this.controls.dampingFactor = 0.25;
+  	this.controls.enableZoom = false;
     this.initAngle = 0;
     this.lastAngle = 0;
     this.intersect = null;
-}
+  }
 
-CubeInteractive.prototype = {
-	onMouseUp : function(event){
+	onMouseUp(event){
 		if (this.isInDragRotation && this.rotateFaceName !== null){
 			//rotating remaining part
-            var op = this.rotateFaces[this.rotateFaceName].getOp();
-            if (this.lastAngle * this.initAngle < 0){
-                //cancel op
-                this.cube.rotateAngle(op, -this.initAngle);
-            }else{
-                if (this.initAngle > 0) op = op + "'";
-                this.cube.rotate(op, this.initAngle, null);
-            }
+      var op = this.rotateFaces[this.rotateFaceName].getOp();
+      if (this.lastAngle * this.initAngle < 0){
+          //cancel op
+          this.cube.rotateAngle(op, -this.initAngle);
+      }else{
+          if (this.initAngle > 0) op = op + "'";
+          this.cube.rotate(op, this.initAngle, null);
+      }
 		}
 		this.isInDragRotation = false;
         this.rotateFaceName = null;
-	},
+	}
 
-    getSmallAngle : function(angle){
-        if (angle > Math.PI) angle = Math.PI * 2 - angle;
-        if (angle < -Math.PI) angle = Math.PI * 2 + angle;
-        return angle;
-    },
+  getSmallAngle(angle){
+    if (angle > Math.PI) angle = Math.PI * 2 - angle;
+    if (angle < -Math.PI) angle = Math.PI * 2 + angle;
+    return angle;
+  }
 
-	onMouseMove : function(event){
+	onMouseMove(event){
 		if (this.isInDragRotation){
 			this.setMousePosition(this.mouse, event);
 			this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -76,20 +76,20 @@ CubeInteractive.prototype = {
                 this.initAngle += angle;
                 this.lastAngle = angle;
 				this.intersect = intersect;
-                
+
 			}
 		}
-	},
+	}
 
-	setMousePosition : function(mouse, event){
-    	var p = elementPosition(this.element);
+	setMousePosition(mouse, event){
+    var p = elementPosition(this.element);
 		var x = event.pageX - p.x;
-		var y = event.pageY - p.y; 
+		var y = event.pageY - p.y;
 		mouse.x = (x / this.element.offsetWidth) * 2 - 1;
 		mouse.y = -(y / this.element.offsetHeight) * 2 + 1;
-	},
+	}
 
-	onMouseDown : function(event){
+	onMouseDown(event){
 		//console.log("down: ", event);
 		if (this.cube.isActive() || !this.cube.isFolded) return;
 		var mouse = new THREE.Vector2();
@@ -104,30 +104,28 @@ CubeInteractive.prototype = {
 			var cubieName = intersects[0].object.facet.cubie.name;
 			var cubicleName = this.cube.cubeState.cubieToLocMap[cubieName];
 			var faceletName = this.cube.cubeState.locToCubieMap[cubicleName].facetToLocMap[facetName];
-			
+
 			var rotateFaceNames = this.cube.isFolded? cubicleName.split('').filter(x=>x!=faceletName) : [faceletName];
 			this.intersects = [];
 			rotateFaceNames.forEach(x=>this.intersects[x] = raycaster.ray.intersectPlane(this.rotateFacePlanes[x]));
 		//console.log("selected: ", faceletName, cubicleName, this.intersects, event);
 			this.rotateFaceName = null;
-			
-            this.initAngle = 0;
-			
+      this.initAngle = 0;
 		}else{
 			this.isInDragRotation = false;
 		}
 		this.controls.enabled = !this.isInDragRotation;
-	},
+	}
 
-	onTouchStart : function(event){
+	onTouchStart(event){
 		this.onMouseDown(event.touches[0]);
-	},
+	}
 
-	onTouchMove : function(event){
+	onTouchMove(event){
 		this.onMouseMove(event.touches[0]);
-	},
+	}
 
-	onTouchEnd : function(event){
+	onTouchEnd(event){
 		this.onMouseUp(event.touches[0]);
 	}
 }
