@@ -1,7 +1,7 @@
 # Rubik's Cube and its Solvers
 
 This is a 3D 3x3x3 Rubik's Cube written in Javascript for Web and Mobile.
-
+Cordova is used in developing the Rubik's cube application with cross-platform (Web/Android/iOS) support.
 
 ## It features:
 * Input initial position using Singmaster positional notation
