@@ -8,7 +8,7 @@
     },
     "installed_plugins": {
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.dingn.Rubikscube"
+            "PACKAGE_NAME": "com.dingn.rubikscube"
         }
     },
     "dependent_plugins": {}

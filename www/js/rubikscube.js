@@ -196,7 +196,7 @@ class RubiksCube{
 		this.enableAnimation = true;
 		this.isFolded = true;
 		this.setIsInSolverMode(false);
-		this.timePerAnimationMove = 5000/10; //in ms
+		this.timePerAnimationMove = 5000/20; //in ms
 
 	}
 

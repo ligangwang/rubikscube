@@ -19,8 +19,8 @@ class CubeConsole{
 
 		//this.renderer.autoClear = false;
 		this.parentControl.appendChild( this.renderer.domElement );
-		this.stats = new Stats();
-		this.parentControl.appendChild( this.stats.dom );
+		//this.stats = new Stats();
+		//this.parentControl.appendChild( this.stats.dom );
 
 		this.camera = new THREE.PerspectiveCamera( 50, this.renderWidth / this.renderHeight, 0.1, 10000 );
 		this.camera.lookAt(this.cube.scene.position);
@@ -29,13 +29,6 @@ class CubeConsole{
 		this.camera.position.x = 1000;
 
 		this.interactive = new CubeInteractive(this.cube, this.camera, this.renderer.domElement);
-
-		this.cubeController = {
-			speed : 10,
-			transparent : 0
-		};
-		this.initController();
-
 /*
 	var plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), -200);
 	var geom = new THREE.SphereGeometry(100, 100, 100);
@@ -46,32 +39,16 @@ class CubeConsole{
 */
 	}
 
-
-	initController(){
-		var gui = new dat.GUI();
-		gui.add(this.cubeController, "speed", 1, 50, 10).onChange(v=>{
-			this.cube.timePerAnimationMove = 5000/v;
-		});
-		gui.add(this.cubeController, "transparent", 0, 100, 0).onChange(v=>{
-			var transparent = v;
-			var opacity = (100-transparent)/100;
-			this.cube.setOpacity(opacity);
-		});
-
-		gui.closed = true;
-
-	}
-
 	render(){
 		var scene = this.cube.scene;
 		var renderer = this.renderer;
 		var camera = this.camera;
 		var controls = this.interactive.controls;
-		var stats = this.stats;
+		//var stats = this.stats;
 		function animate() {
 			TWEEN.update();
 			controls.update();
-			stats.update();
+			//stats.update();
 			renderer.render( scene, camera );
 			requestAnimationFrame( animate );
 		}

@@ -18,18 +18,24 @@
         <title>Rubik's Cube</title>
     </head>
     <body>
-        <div class="app">
-            <div id="cube" style="width: 100%; height:100vh">
-            </div>
+        <!-- <div class="app"> -->
+          <div id="cubeSidenav" class="sidenav">
+            <a id="closesidebar" class="closebtn">&times;</a>
+            <a id="scramble">Scramble</a>
+            <a id="solve">Solve</a>
+            <a id="fold">Fold/unfold</a>
+            <a>speed: <input type="range" id="speed" min="1" max="100" step="1" value="20"></a>
+          </div>
+          <div id="opensidebar" class="opensidebar">&#9776;</div>
+          <div id="cube" class="cube"></div>
             <!-- <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready1</p>
             </div> -->
-        </div>
+        <!-- </div> -->
         <script type="text/javascript" src="lib/three.min.js"></script>
     		<script type="text/javascript" src="lib/controls/OrbitControls.js"></script>
     		<script type="text/javascript" src="lib/Tween.js"></script>
-    		<script type="text/javascript" src="lib/dat.gui.min.js"></script>
     		<script type="text/javascript" src="lib/stats.min.js"></script>
     		<script type="text/javascript" src="lib/slice.0.1.0.min.js"></script>
     		<script type="text/javascript" src="js/common.js"></script>
