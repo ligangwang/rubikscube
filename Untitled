@@ -1,5 +1,0 @@
-<HTML>
-  <script>
-    console.log((x=>x*x)(4));
-  </script>
-</HTML>
