@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.dingn.rubikscube" version="1.0.2" xmlns="http://www.w3.org/ns/widgets"
+<widget id="com.dingn.rubikscube" version="1.0.3" xmlns="http://www.w3.org/ns/widgets"
   android-packageName="com.dingn.rubikscube"
   android-activityName="Rubikscube"
   >
@@ -19,7 +19,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <preference name="SplashScreen" value="/img/splash.png"/>
+    <preference name="SplashScreen" value="/img/favicon.png"/>
     <platform name="android">
       <allow-intent href="market:*" />
       <icon density="ldpi" src="res/icons/android/icon-36-ldpi.png" />
