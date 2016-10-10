@@ -54,8 +54,7 @@ app.initialize();
 document.addEventListener( 'keypress', onDocumentKeyPress, false );
 document.addEventListener( 'keydown', onDocumentKeyDown, false );
 
-document.getElementById("opensidebar").addEventListener("click", openNav);
-document.getElementById("closesidebar").addEventListener("click", closeNav);
+document.getElementById("switchsidebar").addEventListener("click", switchsidebar);
 document.getElementById("scramble").addEventListener("click", scramble);
 document.getElementById("solve").addEventListener("click", solve);
 document.getElementById("fold").addEventListener("click", fold);
@@ -168,10 +167,11 @@ function setInitialPosition(){
 	}
 }
 
-function openNav() {
-    document.getElementById("cubeSidenav").style.width = "150px";
-}
-
-function closeNav() {
-    document.getElementById("cubeSidenav").style.width = "0";
+function switchsidebar() {
+    if (document.getElementById("cubeSidenav").style.width != "150px"){
+      document.getElementById("cubeSidenav").style.width = "150px";
+    }
+    else {
+      document.getElementById("cubeSidenav").style.width = "0px";
+    }
 }

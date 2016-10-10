@@ -115,7 +115,7 @@ h1 {
     -webkit-animation:fade 3000ms infinite;
 }
 
-.opensidebar{
+.switchsidebar{
   font-size:20px;
   cursor:pointer;
   color:white;
