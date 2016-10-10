@@ -9,6 +9,9 @@
     "installed_plugins": {
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.dingn.rubikscube"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "com.dingn.rubikscube"
         }
     },
     "dependent_plugins": {}
