@@ -36,7 +36,8 @@ class CubeInteractive{
       }
 		}
 		this.isInDragRotation = false;
-        this.rotateFaceName = null;
+    this.rotateFaceName = null;
+    this.controls.enableRotate = true;
 	}
 
   getSmallAngle(angle){
@@ -114,7 +115,7 @@ class CubeInteractive{
 		}else{
 			this.isInDragRotation = false;
 		}
-		this.controls.enabled = !this.isInDragRotation;
+		this.controls.enableRotate = !this.isInDragRotation;
 	}
 
 	onTouchStart(event){
