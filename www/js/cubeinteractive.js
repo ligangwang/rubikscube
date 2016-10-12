@@ -26,7 +26,7 @@ class CubeInteractive{
 	onMouseUp(event){
 		if (this.isInDragRotation && this.rotateFaceName !== null){
 			//rotating remaining part
-      var op = this.rotateFaces[this.rotateFaceName].getOp();
+      let op = this.rotateFaces[this.rotateFaceName].getOp();
       if (this.lastAngle * this.initAngle < 0){
           //cancel op
           this.cube.rotateAngle(op, -this.initAngle);
@@ -51,12 +51,12 @@ class CubeInteractive{
 			this.setMousePosition(this.mouse, event);
 			this.raycaster.setFromCamera(this.mouse, this.camera);
 			if (this.rotateFaceName === null){
-				var maxAngle = -1;
+				let maxAngle = -1;
 				Object.keys(this.intersects).forEach(faceName=>{
-					var intersect = this.raycaster.ray.intersectPlane(this.rotateFacePlanes[faceName]);
+					let intersect = this.raycaster.ray.intersectPlane(this.rotateFacePlanes[faceName]);
 					//console.log("setting ", faceName, intersect, this.rotateFacePlanes[faceName], event);
-					var face = this.rotateFaces[faceName];
-                    var angle = this.getSmallAngle(face.getVector2(intersect).angle() - face.getVector2(this.intersects[faceName]).angle());
+					let face = this.rotateFaces[faceName];
+          let angle = this.getSmallAngle(face.getVector2(intersect).angle() - face.getVector2(this.intersects[faceName]).angle());
 					angle = Math.abs(angle);
 					if (angle>maxAngle){
 						maxAngle = angle;
@@ -66,16 +66,16 @@ class CubeInteractive{
 				this.intersect = this.intersects[this.rotateFaceName];
 				//console.log("determined: ", this.rotateFaceName, maxAngle);
 			}else{
-				var intersect = this.raycaster.ray.intersectPlane(this.rotateFacePlanes[this.rotateFaceName]);
+				let intersect = this.raycaster.ray.intersectPlane(this.rotateFacePlanes[this.rotateFaceName]);
 				//do rotate angle
-				var rotateFace = this.rotateFaces[this.rotateFaceName];
-				var angle = rotateFace.getVector2(intersect).angle() - rotateFace.getVector2(this.intersect).angle()
-                angle = this.getSmallAngle(angle);
-				var op = rotateFace.getOp();
+				let rotateFace = this.rotateFaces[this.rotateFaceName];
+				let angle = rotateFace.getVector2(intersect).angle() - rotateFace.getVector2(this.intersect).angle()
+        angle = this.getSmallAngle(angle);
+				let op = rotateFace.getOp();
 				if (angle > 0) op += "'";
 				this.cube.rotateAngle(op, angle);
-                this.initAngle += angle;
-                this.lastAngle = angle;
+        this.initAngle += angle;
+        this.lastAngle = angle;
 				this.intersect = intersect;
 
 			}
@@ -83,30 +83,30 @@ class CubeInteractive{
 	}
 
 	setMousePosition(mouse, event){
-    var p = elementPosition(this.element);
-		var x = event.pageX - p.x;
-		var y = event.pageY - p.y;
+    let p = elementPosition(this.element);
+		let x = event.pageX - p.x;
+		let y = event.pageY - p.y;
 		mouse.x = (x / this.element.offsetWidth) * 2 - 1;
 		mouse.y = -(y / this.element.offsetHeight) * 2 + 1;
 	}
 
 	onMouseDown(event){
 		//console.log("down: ", event);
-		if (this.cube.isActive() || !this.cube.isFolded) return;
-		var mouse = new THREE.Vector2();
+		// if (this.cube.isActive() || !this.cube.isFolded) return;
+    if (this.cube.isActive()) return;
+		let mouse = new THREE.Vector2();
 		this.setMousePosition(mouse, event);
-		var raycaster = new THREE.Raycaster();
+		let raycaster = new THREE.Raycaster();
 		raycaster.setFromCamera(mouse, this.camera);
-		var intersects = raycaster.intersectObjects(this.cube.scene.children);
+		let intersects = raycaster.intersectObjects(this.cube.scene.children);
 		if (intersects.length > 0){
 			this.isInDragRotation = true;
-
-			var facetName = intersects[0].object.facet.name;
-			var cubieName = intersects[0].object.facet.cubie.name;
-			var cubicleName = this.cube.cubeState.cubieToLocMap[cubieName];
-			var faceletName = this.cube.cubeState.locToCubieMap[cubicleName].facetToLocMap[facetName];
-
-			var rotateFaceNames = this.cube.isFolded? cubicleName.split('').filter(x=>x!=faceletName) : [faceletName];
+      let intersect = intersects[0];
+			let facetName = intersect.object.facet.name;
+			let cubieName = intersect.object.facet.cubie.name;
+			let cubicleName = this.cube.cubeState.cubieToLocMap[cubieName];
+			let faceletName = this.cube.cubeState.locToCubieMap[cubicleName].facetToLocMap[facetName];
+			let rotateFaceNames = this.cube.isFolded? cubicleName.split('').filter(x=>x!=faceletName) : [faceletName];
 			this.intersects = [];
 			rotateFaceNames.forEach(x=>this.intersects[x] = raycaster.ray.intersectPlane(this.rotateFacePlanes[x]));
 		//console.log("selected: ", faceletName, cubicleName, this.intersects, event);

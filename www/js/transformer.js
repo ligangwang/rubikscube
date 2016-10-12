@@ -13,26 +13,19 @@ class Teleporter{
 		this.facet = facet;
 		this.axis = axis;
 		this.outBound = outBound;
-		this.inBound = inBound;
+		this.inBound  = inBound;
 		this.distance = distance;
-		if (outDirection > 0){
-			this.position = Math.round(facet.geometry.vertices.map(x=>axis.get(x)).reduce((a,b)=>a>b?a:b, -10000));
-		}else{
-			this.position = Math.round(facet.geometry.vertices.map(x=>axis.get(x)).reduce((a,b)=>a>b?b:a, 10000));
-		}
-		this.facetClone = null;
-		this.facetInSideClone = null;
 		this.length = 200;
-		this.inBoundValue = this.axis.get(this.inBound);
+		this.inBoundValue  = this.axis.get(this.inBound);
 		this.outBoundValue = this.axis.get(this.outBound);
 		//this.distance = Math.abs(this.outBoundValue - origin) + Math.abs(target - this.inBoundValue);
 		//console.log(this.distance);
-		this.outDirection = outDirection;
-		this.inDirection = inDirection;
+		this.outDirection  = outDirection;
+		this.inDirection   = inDirection;
 		this.cutPlaneToOut = new THREE.Plane(axis.getVector3(-outDirection), this.outBoundValue * this.outDirection);//new THREE.Plane(new THREE.Vector3(0, 0,-1), 900);
 		this.cutPlaneToIn  = new THREE.Plane(axis.getVector3(outDirection), -this.outBoundValue * this.outDirection);
-		this.inSidePlane  = new THREE.Plane(axis.getVector3(inDirection), this.inBoundValue);//new THREE.Plane(new THREE.Vector3(0, 0, 1), 1500);
-		this.manualRotate = manualRotate;
+		this.inSidePlane   = new THREE.Plane(axis.getVector3(inDirection), this.inBoundValue);//new THREE.Plane(new THREE.Vector3(0, 0, 1), 1500);
+		this.manualRotate  = manualRotate;
 
 		this.teleport = new THREE.Matrix4();
 		var inBound = this.inBound.clone();
@@ -65,10 +58,12 @@ class Teleporter{
 			this.facet.applyMatrix(this.inTranslation);
 		else
 			this.facet.applyMatrix(this.outTranslation);
+
 		var existsMovedOut = this.existsMovedOut();
 		var isAllMovedOut = this.isAllMovedOut();
 		//console.log("out bound value", this.outBoundValue);
-		if(this.status == TeleporterOut && existsMovedOut){
+		if(this.status == TeleporterOut && existsMovedOut) this.status = TeleporterSplit;
+		if(this.status == TeleporterSplit){
 			//console.log("cut plane: ", this.out_plane, this.out_cut_plane);
 			var inGeometry  = sliceGeometry(this.facet.geometry.clone(), this.cutPlaneToIn);
 			var outGeometry = sliceGeometry(this.facet.geometry.clone(), this.cutPlaneToOut);
@@ -76,7 +71,6 @@ class Teleporter{
 			this.teleportGeometryToInSide(inGeometry);
 			//inGeometry.vertices.forEach(x=>this.axis.add(x, this.inBoundValue-this.outBoundValue));
 			this.facet.updateSplitGeometries(this.scene,  outGeometry, inGeometry);
-			this.status = TeleporterSplit;
 		}
 
 		if (isAllMovedOut || ((!this.manualRotate) && total == 1 && existsMovedOut)){
@@ -104,9 +98,13 @@ class Translater{
 		this.objects = objects;
 		this.translation = translation;
 		this.m = new THREE.Matrix4();
+		this.total_translate = 0;
+		//console.log("to translate: ", translation.z);
 	}
 
 	transform(total, delta){
+		this.total_translate += this.translation.z * delta;
+		//console.log("translating: ", delta, this.total_translate);
 		this.m.makeTranslation(this.translation.x * delta, this.translation.y * delta, this.translation.z * delta);
 		for (var obj of this.objects){
 			obj.applyMatrix(this.m);
