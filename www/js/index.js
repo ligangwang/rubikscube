@@ -67,7 +67,7 @@ function fold() { cmd ('O');}
 var cubeElement = document.getElementById("cube");
 var cubeConsole = new CubeConsole(SINGMASTER_SOLVED_STATE, cubeElement);
 cubeConsole.render();
-cubeConsole.inputChar('O');
+//cubeConsole.inputChar('O');
 cubeConsole.renderer.domElement.addEventListener('mousedown', onMouseDown, false);
 cubeConsole.renderer.domElement.addEventListener('mousemove', onMouseMove, false);
 cubeConsole.renderer.domElement.addEventListener('mouseup', onMouseUp, false);
