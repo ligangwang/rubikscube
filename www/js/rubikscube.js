@@ -283,15 +283,14 @@ class RubiksCube{
 		return this.cubies[cubieState.name].facets[cubieState.locToFacetMap[locFaceName]];
 	}
 
-	getTransformers(op, initAngle = 0, totalAngle = null){
+	getTransformers(op, initAngle = 0){
 		let opFaceName = op.slice(0, 1);
 		let rotateCubies = this.getCubies(opFaceName);
 		let transformers = [];
-		let totalRatio = Math.abs(totalAngle)*2/Math.PI;
 		let initRatio = Math.abs(initAngle)*2/Math.PI;
 		if (this.isFolded){
 			let rotateAxis = this.cubeConfig.rotationOnFoldedConfigs[op].axis;
-			let rotateAngle = (totalAngle===null)? this.cubeConfig.rotationOnFoldedConfigs[op].angle : totalAngle;
+			let rotateAngle = this.cubeConfig.rotationOnFoldedConfigs[op].angle;
 			rotateAngle -= initAngle;
 			transformers.push(new Rotater(rotateCubies, this.cubeConfig.origin, rotateAxis, rotateAngle));
 		}else{//rotating on unfolded state
@@ -299,29 +298,25 @@ class RubiksCube{
 				if (rotateConfig.transformType == "translater"){
 					let facets = this.getFacetsFromCubies(rotateCubies, rotateConfig.facets);
 					//console.log("translator: ",op, rotateConfig.translation);
-					let translation = (totalAngle === null)? rotateConfig.translation.clone() : rotateConfig.translation.clone().multiplyScalar(totalRatio);
+					let translation = rotateConfig.translation.clone();
 					translation.sub(rotateConfig.translation.clone().multiplyScalar(initRatio));
 					//console.log("initAngle: ", initAngle, initRatio, translation.z, rotateConfig.translation.clone().z, rotateConfig.translation.clone().multiplyScalar(initRatio).z);
 					transformers.push(new Translater(facets, translation));
 					//console.log("translator post: ", translation)
 				}else if (rotateConfig.transformType == "rotater"){
 					let facets = this.getFacetsFromCubies(rotateCubies, rotateConfig.facets);
-					let rotateAngle = (totalAngle===null)? rotateConfig.angle : rotateConfig.angle * totalRatio;
+					let rotateAngle = rotateConfig.angle;
 					rotateAngle -= rotateConfig.angle * initRatio;
 					transformers.push(new Rotater(facets, rotateConfig.origin, this.cubeConfig.axisY, rotateAngle));
 				}else if (rotateConfig.transformType == "teleporter"){
-					let distance = (totalAngle ===null)? rotateConfig.distance : rotateConfig.distance * totalRatio;
+					let distance = rotateConfig.distance;
 					distance -= rotateConfig.distance * initRatio;
 					transformers.push(new Teleporter(this.scene, this.getFacetFromLocationFace(rotateConfig.cubicle, rotateConfig.facet),
-					distance,  rotateConfig.outBound, rotateConfig.inBound, rotateConfig.axis, rotateConfig.outDirection, rotateConfig.inDirection, totalAngle !== null));
+					distance,  rotateConfig.outBound, rotateConfig.inBound, rotateConfig.axis, rotateConfig.outDirection, rotateConfig.inDirection));
 				}
 			}
 		}
 		return transformers;
-	}
-
-	rotateAngle(op, angle){
-		this.getTransformers(op, 0, angle).forEach(x=>x.transform(1,1));
 	}
 
 	rotate(op, initAngle = 0){
@@ -329,7 +324,7 @@ class RubiksCube{
 			console.log("the cube is rotating. quiting ".concat(op))
 			return;
 		}
-		var transformers = this.getTransformers(op, initAngle, null);
+		var transformers = this.getTransformers(op, initAngle);
 		var cube = this;
 		this.withAnimation(
 			function(args, total, delta){
@@ -346,7 +341,7 @@ class RubiksCube{
 	}
 
 
-	withAnimation(action, args, onComplete){
+	withAnimation(action, args = {}, onComplete = null){
 		if (this.enableAnimation){
 			this.isInAnimation = true;
 			var tween = new TWEEN.Tween({value:0.0}).to({value: 1.0}, this.timePerAnimationMove);
@@ -358,13 +353,15 @@ class RubiksCube{
 			});
 			tween.onComplete(function(){
 				args.cube.isInAnimation = false;
-				onComplete(args);
+				if (onComplete!= null)
+					onComplete(args);
 				args.cube.doNextCommand();
 			});
 			tween.start();
 		}else{
 			action(args, 1, 1);
-			onComplete(args);
+			if (onComplete != null)
+				onComplete(args);
 			args.cube.doNextCommand();
 		}
 	}

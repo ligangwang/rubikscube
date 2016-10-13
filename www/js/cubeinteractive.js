@@ -21,23 +21,34 @@ class CubeInteractive{
     this.initAngle = 0;
     this.lastAngle = 0;
     this.intersect = null;
+    this.transformers = null;
+    this.op = null;
   }
 
 	onMouseUp(event){
-		if (this.isInDragRotation && this.rotateFaceName !== null){
+		if (this.isInDragRotation && this.rotateFaceName != null){
 			//rotating remaining part
-      let op = this.rotateFaces[this.rotateFaceName].getOp();
       if (this.lastAngle * this.initAngle < 0){
           //cancel op
-          this.cube.rotateAngle(op, -this.initAngle);
+          let transformers = this.transformers;
+          transformers.forEach(x=>x.setDelta(this.getDelta(-this.initAngle)));
+          //this.transformers.forEach(x=>x.transform(delta, delta));
+          this.cube.withAnimation(
+      			function(args, total, delta){
+      				transformers.forEach(x=>x.transform(total, delta));
+      			},
+            {cube:this.cube}
+      		);
+          //console.log("revert: ", this.initAngle);
       }else{
-          if (this.initAngle > 0) op = op + "'";
-          this.cube.rotate(op, this.initAngle, null);
+          this.cube.rotate(this.op, this.initAngle);
+          //console.log("rotate: ", this.op, this.initAngle);
       }
 		}
 		this.isInDragRotation = false;
     this.rotateFaceName = null;
     this.controls.enableRotate = true;
+    this.transformers = null;
 	}
 
   getSmallAngle(angle){
@@ -51,6 +62,7 @@ class CubeInteractive{
 			this.setMousePosition(this.mouse, event);
 			this.raycaster.setFromCamera(this.mouse, this.camera);
 			if (this.rotateFaceName === null){
+        //determine face to rotate
 				let maxAngle = -1;
 				Object.keys(this.intersects).forEach(faceName=>{
 					let intersect = this.raycaster.ray.intersectPlane(this.rotateFacePlanes[faceName]);
@@ -66,21 +78,40 @@ class CubeInteractive{
 				this.intersect = this.intersects[this.rotateFaceName];
 				//console.log("determined: ", this.rotateFaceName, maxAngle);
 			}else{
+        //determined face,
 				let intersect = this.raycaster.ray.intersectPlane(this.rotateFacePlanes[this.rotateFaceName]);
 				//do rotate angle
 				let rotateFace = this.rotateFaces[this.rotateFaceName];
 				let angle = rotateFace.getVector2(intersect).angle() - rotateFace.getVector2(this.intersect).angle()
         angle = this.getSmallAngle(angle);
-				let op = rotateFace.getOp();
-				if (angle > 0) op += "'";
-				this.cube.rotateAngle(op, angle);
+        if (Math.abs(this.initAngle + angle) > Math.PI/2) return;
+        if(this.transformers == null || this.initAngle * (this.initAngle+angle) < 0){
+          if(this.transformers != null){
+            let delta = this.getDelta(-this.initAngle);
+            this.transformers.forEach(x=>x.transform(delta, delta));
+            this.transformers.forEach(x=>x.reset());
+            this.initAngle += -this.initAngle;
+            angle += this.initAngle;
+          }
+          this.op = rotateFace.getOp();
+  				if (angle > 0) this.op += "'";
+          this.transformers = this.cube.getTransformers(this.op, 0); //reset transformers
+          //console.log("reset transformers: ", this.op);
+        }
+        //console.log("rotating face: ", this.rotateFaceName, angle, op);
+        let delta = this.getDelta(angle);
+        this.transformers.forEach(x=>x.transform(delta, delta));
+				this.intersect = intersect;
         this.initAngle += angle;
         this.lastAngle = angle;
-				this.intersect = intersect;
-
+        //console.log("initAngle: ", this.initAngle);
 			}
 		}
 	}
+
+  getDelta(angle){
+    return this.op.length == 1 ? -angle * 2/Math.PI : angle * 2/Math.PI;
+  }
 
 	setMousePosition(mouse, event){
     let p = elementPosition(this.element);
@@ -94,6 +125,10 @@ class CubeInteractive{
 		//console.log("down: ", event);
 		// if (this.cube.isActive() || !this.cube.isFolded) return;
     if (this.cube.isActive()) return;
+    if(this.isInDragRotation){
+      this.onMouseUp(event);
+      return;
+    }
 		let mouse = new THREE.Vector2();
 		this.setMousePosition(mouse, event);
 		let raycaster = new THREE.Raycaster();
