@@ -41,7 +41,9 @@ class CubeInteractive{
       		);
           //console.log("revert: ", this.initAngle);
       }else{
-          this.cube.rotate(this.op, this.initAngle);
+          let initDelta = this.getDelta(this.initAngle);
+          this.transformers.forEach(x=>x.setDelta(1.0-initDelta));
+          this.cube.transform(this.transformers, this.op);
           //console.log("rotate: ", this.op, this.initAngle);
       }
 		}

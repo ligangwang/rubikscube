@@ -324,7 +324,11 @@ class RubiksCube{
 			console.log("the cube is rotating. quiting ".concat(op))
 			return;
 		}
-		var transformers = this.getTransformers(op, initAngle);
+		let transformers = this.getTransformers(op, initAngle);
+		this.transform(transformers, op);
+	}
+
+	transform(transformers, op){
 		var cube = this;
 		this.withAnimation(
 			function(args, total, delta){
@@ -339,7 +343,6 @@ class RubiksCube{
 			}
 		);
 	}
-
 
 	withAnimation(action, args = {}, onComplete = null){
 		if (this.enableAnimation){

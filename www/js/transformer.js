@@ -100,8 +100,9 @@ class Teleporter{
 			}
 		}
 
+
 		if (isAllMovedOut || total == 1){
-			if (this.status != TeleporterIn){
+			if (this.status == TeleporterSplit){
 				//all moving out
 				//console.log("all moved out: ",this.status, this.facet.name, this.facet.cubie.name);
 				//this.facet.geometry.vertices.forEach(v=>this.axis.add(v, this.inBoundValue-this.outBoundValue));
@@ -109,12 +110,11 @@ class Teleporter{
 					this.teleportGeometryToInSide(this.facet.geometry);
 					this.facet.removeSplitGeometries(this.scene);
 					this.status = TeleporterIn;
-					//console.log("cleaning move out, moved to in", isAllMovedOut, total);
+					console.log("cleaning move out, moved to in", isAllMovedOut, total, this.facet.name, this.facet.cubie.name);
 				}else{
 					this.facet.removeSplitGeometries(this.scene);
-					//console.log("reverting back to out. ", isAllMovedOut, total, this.facet.name, this.facet.cubie.name);
+					console.log("reverting back to out. ", isAllMovedOut, total, this.facet.name, this.facet.cubie.name);
 					this.status = TeleporterOut;
-
 				}
 			}
 		}
