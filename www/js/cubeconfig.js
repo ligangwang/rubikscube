@@ -100,77 +100,77 @@ class CubeConfig {
 		this.rotationOnUnfoldedConfigs["R'"] = [	{transformType: "rotater", facets: "R", origin:new THREE.Vector3(600, 0, 0), 	angle: Math.PI/2},
 													{transformType: "translater", facets: "DBU", translation: new THREE.Vector3(0, 0, 600)},
 
-													{transformType: "teleporter", cubicle: "DFR", facet: "F", outBound:new THREE.Vector3(0, 0, 900), inBound:new THREE.Vector3(0, 0, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
-													{transformType: "teleporter", cubicle: "FR", facet: "F", outBound:new THREE.Vector3(0, 0, 900), inBound:new THREE.Vector3(0, 0, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
-													{transformType: "teleporter", cubicle: "FRU", facet: "F", outBound:new THREE.Vector3(0, 0, 900), inBound:new THREE.Vector3(0, 0, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
+													{transformType: "teleporter", cubicle: "DFR", facet: "F", outBound:new THREE.Vector3(0, 300, 900), inBound:new THREE.Vector3(0, 300, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
+													{transformType: "teleporter", cubicle: "FR", facet: "F", outBound:new THREE.Vector3(0, 300, 900), inBound:new THREE.Vector3(0, 300, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
+													{transformType: "teleporter", cubicle: "FRU", facet: "F", outBound:new THREE.Vector3(0, 300, 900), inBound:new THREE.Vector3(0, 300, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
 												];
 		this.rotationOnUnfoldedConfigs["R"] = [	{transformType: "rotater", facets: "R", origin:new THREE.Vector3(600, 0, 0), 	angle: -Math.PI/2},
 													{transformType: "translater", facets: "FUB", translation: new THREE.Vector3(0, 0, -600)},
-													{transformType: "teleporter", cubicle: "DFR", facet: "D", outBound:new THREE.Vector3(0, 0, -1500), inBound:new THREE.Vector3(0, 0, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "DR", facet: "D", outBound:new THREE.Vector3(0, 0, -1500), inBound:new THREE.Vector3(0, 0, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "BDR", facet: "D", outBound:new THREE.Vector3(0, 0, -1500), inBound:new THREE.Vector3(0, 0, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "DFR", facet: "D", outBound:new THREE.Vector3(0, 300, -1500), inBound:new THREE.Vector3(0, 300, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "DR", facet: "D", outBound:new THREE.Vector3(0, 300, -1500), inBound:new THREE.Vector3(0, 300, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "BDR", facet: "D", outBound:new THREE.Vector3(0, 300, -1500), inBound:new THREE.Vector3(0, 300, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
 												];
 
 		this.rotationOnUnfoldedConfigs["L'"] = [	{transformType: "rotater", facets: "L", origin:new THREE.Vector3(-600, 0, 0), 	angle:Math.PI/2},
 													{transformType: "translater", facets: "FUB", translation: new THREE.Vector3(0, 0, -600)},
-													{transformType: "teleporter", cubicle: "DFL", facet: "D", outBound:new THREE.Vector3(0, 0, -1500), inBound:new THREE.Vector3(0, 0, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "DL", facet: "D", outBound:new THREE.Vector3(0, 0, -1500), inBound:new THREE.Vector3(0, 0, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "BDL", facet: "D", outBound:new THREE.Vector3(0, 0, -1500), inBound:new THREE.Vector3(0, 0, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "DFL", facet: "D", outBound:new THREE.Vector3(0, 300, -1500), inBound:new THREE.Vector3(0, 300, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "DL", facet: "D", outBound:new THREE.Vector3(0, 300, -1500), inBound:new THREE.Vector3(0, 300, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "BDL", facet: "D", outBound:new THREE.Vector3(0, 300, -1500), inBound:new THREE.Vector3(0, 300, 900), distance:600,  axis:AxisZ, outDirection:-1, inDirection:-1},
 													];
 		this.rotationOnUnfoldedConfigs["L"] = [	{transformType: "rotater", facets: "L", origin:new THREE.Vector3(-600, 0, 0), 	angle: -Math.PI/2},
 													{transformType: "translater", facets: "DUB", translation: new THREE.Vector3(0, 0, 600)},
-													{transformType: "teleporter", cubicle: "DFL", facet: "F", outBound:new THREE.Vector3(0, 0, 900), inBound:new THREE.Vector3(0, 0, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
-													{transformType: "teleporter", cubicle: "FL", facet: "F", outBound:new THREE.Vector3(0, 0, 900), inBound:new THREE.Vector3(0, 0, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
-													{transformType: "teleporter", cubicle: "FLU", facet: "F", outBound:new THREE.Vector3(0, 0, 900), inBound:new THREE.Vector3(0, 0, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
+													{transformType: "teleporter", cubicle: "DFL", facet: "F", outBound:new THREE.Vector3(0, 300, 900), inBound:new THREE.Vector3(0, 300, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
+													{transformType: "teleporter", cubicle: "FL", facet: "F", outBound:new THREE.Vector3(0, 300, 900), inBound:new THREE.Vector3(0, 300, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
+													{transformType: "teleporter", cubicle: "FLU", facet: "F", outBound:new THREE.Vector3(0, 300, 900), inBound:new THREE.Vector3(0, 300, -1500), distance:600,  axis:AxisZ, outDirection:1, inDirection:1},
 													];
 		this.rotationOnUnfoldedConfigs["F'"] = [
 													{transformType: "rotater", facets: "F", origin:new THREE.Vector3(0, 0, 600),	angle: Math.PI/2},
 													{transformType: "translater", facets: "RU", translation: new THREE.Vector3(-600, 0, 0)},
 
-													{transformType: "teleporter", cubicle: "DFL", facet: "L", outBound:new THREE.Vector3(-900, 0, 0), inBound:new THREE.Vector3(-300, 0, -1600), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
-													{transformType: "teleporter", cubicle: "FL", facet: "L", outBound:new THREE.Vector3(-900, 0, 0), inBound:new THREE.Vector3(-300, 0, -1600), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
-													{transformType: "teleporter", cubicle: "FLU", facet: "L", outBound:new THREE.Vector3(-900, 0, 0), inBound:new THREE.Vector3(-300, 0, -1600), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "DFL", facet: "L", outBound:new THREE.Vector3(-900, 300, 0), inBound:new THREE.Vector3(-300, 300, -1600), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "FL", facet: "L", outBound:new THREE.Vector3(-900, 300, 0), inBound:new THREE.Vector3(-300, 300, -1600), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "FLU", facet: "L", outBound:new THREE.Vector3(-900, 300, 0), inBound:new THREE.Vector3(-300, 300, -1600), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
 
-													{transformType: "teleporter", cubicle: "DFR", facet: "D", outBound:new THREE.Vector3(300, 0, -1600), inBound:new THREE.Vector3(900, 0, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "DF", facet: "D", outBound:new THREE.Vector3(300, 0, -1600), inBound:new THREE.Vector3(900, 0, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "DFL", facet: "D", outBound:new THREE.Vector3(300, 0, -1600), inBound:new THREE.Vector3(900, 0, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "DFR", facet: "D", outBound:new THREE.Vector3(300, 300, -1600), inBound:new THREE.Vector3(900, 300, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "DF", facet: "D", outBound:new THREE.Vector3(300, 300, -1600), inBound:new THREE.Vector3(900, 300, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "DFL", facet: "D", outBound:new THREE.Vector3(300, 300, -1600), inBound:new THREE.Vector3(900, 300, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
 													];
 		this.rotationOnUnfoldedConfigs["F"] = [
 													{transformType: "rotater", facets: "F", origin:new THREE.Vector3(0, 0, 600),angle: -Math.PI/2},
 													{transformType: "translater", facets: "LU", translation: new THREE.Vector3(600, 0, 0)},
 
-													{transformType: "teleporter", cubicle: "DFR", facet: "R", outBound:new THREE.Vector3(900, 0, 0), inBound:new THREE.Vector3(300, 0, -1600), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "FR", facet:  "R", outBound:new THREE.Vector3(900, 0, 0), inBound:new THREE.Vector3(300, 0, -1600), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "FRU", facet: "R", outBound:new THREE.Vector3(900, 0, 0), inBound:new THREE.Vector3(300, 0, -1600), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "DFR", facet: "R", outBound:new THREE.Vector3(900, 300, 0), inBound:new THREE.Vector3(300, 300, -1600), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "FR", facet:  "R", outBound:new THREE.Vector3(900, 300, 0), inBound:new THREE.Vector3(300, 300, -1600), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "FRU", facet: "R", outBound:new THREE.Vector3(900, 300, 0), inBound:new THREE.Vector3(300, 300, -1600), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
 
-													{transformType: "teleporter", cubicle: "DFL", facet: "D", outBound:new THREE.Vector3(-300, 0, -1600), inBound:new THREE.Vector3(-900, 0, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
-													{transformType: "teleporter", cubicle: "DF", facet: "D", outBound:new THREE.Vector3(-300, 0, -1600), inBound:new THREE.Vector3(-900, 0, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
-													{transformType: "teleporter", cubicle: "DFR", facet: "D", outBound:new THREE.Vector3(-300, 0, -1600), inBound:new THREE.Vector3(-900, 0, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "DFL", facet: "D", outBound:new THREE.Vector3(-300, 300, -1600), inBound:new THREE.Vector3(-900, 300, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "DF", facet: "D", outBound:new THREE.Vector3(-300, 300, -1600), inBound:new THREE.Vector3(-900, 300, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "DFR", facet: "D", outBound:new THREE.Vector3(-300, 300, -1600), inBound:new THREE.Vector3(-900, 300, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
 													];
 
 		this.rotationOnUnfoldedConfigs["B'"] = [
 													{transformType: "rotater", facets: "B", origin:new THREE.Vector3(0, 0,  -600), 	angle: Math.PI/2},
 													{transformType: "translater", facets: "LU", translation: new THREE.Vector3(600, 0, 0)},
 
-													{transformType: "teleporter", cubicle: "BDR", facet: "R", outBound:new THREE.Vector3(900, 0, 0), inBound:new THREE.Vector3(300, 0, -800), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "BR", facet:  "R", outBound:new THREE.Vector3(900, 0, 0), inBound:new THREE.Vector3(300, 0, -800), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "BRU", facet: "R", outBound:new THREE.Vector3(900, 0, 0), inBound:new THREE.Vector3(300, 0, -800), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "BDR", facet: "R", outBound:new THREE.Vector3(900, 300, 0), inBound:new THREE.Vector3(300, 300, -800), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "BR", facet:  "R", outBound:new THREE.Vector3(900, 300, 0), inBound:new THREE.Vector3(300, 300, -800), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "BRU", facet: "R", outBound:new THREE.Vector3(900, 300, 0), inBound:new THREE.Vector3(300, 300, -800), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
 
-													{transformType: "teleporter", cubicle: "BDL", facet: "D", outBound:new THREE.Vector3(-300, 0, -800), inBound:new THREE.Vector3(-900, 0, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
-													{transformType: "teleporter", cubicle: "BD", facet: "D", outBound:new THREE.Vector3(-300, 0, -800), inBound:new THREE.Vector3(-900, 0, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
-													{transformType: "teleporter", cubicle: "BDR", facet: "D", outBound:new THREE.Vector3(-300, 0, -800), inBound:new THREE.Vector3(-900, 0, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "BDL", facet: "D", outBound:new THREE.Vector3(-300, 300, -800), inBound:new THREE.Vector3(-900, 300, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "BD", facet: "D", outBound:new THREE.Vector3(-300, 300, -800), inBound:new THREE.Vector3(-900, 300, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "BDR", facet: "D", outBound:new THREE.Vector3(-300, 300, -800), inBound:new THREE.Vector3(-900, 300, 0), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
 													];
 		this.rotationOnUnfoldedConfigs["B"] = [
 													{transformType: "rotater", facets: "B", origin:new THREE.Vector3(0, 0,  -600), 	angle: -Math.PI/2},
 													{transformType: "translater", facets: "RU", translation: new THREE.Vector3(-600, 0, 0)},
 
-													{transformType: "teleporter", cubicle: "BDL", facet: "L", outBound:new THREE.Vector3(-900, 0, 0), inBound:new THREE.Vector3(-300, 0, -800), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
-													{transformType: "teleporter", cubicle: "BL", facet: "L", outBound:new THREE.Vector3(-900, 0, 0), inBound:new THREE.Vector3(-300, 0, -800), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
-													{transformType: "teleporter", cubicle: "BLU", facet: "L", outBound:new THREE.Vector3(-900, 0, 0), inBound:new THREE.Vector3(-300, 0, -800), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "BDL", facet: "L", outBound:new THREE.Vector3(-900, 300, 0), inBound:new THREE.Vector3(-300, 300, -800), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "BL", facet: "L", outBound:new THREE.Vector3(-900, 300, 0), inBound:new THREE.Vector3(-300, 300, -800), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
+													{transformType: "teleporter", cubicle: "BLU", facet: "L", outBound:new THREE.Vector3(-900, 300, 0), inBound:new THREE.Vector3(-300, 300, -800), distance:600,  axis:AxisX, outDirection:-1, inDirection:1},
 
-													{transformType: "teleporter", cubicle: "BDR", facet: "D", outBound:new THREE.Vector3(300, 0, -800), inBound:new THREE.Vector3(900, 0, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "BD", facet: "D", outBound:new THREE.Vector3(300, 0, -800), inBound:new THREE.Vector3(900, 0, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
-													{transformType: "teleporter", cubicle: "BDL", facet: "D", outBound:new THREE.Vector3(300, 0, -800), inBound:new THREE.Vector3(900, 0, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "BDR", facet: "D", outBound:new THREE.Vector3(300, 300, -800), inBound:new THREE.Vector3(900, 300, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "BD", facet: "D", outBound:new THREE.Vector3(300, 300, -800), inBound:new THREE.Vector3(900, 300, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
+													{transformType: "teleporter", cubicle: "BDL", facet: "D", outBound:new THREE.Vector3(300, 300, -800), inBound:new THREE.Vector3(900, 300, 0), distance:600,  axis:AxisX, outDirection:1, inDirection:-1},
 													];
 	}
 }
