@@ -2,8 +2,9 @@
  ** @author Ligang Wang, http://github.com/ligangwang/
  **/
 class Facet{
-	constructor(name, color, cubie, axis, position){
+	constructor(name, color, cubie, axis, position, faceletName){
 		this.name = name;
+		this.faceletName = faceletName;
 		this.color = color;
 		this.cubie = cubie;
 		this.axis = axis;
@@ -32,7 +33,7 @@ class Facet{
 	}
 
 	setGeometry(geometry){
-		var oldGeometry = this.geometry;
+		let oldGeometry = this.geometry;
 		this.geometry = geometry;
 		this.meshes.forEach(x=>{
 			x.geometry = geometry;
@@ -42,10 +43,11 @@ class Facet{
 	}
 
 	createFacetGeometry(){
-		var width = 200, radius = 40;
-		var position = this.position;
-		var shape = new THREE.Shape();
-		var height = width;
+		let width = 200;
+		let radius = 40;
+		let position = this.position;
+		let shape = new THREE.Shape();
+		let height = width;
 		let x = -width/2;
 		let y = x;
 
@@ -61,13 +63,13 @@ class Facet{
 
 		this.geometry = new THREE.ShapeGeometry( shape );
 
-		var m = new THREE.Matrix4();
-		if (this.name == "L" || this.name == "R") {
+		let m = new THREE.Matrix4();
+		if (this.faceletName == "L" || this.faceletName == "R") {
 			//mesh.rotation.set(0, Math.PI/2, 0);
 			m.makeRotationAxis(new THREE.Vector3(0,1,0), Math.PI/2);
 			this.applyMatrix(m);
 		}
-		else if (this.name == "U" || this.name == "D"){
+		else if (this.faceletName == "U" || this.faceletName == "D"){
 			//mesh.rotation.set(Math.PI/2, 0, 0);
 			m.makeRotationAxis(new THREE.Vector3(1,0,0), Math.PI/2);
 			this.applyMatrix(m);
@@ -126,7 +128,7 @@ class Facet{
 	}
 
 	clone(){
-		var facet = new Facet(this.name, this.color, this.cubie, this.axis, this.position);
+		let facet = new Facet(this.name, this.color, this.cubie, this.axis, this.position);
 		facet.geometry = this.geometry.clone();
 		facet.createMeshes();
 		facet.setFacetToMeshes()
@@ -148,12 +150,13 @@ class Cubie{
 	}
 
 	setCubieState(cubieState, cubeConfig){
-		var facets = [];
+		let facets = [];
 		cubieState.name.split('').forEach(facetName=>
 			{
-				var faceletName = cubieState.facetToLocMap[facetName];
-				var facet = new Facet(facetName, cubeConfig.facetConfigs[facetName].color, this,
-					 cubeConfig.rotationOnFoldedConfigs[faceletName].axis, cubeConfig.faceletConfigs[faceletName].position);
+				let faceletName = cubieState.facetToLocMap[facetName];
+				console.log("setting facet: ", facetName, faceletName, cubieState.name);
+				let facet = new Facet(facetName, cubeConfig.facetConfigs[facetName].color, this,
+					 cubeConfig.rotationOnFoldedConfigs[faceletName].axis, cubeConfig.faceletConfigs[faceletName].position, faceletName);
 				facets[facetName] = facet;
 			}
 		);
@@ -185,6 +188,8 @@ class Cubie{
 
 class RubiksCube{
 	constructor(state, scene){
+		state = "RF UR UB UL LF DR DB DL FD FU BR BL RFD URB UBL RUF LDF LFU DLB DBR";
+		this.isFolded = true;
 		this.scene = scene;
 		this.cubeConfig = new CubeConfig();
 		this.position = new THREE.Vector3(0,0,0);
@@ -194,18 +199,30 @@ class RubiksCube{
 		this.isInAnimation = false;
 		this.commands = "";
 		this.enableAnimation = true;
-		this.isFolded = true;
 		this.setIsInSolverMode(false);
 		this.timePerAnimationMove = 5000/20; //in ms
 
 	}
 
 	setState(state){
-		var cubeState = new CubeState(state);
+		let is2D = !this.isFolded;
+		let enableAnimation = this.enableAnimation;
+		this.enableAnimation = false;
+		if(is2D){
+			console.log("closing first.");
+			this.fold();
+		}
+		//this.removeContentsFromScene();
+		let cubeState = new CubeState(state);
 		Object.keys(this.cubeConfig.cubiclePositions)
 			.forEach(x=>this.setCubieState(cubeState.locToCubieMap[x], this.cubeConfig));
 		this.cubeState = cubeState;
-		this.addContentsToScene(this.scene);
+		this.addContentsToScene();
+		if(is2D){
+			console.log("reopening.");
+			this.fold();
+		}
+		this.enableAnimation = enableAnimation;
 	}
 
 	setCubieState(cubieState){
@@ -214,9 +231,12 @@ class RubiksCube{
 		this.cubies[cubieState.name].setCubieState(cubieState, this.cubeConfig);
 	}
 
-	addContentsToScene(scene){
-		this.scene = scene;
-		Object.keys(this.cubies).forEach(x=>this.cubies[x].addContentsToScene(scene));
+	addContentsToScene(){
+		Object.keys(this.cubies).forEach(x=>this.cubies[x].addContentsToScene(this.scene));
+	}
+
+	removeContentsFromScene(){
+		Object.keys(this.cubies).forEach(x=>this.cubies[x].removeContentsFromScene(this.scene));
 	}
 
 	removeCubie(cubieName){
@@ -238,7 +258,7 @@ class RubiksCube{
 		//console.log(this.getState());
 
 		//console.log(this.cubies["DFR"].facets["F"].geometry.vertices.map(x=>x.z).reduce((a,b)=>a>b?a:b, -10000));
-		var cubie = this.cubies["DFL"].facets["L"];
+		let cubie = this.cubies["DFL"].facets["L"];
 		// if (debug_count % 2 == 0)
 		// 	cubie.removeContentsFromScene(this.scene);
 		// else
@@ -329,7 +349,7 @@ class RubiksCube{
 	}
 
 	transform(transformers, op){
-		var cube = this;
+		let cube = this;
 		this.withAnimation(
 			function(args, total, delta){
 				transformers.forEach(x=>x.transform(total, delta));
@@ -347,10 +367,10 @@ class RubiksCube{
 	withAnimation(action, args = {}, onComplete = null){
 		if (this.enableAnimation){
 			this.isInAnimation = true;
-			var tween = new TWEEN.Tween({value:0.0}).to({value: 1.0}, this.timePerAnimationMove);
-			var lastData = 0.0;
+			let tween = new TWEEN.Tween({value:0.0}).to({value: 1.0}, this.timePerAnimationMove);
+			let lastData = 0.0;
 			tween.onUpdate(function(){
-				var delta = this.value - lastData;
+				let delta = this.value - lastData;
 				lastData = this.value;
 				action(args, this.value, delta);
 			});
@@ -393,19 +413,19 @@ class RubiksCube{
 	}
 
 	doFold(doUnfolding, delta){
-		for (var facetName in this.cubeConfig.facetFoldingConfig){
-			var facets = this.getFacets(facetName);
-			var foldingConfigs = this.cubeConfig.facetFoldingConfig[facetName];
-			var m = undefined;
-			for (var foldingConfig of foldingConfigs){
-				var translate = foldingConfig.translation;
-				if (m != undefined){
+		for (let facetName in this.cubeConfig.facetFoldingConfig){
+			let facets = this.getFacets(facetName);
+			let foldingConfigs = this.cubeConfig.facetFoldingConfig[facetName];
+			let m = null;
+			for (let foldingConfig of foldingConfigs){
+				let translate = foldingConfig.translation;
+				if (m != null){
 					translate.applyMatrix4(m);
 				}
-				var rotateAxis = foldingConfig.axis;
-				var rotateAngle = foldingConfig.angle * delta;
+				let rotateAxis = foldingConfig.axis;
+				let rotateAngle = foldingConfig.angle * delta;
 				m = Transform(translate, rotateAxis, doUnfolding? rotateAngle:-rotateAngle);
-				for (var facet of facets){
+				for (let facet of facets){
 					facet.applyMatrix(m);
 					facet.position.applyMatrix4(m);
 				}
@@ -422,8 +442,8 @@ class RubiksCube{
 			function(args){
 				args.cube.isFolded  = !args.cube.isFolded;
 				/*
-				for (var facetName in args.cube.cubeConfig.facetFoldingConfig){
-					var facets = args.cube.getFacets(facetName);
+				for (let facetName in args.cube.cubeConfig.facetFoldingConfig){
+					let facets = args.cube.getFacets(facetName);
 					facets.forEach(facet=>{
 						facet.position.x = Math.round(facet.position.x);
 						facet.position.y = Math.round(facet.position.y);
@@ -434,10 +454,12 @@ class RubiksCube{
 	}
 
 	isValidInputChar(prevChar, char){
+		prevChar = prevChar.toUpperCase();
+		char = char.toUpperCase();
 		if ("OST".indexOf(char) > -1){
 			return true;
 		}
-		return (char.toUpperCase() in this.cubeConfig.rotationOnFoldedConfigs) || ("OST'".indexOf(prevChar) < 0 && char == "'");
+		return (char in this.cubeConfig.rotationOnFoldedConfigs) || ("OST'".indexOf(prevChar) < 0 && char == "'");
 	}
 
 	command(command){
@@ -449,7 +471,7 @@ class RubiksCube{
 
 
 	doNextCommand(){
-		var op = this.getNextOp();
+		let op = this.getNextOp();
 		if (op != ""){
 			if (op == "S"){
 				this.randomize();
@@ -465,8 +487,8 @@ class RubiksCube{
 	}
 
 	getNextOp(){
-		var len = this.commands.length;
-		var lookAt = 0;
+		let len = this.commands.length;
+		let lookAt = 0;
 		if (len > 1){
 			if (this.commands[1] == "'"){
 				lookAt = 2;
@@ -476,13 +498,13 @@ class RubiksCube{
 		}else if(len == 1){
 			lookAt = 1;
 		}
-		var op = this.commands.slice(0, lookAt);
+		let op = this.commands.slice(0, lookAt);
 		this.commands = this.commands.slice(lookAt);
 		return op;
 	}
 
 	randomize(){
-		var saved = this.enableAnimation;
+		let saved = this.enableAnimation;
 		this.enableAnimation = false;
 		getRandomOps().forEach(x=>this.rotate(x));
 		this.enableAnimation = saved;

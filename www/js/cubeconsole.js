@@ -30,21 +30,21 @@ class CubeConsole{
 		this.interactive = new CubeInteractive(this.cube, this.camera, this.renderer.domElement);
 
 /*
-	var plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), -200);
-	var geom = new THREE.SphereGeometry(100, 100, 100);
+	let plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), -200);
+	let geom = new THREE.SphereGeometry(100, 100, 100);
 	geom = sliceGeometry(geom, plane);
-	var material = new THREE.MeshBasicMaterial({ wireframe: false });
-	var mesh = new THREE.Mesh(geom, material);
+	let material = new THREE.MeshBasicMaterial({ wireframe: false });
+	let mesh = new THREE.Mesh(geom, material);
 	this.cube.scene.add(mesh);
 */
 	}
 
 	render(){
-		var scene = this.cube.scene;
-		var renderer = this.renderer;
-		var camera = this.camera;
-		var controls = this.interactive.controls;
-		//var stats = this.stats;
+		let scene = this.cube.scene;
+		let renderer = this.renderer;
+		let camera = this.camera;
+		let controls = this.interactive.controls;
+		//let stats = this.stats;
 		function animate() {
 			TWEEN.update();
 			controls.update();
@@ -75,11 +75,14 @@ class CubeConsole{
 
 	inputChar(ch){
 		if (!this.cube.isInSolverMode) {
-			var prevChar = this.inputText.substr(this.inputText.length - 1)
+			let prevChar = this.inputText.substr(this.inputText.length - 1)
 			if (this.cube.isValidInputChar(prevChar, ch)){
 				//this.changeInputText(this.inputText + ch);
-				if (ch == ch.toLowerCase() && ch != "'")
+				if("OST".indexOf(ch.toUpperCase()) > -1){
+					ch = ch.toUpperCase();
+				}else if (ch == ch.toLowerCase() && ch != "'")
 					ch = ch.toUpperCase() + "'";
+				console.log("ch: ", ch);
 				this.inputText += ch;
 				this.resetInputTimer();
 			}
