@@ -188,7 +188,6 @@ class Cubie{
 
 class RubiksCube{
 	constructor(state, scene){
-		state = "RF UR UB UL LF DR DB DL FD FU BR BL RFD URB UBL RUF LDF LFU DLB DBR";
 		this.isFolded = true;
 		this.scene = scene;
 		this.cubeConfig = new CubeConfig();

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.dingn.rubikscube" version="1.0.8" xmlns="http://www.w3.org/ns/widgets"
+<widget id="com.dingn.rubikscube" version="1.0.9" xmlns="http://www.w3.org/ns/widgets"
   android-packageName="com.dingn.rubikscube"
   android-activityName="Rubikscube"
   >
