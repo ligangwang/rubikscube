@@ -1,19 +1,23 @@
 document.addEventListener( 'keypress', onDocumentKeyPress, false );
-document.addEventListener( 'keydown', onDocumentKeyDown, false );
+document.addEventListener( 'keydown',  onDocumentKeyDown, false );
 
 document.getElementById("switchsidebar").addEventListener("click", switchsidebar);
 document.getElementById("scramble").addEventListener("click", scramble);
 document.getElementById("solve").addEventListener("click", solve);
 document.getElementById("fold").addEventListener("click", fold);
+document.getElementById("execute").addEventListener("click", execute);
 document.getElementById("speed").addEventListener("change", onChangeSpeed);
+//document.getElementById("command").addEventListener( 'keypress', onDocumentKeyPress);
+document.getElementById("getposition").addEventListener("click", getPosition);
+document.getElementById("setposition").addEventListener("click", setPosition);
 
-function scramble() { cmd ('S');}
-function solve() { cmd ('V');}
-function fold() { cmd ('O');}
-
-var cubeElement = document.getElementById("cube");
-var cubeConsole = new CubeConsole(SINGMASTER_SOLVED_STATE, cubeElement);
+let command = document.getElementById("command");
+let position = document.getElementById("position");
+let cubeElement = document.getElementById("cube");
+let cubeConsole = new CubeConsole(SINGMASTER_SOLVED_STATE, cubeElement);
+let sideBarIsOpen = false;
 cubeConsole.render();
+//cubeConsole.cube.enableAnimation = false;
 //cubeConsole.inputChar('O');
 cubeConsole.renderer.domElement.addEventListener('mousedown', onMouseDown, false);
 cubeConsole.renderer.domElement.addEventListener('mousemove', onMouseMove, false);
@@ -21,6 +25,31 @@ cubeConsole.renderer.domElement.addEventListener('mouseup', onMouseUp, false);
 cubeConsole.renderer.domElement.addEventListener('touchstart', onTouchStart, false);
 cubeConsole.renderer.domElement.addEventListener('touchmove', onTouchMove, false);
 cubeConsole.renderer.domElement.addEventListener('touchend', onTouchEnd, false);
+
+function scramble() { cmd ('S');}
+function solve() { cmd ('V');}
+function fold() {
+  if (cubeConsole.cube.isFolded){
+    screen.lockOrientation('landscape');
+  }else{
+    screen.unlockOrientation();
+  }
+  cmd ('O');
+}
+function execute(){
+  command.value.split('').forEach(x=>cubeConsole.inputChar(x));
+  command.value = "";
+}
+function getPosition(){
+  position.value = cubeConsole.cube.getState();
+}
+
+function setPosition(){
+  let state = position.value;
+  if(isValidCubeState(state)){
+    cubeConsole.cube.setState(state);
+  }
+}
 
 window.addEventListener( 'resize', onWindowResize, false );
 
@@ -60,6 +89,7 @@ function onTouchEnd(event){
 }
 
 function onDocumentKeyDown( event ) {
+  if(sideBarIsOpen) return;
 	var keyCode = event.keyCode;
 	if ( keyCode == 8 ) {
 		//event.preventDefault();
@@ -70,12 +100,15 @@ function onDocumentKeyDown( event ) {
 }
 
 function onDocumentKeyPress ( event ) {
+  if(sideBarIsOpen) return;
 	var keyCode = event.which;
 	if ( keyCode == 8 ) {
 
 		//event.preventDefault();
-	} else if (document.activeElement.nodeName == "BODY"){
+	} else if (document.activeElement.nodeName == "BODY"||
+            document.activeElement.id == "command"){
 		var ch = String.fromCharCode( keyCode );
+    console.log("press: ", ch, document.activeElement.id);
     cmd(ch);
 	}
 }
@@ -118,8 +151,10 @@ function setInitialPosition(){
 function switchsidebar() {
     if (document.getElementById("cubeSidenav").style.width != "150px"){
       document.getElementById("cubeSidenav").style.width = "150px";
+      sideBarIsOpen = true;
     }
     else {
       document.getElementById("cubeSidenav").style.width = "0px";
+      sideBarIsOpen = false;
     }
 }

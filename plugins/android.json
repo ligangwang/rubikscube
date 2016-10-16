@@ -12,6 +12,9 @@
         },
         "cordova-plugin-splashscreen": {
             "PACKAGE_NAME": "com.dingn.rubikscube"
+        },
+        "cordova-plugin-screen-orientation": {
+            "PACKAGE_NAME": "com.dingn.rubikscube"
         }
     },
     "dependent_plugins": {}

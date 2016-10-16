@@ -138,6 +138,7 @@ h1 {
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
+    color: #818181;
 }
 
 .sidenav a {

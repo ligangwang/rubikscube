@@ -16,7 +16,6 @@ class CubeConsole{
 		this.renderer.setPixelRatio( window.devicePixelRatio );
 		this.renderer.setSize( this.renderWidth, this.renderHeight );
 		this.renderer.setClearColor(0x262626);
-
 		//this.renderer.autoClear = false;
 		this.parentControl.appendChild( this.renderer.domElement );
 		//this.stats = new Stats();
@@ -29,6 +28,7 @@ class CubeConsole{
 		this.camera.position.x = 1000;
 
 		this.interactive = new CubeInteractive(this.cube, this.camera, this.renderer.domElement);
+
 /*
 	var plane = new THREE.Plane(new THREE.Vector3(0, 0, -1), -200);
 	var geom = new THREE.SphereGeometry(100, 100, 100);
@@ -61,10 +61,10 @@ class CubeConsole{
 	}
 
 
-	onTimer(console){
-		if (console.inputText.length > 0){
-			console.cube.command(console.inputText);
-			console.inputText = "";
+	onTimer(cubeConsole){
+		if (cubeConsole.inputText.length > 0){
+			cubeConsole.cube.command(cubeConsole.inputText);
+			cubeConsole.inputText = "";
 		}
 	}
 
@@ -75,12 +75,15 @@ class CubeConsole{
 
 	inputChar(ch){
 		if (!this.cube.isInSolverMode) {
-			ch = ch.toUpperCase();
 			var prevChar = this.inputText.substr(this.inputText.length - 1)
 			if (this.cube.isValidInputChar(prevChar, ch)){
+				//this.changeInputText(this.inputText + ch);
+				if (ch == ch.toLowerCase() && ch != "'")
+					ch = ch.toUpperCase() + "'";
 				this.inputText += ch;
 				this.resetInputTimer();
 			}
 		}
 	}
+
 }

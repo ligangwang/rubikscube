@@ -77,16 +77,16 @@ class Facet{
 	}
 
 	createFacetMeshes(){
-		this.meshes = [new THREE.Mesh( this.geometry, new THREE.MeshBasicMaterial({opacity: 1, transparent: true, color: this.color, side: THREE.DoubleSide }))];
+		this.meshes = [new THREE.Mesh( this.geometry, new THREE.MeshBasicMaterial({opacity: 1, color: this.color, side: THREE.DoubleSide }))];
 	}
 
 	updateSplitGeometries(scene, splitGeometry1, splitGeometry2){
 		if (this.splitMesh1 === null){
 			this.splitGeometry1 = splitGeometry1;
-			this.splitMesh1 = new THREE.Mesh( splitGeometry1, new THREE.MeshBasicMaterial({opacity: this.meshes[0].material.opacity, transparent: true, color: this.color, side: THREE.DoubleSide }));
+			this.splitMesh1 = new THREE.Mesh( splitGeometry1, new THREE.MeshBasicMaterial({opacity: 1, color: this.color, side: THREE.DoubleSide }));
 			scene.add(this.splitMesh1);
 			this.splitGeometry2 = splitGeometry2;
-			this.splitMesh2 = new THREE.Mesh( splitGeometry2, new THREE.MeshBasicMaterial({opacity: this.meshes[0].material.opacity, transparent: true, color: this.color, side: THREE.DoubleSide }));
+			this.splitMesh2 = new THREE.Mesh( splitGeometry2, new THREE.MeshBasicMaterial({opacity: 1, color: this.color, side: THREE.DoubleSide }));
 			scene.add(this.splitMesh2);
 			this.removeContentsFromScene(scene);
 		}
@@ -190,7 +190,7 @@ class RubiksCube{
 		this.position = new THREE.Vector3(0,0,0);
 		this.cubies = [];
 
-		this.setCubeState(state);
+		this.setState(state);
 		this.isInAnimation = false;
 		this.commands = "";
 		this.enableAnimation = true;
@@ -200,7 +200,7 @@ class RubiksCube{
 
 	}
 
-	setCubeState(state){
+	setState(state){
 		var cubeState = new CubeState(state);
 		Object.keys(this.cubeConfig.cubiclePositions)
 			.forEach(x=>this.setCubieState(cubeState.locToCubieMap[x], this.cubeConfig));
@@ -437,7 +437,7 @@ class RubiksCube{
 		if ("OST".indexOf(char) > -1){
 			return true;
 		}
-		return (char in this.cubeConfig.rotationOnFoldedConfigs) || ("OST'".indexOf(prevChar) < 0 && char == "'");
+		return (char.toUpperCase() in this.cubeConfig.rotationOnFoldedConfigs) || ("OST'".indexOf(prevChar) < 0 && char == "'");
 	}
 
 	command(command){
