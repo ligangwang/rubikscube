@@ -204,6 +204,7 @@ class RubiksCube{
 	}
 
 	setState(state){
+		if(this.isActive()) return;
 		let is2D = !this.isFolded;
 		let enableAnimation = this.enableAnimation;
 		this.enableAnimation = false;

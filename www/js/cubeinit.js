@@ -14,6 +14,7 @@ document.getElementById("setposition").addEventListener("click", setPosition);
 let command = document.getElementById("command");
 let position = document.getElementById("position");
 let cubeElement = document.getElementById("cube");
+let status = document.getElementById("status");
 let cubeConsole = new CubeConsole(SINGMASTER_SOLVED_STATE, cubeElement);
 let sideBarIsOpen = false;
 cubeConsole.render();
@@ -48,6 +49,8 @@ function setPosition(){
   let state = position.value;
   if(isValidCubeState(state)){
     cubeConsole.cube.setState(state);
+  }else{
+    status.innerText = "Invalid state !"
   }
 }
 
