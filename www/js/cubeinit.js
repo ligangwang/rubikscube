@@ -30,11 +30,11 @@ cubeConsole.renderer.domElement.addEventListener('touchend', onTouchEnd, false);
 function scramble() { cmd ('S');}
 function solve() { cmd ('V');}
 function fold() {
-  if (cubeConsole.cube.isFolded){
-    screen.lockOrientation('landscape');
-  }else{
-    screen.unlockOrientation();
-  }
+  // if (cubeConsole.cube.isFolded){
+  //   screen.lockOrientation('landscape');
+  // }else{
+  //   screen.unlockOrientation();
+  // }
   cmd ('O');
 }
 function execute(){
