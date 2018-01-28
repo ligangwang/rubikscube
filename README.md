@@ -14,7 +14,7 @@ Cordova is used in developing the Rubik's cube application with cross-platform (
 
 
 
-**[Demo here.](http://ligangwang.github.io/rubikscube)**
+**[Demo here.](http://ligangwang.github.io/rubikscube/www/)**
 <br/>
 <br/>
 <br/>
