@@ -1,3 +1,4 @@
-.DS_Store
-platforms
-build.json
+node_modules/
+dist/
+release/
+.preview/

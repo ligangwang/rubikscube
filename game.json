@@ -1,0 +1,26 @@
+{
+  "id": "rubikscube",
+  "version": "2.0.0",
+  "title": {
+    "en": "Rubik's Cube",
+    "zh": "魔方"
+  },
+  "description": {
+    "en": "A 3D Rubik's Cube: climb 15 levels from a one-move scramble to a full one, solve the daily cube, and watch a layer-by-layer solver teach the beginner's method. Unfolds into a flat net too.",
+    "zh": "3D 魔方：从打乱一步到完全打乱，闯过 15 关；挑战每日魔方；看分层解法一步步演示新手公式。还能展开成平面图。"
+  },
+  "entry": "index.html",
+  "badges": [
+    { "id": "level-3", "tier": "bronze", "level": 3, "title": { "en": "Clear level 3", "zh": "通过第 3 关" } },
+    { "id": "level-5", "tier": "bronze", "level": 5, "title": { "en": "Clear level 5", "zh": "通过第 5 关" } },
+    { "id": "level-8", "tier": "silver", "level": 8, "title": { "en": "Clear level 8", "zh": "通过第 8 关" } },
+    { "id": "level-11", "tier": "silver", "level": 11, "title": { "en": "Clear level 11", "zh": "通过第 11 关" } },
+    { "id": "level-14", "tier": "gold", "level": 14, "title": { "en": "Clear level 14", "zh": "通过第 14 关" } },
+    { "id": "full-solve", "tier": "gold", "icon": "trophy", "title": { "en": "Solve a fully scrambled cube without help", "zh": "不靠提示还原完全打乱的魔方" } },
+    { "id": "full-5min", "tier": "gold", "icon": "clock", "title": { "en": "Solve a full scramble in under 5 minutes", "zh": "5 分钟内还原完全打乱的魔方" } },
+    { "id": "full-2min", "tier": "diamond", "icon": "bolt", "title": { "en": "Solve a full scramble in under 2 minutes", "zh": "2 分钟内还原完全打乱的魔方" } },
+    { "id": "full-1min", "tier": "diamond", "icon": "crown", "title": { "en": "Solve a full scramble in under 1 minute", "zh": "1 分钟内还原完全打乱的魔方" } },
+    { "id": "daily-cube", "tier": "bronze", "icon": "star", "title": { "en": "Solve a daily cube", "zh": "还原一次每日魔方" } },
+    { "id": "watch-solver", "tier": "bronze", "icon": "target", "title": { "en": "Watch the solver solve a scrambled cube", "zh": "看解法还原一个打乱的魔方" } }
+  ]
+}
