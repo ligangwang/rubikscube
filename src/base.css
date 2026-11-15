@@ -1,0 +1,71 @@
+/* The few dingn site styles the game uses, so it looks the same inside its
+   frame as the rest of dingn. */
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: #10131c;
+  color: #f3f4f8;
+  font-family: "Space Grotesk Variable", "Open Sans", Arial, sans-serif;
+  line-height: 1.6;
+  overflow: hidden;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #d5ff58;
+  color: #172013;
+  border: 1px solid #d5ff58;
+  border-radius: 28px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  gap: 8px;
+}
+.button:hover {
+  background: #bedf58;
+}
+.secondary-button {
+  background: #252c40;
+  color: #f3f4f8;
+  border: 1px solid #34394b;
+  border-radius: 24px;
+  padding: 11px 18px;
+  font-size: 13px;
+}
+.link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  text-decoration: underline;
+}
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #cdd2e0;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

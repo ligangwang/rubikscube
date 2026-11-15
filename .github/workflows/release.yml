@@ -1,0 +1,45 @@
+# Tests every pull request. A push to master (merging a pull request) also
+# builds the zip and publishes it on dingn with the DINGN_UPLOAD_KEY secret,
+# when version in game.json is one dingn doesn't have yet. The upload then
+# waits in dingn's review queue and goes live once it is approved.
+name: Build and publish
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run pack
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rubikscube-zip
+          path: release/*.zip
+      - name: Publish on dingn
+        if: github.event_name != 'pull_request'
+        env:
+          DINGN_UPLOAD_KEY: ${{ secrets.DINGN_UPLOAD_KEY }}
+        run: |
+          if [ -z "$DINGN_UPLOAD_KEY" ]; then
+            echo "::warning::No DINGN_UPLOAD_KEY secret yet, so nothing was published. See README.md."
+            exit 0
+          fi
+          npm run upload
