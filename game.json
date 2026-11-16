@@ -1,6 +1,6 @@
 {
   "id": "rubikscube",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "title": {
     "en": "Rubik's Cube",
     "zh": "魔方"
@@ -10,6 +10,7 @@
     "zh": "3D 魔方：从打乱一步到完全打乱，闯过 15 关；挑战每日魔方；看分层解法一步步演示新手公式。还能展开成平面图。"
   },
   "entry": "index.html",
+  "cover": "cover.jpg",
   "badges": [
     { "id": "level-3", "tier": "bronze", "level": 3, "title": { "en": "Clear level 3", "zh": "通过第 3 关" } },
     { "id": "level-5", "tier": "bronze", "level": 5, "title": { "en": "Clear level 5", "zh": "通过第 5 关" } },
