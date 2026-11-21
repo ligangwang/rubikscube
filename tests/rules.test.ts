@@ -12,7 +12,8 @@ import {
   undoPath,
 } from "../src/levels";
 import { CubeState } from "../src/cube/state";
-import zh from "../src/zh-CN.json" with { type: "json" };
+import zh from "../src/locales/zh-CN.json" with { type: "json" };
+import { LANGUAGES, PACKS, translate } from "../src/i18n";
 import game from "../game.json" with { type: "json" };
 
 test("saves are read defensively", () => {
@@ -89,9 +90,63 @@ test("every badge the game awards is in game.json", () => {
   assert.equal(ids.size, game.badges.length);
 });
 
-test("every Chinese pattern keeps its placeholders", () => {
-  for (const [en, cn] of Object.entries(zh as Record<string, string>)) {
-    const holes = (s: string) => (s.match(/\{\d\}/g) ?? []).sort().join();
-    assert.equal(holes(cn), holes(en), en);
+const holes = (s: string) => (s.match(/\{\d+\}/g) ?? []).sort().join();
+
+test("every language pack has the Chinese pack's keys and placeholders", () => {
+  const keys = Object.keys(zh).sort();
+  assert.deepEqual(Object.keys(PACKS).sort(), ["es", "id", "ja", "ko", "pt-BR", "zh-CN"]);
+  for (const [lang, pack] of Object.entries(PACKS)) {
+    assert.deepEqual(Object.keys(pack).sort(), keys, lang);
+    for (const [en, text] of Object.entries(pack)) {
+      assert.ok(text.trim(), `${lang}: ${en}`);
+      assert.equal(holes(text), holes(en), `${lang}: ${en}`);
+    }
   }
+});
+
+test("game.json lists every language, with a title and description in each", () => {
+  assert.deepEqual(game.languages, LANGUAGES);
+  assert.ok(game.languages.includes("en"));
+  // game.json names Chinese "zh"; every other language by its own code.
+  const field = (lang: string) => (lang === "zh-CN" ? "zh" : lang);
+  for (const lang of game.languages) {
+    const title = (game.title as Record<string, string>)[field(lang)];
+    const description = (game.description as Record<string, string>)[field(lang)];
+    assert.ok(title?.trim(), `title ${lang}`);
+    assert.ok(description?.trim(), `description ${lang}`);
+  }
+});
+
+test("translate speaks each language, and English for the rest", () => {
+  assert.equal(translate("Play again", "es"), "Jugar otra vez");
+  assert.equal(translate("Play again", "pt-BR"), "Jogar de novo");
+  assert.equal(translate("Play again", "id"), "Main lagi");
+  assert.equal(translate("Play again", "ja"), "もう一度遊ぶ");
+  assert.equal(translate("Play again", "ko"), "다시 하기");
+  assert.equal(translate("Play again", "zh-CN"), "再玩一次");
+  assert.equal(translate("Level {0} of {1}", "es"), "Nivel {0} de {1}");
+  assert.equal(translate("Level 3 of 15", "pt-BR"), "Nível 3 de 15");
+  assert.equal(translate("Level 3", "ja"), "レベル 3");
+  for (const locale of ["en", "fr", "de", "zh", "constructor", "toString"])
+    assert.equal(translate("Play again", locale), "Play again", locale);
+  assert.equal(translate("Level 3 of 15", "fr"), "Level 3 of 15");
+  assert.equal(translate("Not a game string", "ja"), "Not a game string");
+});
+
+test("no language other than Chinese ever gets Chinese text", () => {
+  const han = /[\u4e00-\u9fff]/;
+  const chinese = new Set(Object.values(zh as Record<string, string>));
+  for (const locale of ["en", "es", "pt-BR", "id", "ja", "ko", "fr"])
+    for (const key of Object.keys(zh)) {
+      const text = translate(key, locale);
+      // Japanese writes with kanji too, so for it only the exact Chinese text counts.
+      if (locale !== "ja") assert.ok(!han.test(text), `${locale}: ${key}`);
+      assert.ok(!chinese.has(text), `${locale}: ${key}`);
+    }
+});
+
+test("cube notation stays as it is in every language", () => {
+  const notation = "R U R' U'";
+  for (const pack of Object.values(PACKS))
+    assert.ok(pack["Use U, D, L, R, F and B, with ' or 2, such as R U R' U'."].includes(notation));
 });

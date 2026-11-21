@@ -60,6 +60,12 @@ vi.mock("../src/cube-scene", async () => {
 
 let stored: Map<string, unknown>;
 let sdk: DingnGame;
+/** What the game listens to for language switches, as dingn would call it. */
+const languageListeners = new Set<(locale: Locale) => void>();
+const switchLanguage = (locale: Locale) =>
+  act(() => {
+    for (const fn of languageListeners) fn(locale);
+  });
 const calls = {
   save: vi.fn(),
   earn: vi.fn(),
@@ -70,6 +76,7 @@ function fakeSdk(signedIn: boolean, locale: Locale = "en") {
   calls.save.mockReset().mockResolvedValue(undefined);
   calls.earn.mockReset().mockImplementation(async (coins: number) => ({ coins, left: 100 }));
   calls.unlock.mockReset().mockResolvedValue({ new: true, coins: 10 });
+  languageListeners.clear();
   sdk = {
     gameId: "rubikscube",
     version: "2.0.0",
@@ -77,6 +84,13 @@ function fakeSdk(signedIn: boolean, locale: Locale = "en") {
     player: { signedIn, name: signedIn ? "Ada" : "", avatar: "" },
     embedded: true,
     onPlayer: () => () => {},
+    onLanguage: (fn) => {
+      languageListeners.add(fn);
+      return () => void languageListeners.delete(fn);
+    },
+    challenge: null,
+    challengeLink: async () => "",
+    roundEnded() {},
     storage: {
       get: async (key) => (stored.get(key) ?? null) as never,
       set: async (key, value) => void stored.set(key, value),
@@ -186,4 +200,63 @@ test("speaks Chinese", () => {
   expect(screen.getByRole("heading", { name: "还原打乱 1 步的魔方" })).toBeTruthy();
   expect(screen.getByRole("button", { name: "打乱并开始" })).toBeTruthy();
   expect(screen.getByText("登录以赚取金币和徽章")).toBeTruthy();
+});
+
+test("speaks every language, and English for one it doesn't know", () => {
+  const headings: Record<string, string> = {
+    es: "Deshaz una mezcla de 1 movimiento",
+    "pt-BR": "Desfaça um embaralhamento de 1 movimento",
+    id: "Kembalikan acakan 1 langkah",
+    ja: "1 手のスクランブルを戻そう",
+    ko: "1번 섞은 큐브를 되돌려요",
+    fr: "Undo a 1-move scramble",
+  };
+  for (const [locale, heading] of Object.entries(headings)) {
+    fakeSdk(false, locale);
+    play();
+    expect(screen.getByRole("heading", { name: heading })).toBeTruthy();
+    cleanup();
+  }
+});
+
+test("switching language mid-game keeps the game going", async () => {
+  play({ ...empty(), level: 4 });
+  fireEvent.click(screen.getByRole("button", { name: "Scramble and start" }));
+  const scramble = [...mocks.scene!.turns];
+  fireEvent.click(screen.getByRole("button", { name: "R" }));
+  fireEvent.click(screen.getByRole("button", { name: /Hint/ }));
+  const hint = document.querySelector(".rc-hint b")!.textContent;
+  expect(document.documentElement.lang).toBe("en");
+
+  switchLanguage("ja");
+  expect(screen.getByRole("button", { name: /ヒント/ })).toBeTruthy();
+  expect(screen.getByText("レベル 5 / 15")).toBeTruthy();
+  expect(document.querySelector(".rc-hint")!.textContent).toBe(`${hint} を回してみよう`);
+  expect(document.documentElement.lang).toBe("ja");
+
+  switchLanguage("es");
+  expect(screen.getByRole("button", { name: /Pista/ })).toBeTruthy();
+  expect(screen.getByText("Nivel 5 de 15")).toBeTruthy();
+  expect(document.querySelector(".rc-hint")!.textContent).toBe(`Prueba ${hint}`);
+  // Same scramble, same turns: nothing restarted.
+  expect(mocks.scene!.turns).toEqual([...scramble, "R"]);
+  expect(screen.queryByRole("button", { name: "Mezclar y empezar" })).toBeNull();
+
+  switchLanguage("en");
+  expect(screen.getByText("Level 5 of 15")).toBeTruthy();
+});
+
+test("a free-play error switches language with the rest", () => {
+  play(empty(), "free");
+  fireEvent.change(screen.getByPlaceholderText("R U R' U'"), { target: { value: "X" } });
+  fireEvent.click(screen.getByRole("button", { name: "Run" }));
+  switchLanguage("ko");
+  expect(screen.getByText("U, D, L, R, F, B에 ' 또는 2를 붙여서 써요. 예: R U R' U'")).toBeTruthy();
+});
+
+test("stops listening for languages when it closes", () => {
+  const { unmount } = play();
+  expect(languageListeners.size).toBe(1);
+  unmount();
+  expect(languageListeners.size).toBe(0);
 });

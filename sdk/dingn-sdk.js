@@ -6,7 +6,8 @@
 //
 //   import { connect } from "./dingn-sdk.js";
 //   const dingn = await connect();
-//   dingn.locale;                         // "en" or "zh-CN"
+//   dingn.locale;                         // the player's language, one your game.json lists ("en" if none fits)
+//   dingn.onLanguage((locale) => …);      // the player switched language
 //   dingn.player;                         // { signedIn, name, avatar }
 //   dingn.onPlayer((player) => …);        // sign-in or sign-out
 //   await dingn.storage.set("best", 12);  // this device only
@@ -19,6 +20,9 @@
 //   await dingn.rewards.earn(3);          // a few coins for play, capped each day
 //   dingn.navigate("/");                  // leave the game for a dingn page
 //   dingn.ready();                        // hide the website's loading screen
+//   dingn.challenge;                      // the friend's challenge this page opened, or null
+//   await dingn.challengeLink({ mode: "daily", seed: "2026-11-16", score: 10, unit: "points" });
+//   dingn.roundEnded();                   // a round was played to the end
 //
 // Opened on its own (not inside dingn), connect() still works in a local
 // mode: signed out, English, and storage that lasts until the page closes.
@@ -39,6 +43,7 @@ function connectToHost(host, timeout) {
   let nextId = 1;
   const pending = new Map();
   const listeners = new Set();
+  const languageListeners = new Set();
   let game;
 
   window.addEventListener("message", (event) => {
@@ -55,6 +60,12 @@ function connectToHost(host, timeout) {
       for (const fn of listeners) fn(msg.data);
       return;
     }
+    // The player switched language: show the game in it, keeping their play.
+    if (msg.event === "language") {
+      if (game) game.locale = msg.data;
+      for (const fn of languageListeners) fn(msg.data);
+      return;
+    }
     const call = pending.get(msg.id);
     if (!call) return;
     pending.delete(msg.id);
@@ -63,6 +74,9 @@ function connectToHost(host, timeout) {
       call.reject(
         Object.assign(new Error(msg.error.message || msg.error.code), {
           code: msg.error.code,
+          ...(typeof msg.error.balance === "number"
+            ? { balance: msg.error.balance }
+            : {}),
         }),
       );
     else call.resolve(msg.result);
@@ -93,9 +107,15 @@ function connectToHost(host, timeout) {
       locale: info.locale,
       player: info.player,
       embedded: true,
+      // Websites from before challenge links send none.
+      challenge: info.challenge ?? null,
       onPlayer(fn) {
         listeners.add(fn);
         return () => listeners.delete(fn);
+      },
+      onLanguage(fn) {
+        languageListeners.add(fn);
+        return () => languageListeners.delete(fn);
       },
       storage: {
         get: (key) => request("storage.get", { key }),
@@ -116,6 +136,8 @@ function connectToHost(host, timeout) {
       requestSignIn: () => notify("signIn"),
       navigate: (path) => notify("navigate", { path }),
       ready: () => notify("ready"),
+      challengeLink: (challenge) => request("challenge.link", challenge),
+      roundEnded: () => notify("roundEnded"),
     };
     return game;
   });
@@ -136,7 +158,9 @@ function standalone() {
     locale: lang.toLowerCase().startsWith("zh") ? "zh-CN" : "en",
     player: { signedIn: false, name: "", avatar: "" },
     embedded: false,
+    challenge: null,
     onPlayer: () => () => {},
+    onLanguage: () => () => {},
     storage: {
       get: async (key) =>
         memory.has(key) ? JSON.parse(memory.get(key)) : null,
@@ -155,5 +179,12 @@ function standalone() {
       location.href = path;
     },
     ready() {},
+    challengeLink: () =>
+      Promise.reject(
+        Object.assign(new Error("Challenge links work on dingn."), {
+          code: "unavailable",
+        }),
+      ),
+    roundEnded() {},
   };
 }
