@@ -14,7 +14,8 @@ layer-by-layer solver for cube learners. Play it at
   (U D L R F B, Shift for counterclockwise, Ctrl+Z to undo). Drag the
   background to look around.
 - **Unfold** opens the cube into a flat net and folds it back.
-- Hints, face letters, turn speed, English and Chinese.
+- Hints, face letters, turn speed, and seven languages (English, Chinese,
+  Spanish, Portuguese, Indonesian, Japanese, Korean) that switch live.
 
 Rubik's Cube is published on dingn the same way as any outside developer's
 game: a zip uploaded on [My games](https://dingn.com/developers/games/) and

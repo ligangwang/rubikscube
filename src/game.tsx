@@ -124,11 +124,14 @@ export function RubiksGame({
   const [prefs, setPrefs] = useState<Prefs>(initialPrefs);
   const [notation, setNotation] = useState("");
   const [position, setPosition] = useState("");
+  /** An error under the free-play boxes, in English: drawn through t(). */
   const [message, setMessage] = useState<string | null>(null);
   const [pressed, setPressed] = useState<Move | null>(null);
 
-  const movesText = (n: number) =>
-    (n === 1 ? t("{0} move") : t("{0} moves")).replace("{0}", String(n));
+  /** A count in words, with the singular text for 1 (languages differ). */
+  const counted = (n: number, one: string, many: string) =>
+    (n === 1 ? t(one) : t(many)).replace("{0}", String(n));
+  const movesText = (n: number) => counted(n, "{0} move", "{0} moves");
   const turnTime = (speed: number) => Math.round(420 - speed * 3.4);
 
   // ------------------------------------------------------------ the scene
@@ -467,7 +470,7 @@ export function RubiksGame({
   const runNotation = () => {
     const moves = parseMoves(notation);
     if (!moves) {
-      setMessage(t("Use U, D, L, R, F and B, with ' or 2, such as R U R' U'."));
+      setMessage("Use U, D, L, R, F and B, with ' or 2, such as R U R' U'.");
       return;
     }
     setMessage(null);
@@ -477,7 +480,7 @@ export function RubiksGame({
   const setFromPosition = () => {
     const text = position.trim().toUpperCase().replace(/\s+/g, " ");
     if (!isValidState(text)) {
-      setMessage(t("That isn't a position a real cube can reach."));
+      setMessage("That isn't a position a real cube can reach.");
       return;
     }
     setMessage(null);
@@ -557,9 +560,10 @@ export function RubiksGame({
             <h2>
               {scrambleLength(phase === "ready" ? level : a.level || level) >= FULL
                 ? t("Full scramble")
-                : t("{0}-move scramble").replace(
-                    "{0}",
-                    String(scrambleLength(phase === "ready" ? level : a.level || level)),
+                : counted(
+                    scrambleLength(phase === "ready" ? level : a.level || level),
+                    "1-move scramble",
+                    "{0}-move scramble",
                   )}
             </h2>
             <LevelDots
@@ -638,8 +642,10 @@ export function RubiksGame({
         </div>
         {hint && (
           <p className="rc-hint">
-            {t("Try {0}").replace("{0}", "")}
+            {/* The move goes where the language puts it. */}
+            {t("Try {0}").split("{0}")[0]}
             <b>{hint}</b>
+            {t("Try {0}").split("{0}")[1]}
           </p>
         )}
         <label className="rc-speed">
@@ -714,7 +720,7 @@ export function RubiksGame({
                 </button>
               </span>
             </label>
-            {message && <p className="rc-error">{message}</p>}
+            {message && <p className="rc-error">{t(message)}</p>}
           </div>
         )}
       </aside>
@@ -791,9 +797,10 @@ export function RubiksGame({
               <h2>
                 {scrambleLength(level) >= FULL
                   ? t("Solve a fully scrambled cube")
-                  : t("Undo a {0}-move scramble").replace(
-                      "{0}",
-                      String(scrambleLength(level)),
+                  : counted(
+                      scrambleLength(level),
+                      "Undo a 1-move scramble",
+                      "Undo a {0}-move scramble",
                     )}
               </h2>
               <p className="rc-muted">

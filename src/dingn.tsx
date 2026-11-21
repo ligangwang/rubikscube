@@ -22,8 +22,15 @@ export function DingnProvider({
   // Re-render when the player signs in or out.
   const [player, setPlayer] = useState(sdk.player);
   useEffect(() => sdk.onPlayer(setPlayer), [sdk]);
+  // And when they switch language while playing: the game keeps going, only
+  // its words change. dingn websites from before languages can't switch.
+  const [locale, setLocale] = useState(sdk.locale);
+  useEffect(() => sdk.onLanguage?.(setLocale), [sdk]);
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
   return (
-    <DingnContext.Provider value={{ ...sdk, player }}>
+    <DingnContext.Provider value={{ ...sdk, player, locale }}>
       {children}
     </DingnContext.Provider>
   );

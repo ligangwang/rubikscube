@@ -1,14 +1,25 @@
 {
   "id": "rubikscube",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "title": {
     "en": "Rubik's Cube",
-    "zh": "魔方"
+    "zh": "魔方",
+    "es": "Cubo de Rubik",
+    "pt-BR": "Cubo Mágico",
+    "id": "Kubus Rubik",
+    "ja": "ルービックキューブ",
+    "ko": "루빅스 큐브"
   },
   "description": {
     "en": "A 3D Rubik's Cube: climb 15 levels from a one-move scramble to a full one, solve the daily cube, and watch a layer-by-layer solver teach the beginner's method. Unfolds into a flat net too.",
-    "zh": "3D 魔方：从打乱一步到完全打乱，闯过 15 关；挑战每日魔方；看分层解法一步步演示新手公式。还能展开成平面图。"
+    "zh": "3D 魔方：从打乱一步到完全打乱，闯过 15 关；挑战每日魔方；看分层解法一步步演示新手公式。还能展开成平面图。",
+    "es": "Un cubo de Rubik en 3D: supera 15 niveles, desde una mezcla de un solo movimiento hasta una mezcla completa, resuelve el cubo del día y mira cómo un solucionador capa por capa te enseña el método para principiantes. También se despliega en un plano.",
+    "pt-BR": "Um Cubo Mágico em 3D: passe por 15 níveis, de um embaralhamento de um só movimento até um completo, resolva o cubo do dia e veja um solucionador camada por camada ensinar o método para iniciantes. Ele também se abre em uma planificação.",
+    "id": "Kubus Rubik 3D: naiki 15 level, dari acakan satu langkah sampai acak penuh, selesaikan kubus harian, dan lihat pemecah lapis demi lapis mengajarkan metode pemula. Kubusnya juga bisa dibuka jadi jaring datar.",
+    "ja": "3Dのルービックキューブ。1手のスクランブルからフルスクランブルまで15レベルに挑戦し、デイリーキューブを解いて、ソルバーが層ごとに初心者向けの解き方を教えてくれるのを見よう。平らな展開図にもひらけます。",
+    "ko": "3D 루빅스 큐브: 한 번 섞은 큐브부터 완전히 섞은 큐브까지 15개 레벨에 도전하고, 데일리 큐브를 풀고, 자동 풀이가 층별로 초보자 풀이법을 알려 주는 걸 지켜봐요. 평평한 전개도로 펼칠 수도 있어요."
   },
+  "languages": ["en", "zh-CN", "es", "pt-BR", "id", "ja", "ko"],
   "entry": "index.html",
   "cover": "cover.jpg",
   "badges": [

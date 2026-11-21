@@ -13,7 +13,10 @@ Notes for AI coding agents working on Rubik's Cube.
   already has.
 - Save with `sdk.storage` / `sdk.progress`, never `localStorage` or cookies,
   which the sandbox blocks. Keep every URL relative (`base: "./"`).
-- UI strings go through `t()` with translations in `src/zh-CN.json`.
+- UI strings go through `t()` with translations in `src/locales/<lang>.json`
+  (zh-CN, es, pt-BR, id, ja, ko), each keyed by the English text. Add a new
+  string to every pack; a test checks they all have the same keys and
+  placeholders. Cube notation (R, U', F2) stays as is in every language.
 - `src/cube/` is the cube model and the layer-by-layer solver, ported from
   the original JavaScript game. Keep it free of three.js and the DOM so the
   tests can run it in Node.
